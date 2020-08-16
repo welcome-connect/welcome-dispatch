@@ -1,8 +1,7 @@
 import { auth, db, functions, firebase } from './index'
-import { User } from 'firebase'
 
 // CREATE OR FIND USER
-export const createUserDocument = async (newUser: User, data: User) => {
+export const createUserDocument = async (newUser, data) => {
 	if (!newUser) return
 
 	const userRef = db.doc(`users/${newUser.uid}`)
@@ -28,7 +27,7 @@ export const createUserDocument = async (newUser: User, data: User) => {
 }
 
 // GET USER DOCUMENT
-export const getUserDocument = async (uid: string) => {
+export const getUserDocument = async uid => {
 	if (!uid) return null
 
 	try {
@@ -41,7 +40,7 @@ export const getUserDocument = async (uid: string) => {
 }
 
 // UPDATE USER
-export const updateUser = async (uid: string, data: User) => {
+export const updateUser = async (uid, data) => {
 	try {
 		await db.collection('users').doc(uid).update(data)
 	} catch (error) {
