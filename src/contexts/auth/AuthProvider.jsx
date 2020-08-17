@@ -23,7 +23,7 @@ const AuthProvider = ({ children }) => {
 
 		try {
 			await auth.signInWithEmailAndPassword(email, password)
-			dispatch({ type: types.SIGN_IN_UP_SUCCESS })
+			dispatch({ type: types.SIGN_IN_SUCCESS })
 		} catch (error) {
 			console.error('Error signing in: ', error.message)
 			dispatch({ type: types.FETCH_FAILED, payload: error.message })
@@ -56,7 +56,7 @@ const AuthProvider = ({ children }) => {
 				displayName: name,
 			})
 
-			dispatch({ type: types.SIGN_IN_UP_SUCCESS })
+			dispatch({ type: types.SIGN_IN_SUCCESS })
 		} catch (error) {
 			console.error('Error signing up: ', error.message)
 			dispatch({ type: types.FETCH_FAILED, payload: error.message })
@@ -75,6 +75,7 @@ const AuthProvider = ({ children }) => {
 
 		// Setting user to auth state
 		dispatch({ type: types.SET_USER, payload: user })
+		// router.push('/dashboard')
 	}
 
 	useEffect(() => {
@@ -86,11 +87,9 @@ const AuthProvider = ({ children }) => {
 	}, [router.pathname])
 
 	return (
-		<AuthStateContext.Provider value={{ ...state }}>
-			<AuthSetterContext.Provider value={{ signin, signup, signout }}>
-				{children}
-			</AuthSetterContext.Provider>
-		</AuthStateContext.Provider>
+		<AuthSetterContext.Provider value={{ signin, signup, signout }}>
+			<AuthStateContext.Provider value={{ ...state }}>{children}</AuthStateContext.Provider>
+		</AuthSetterContext.Provider>
 	)
 }
 

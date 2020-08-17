@@ -1,31 +1,26 @@
 import styled from 'styled-components'
 import Link from 'next/link'
 
-import { SignInForm } from '../components/SignInForm'
-import { Logo } from '../components/_icons'
+import { Logo } from '../../components/_icons'
+import { SignUpForm } from '../../components/SignUpForm'
 
-const Home = () => {
-	return (
-		<PageLayout>
-			<div className="left-container">
-				<div className="logo-container">
-					<Logo main="white" accent="#00D084" />
-				</div>
+const SignUpPage = () => (
+	<PageLayout>
+		<div className="left-container">
+			<div className="logo-container">
+				<Logo main="white" accent="#00D084" />
 			</div>
-			<div className="right-container">
-				<div className="logo-container">
-					<Logo main="white" accent="#00D084" />
-				</div>
-				<SignInForm />
-				<Link href="/signup">
-					<span className="signup">
-						not a member? <strong>Sign up now</strong>
-					</span>
-				</Link>
-			</div>
-		</PageLayout>
-	)
-}
+		</div>
+		<div className="right-container">
+			<Link href="/">
+				<span className="signin">
+					already a member? <strong>Sign in</strong>
+				</span>
+			</Link>
+			<SignUpForm />
+		</div>
+	</PageLayout>
+)
 
 const PageLayout = styled.main`
 	display: flex;
@@ -60,7 +55,7 @@ const PageLayout = styled.main`
 
 		position: relative;
 
-		.signup {
+		.signin {
 			position: absolute;
 			top: 1.5rem;
 			right: 2rem;
@@ -110,4 +105,4 @@ const PageLayout = styled.main`
 	}
 `
 
-export default Home
+export default SignUpPage

@@ -2,7 +2,7 @@ export const types = {
 	FETCH_REQ: 'FETCH_REQ',
 	FETCH_FAILED: 'FETCH_FAILED',
 
-	SIGN_IN_UP_SUCCESS: 'SIGN_IN_UP_SUCCESS',
+	SIGN_IN_SUCCESS: 'SIGN_IN_SUCCESS',
 	SIGNOUT_SUCCESS: 'SIGNOUT_SUCCESS',
 
 	SET_USER: 'SET_USER',
@@ -11,24 +11,33 @@ export const types = {
 }
 
 export const initialState = {
-	user: false,
+	user: null,
 	isLoggedIn: false,
 	isLoading: false,
 	error: null,
 }
 
 export const authReducer = (state, action) => {
-	return action.type === types.FETCH_REQ
-		? { ...state, isLoading: true }
-		: action.type === types.FETCH_FAILED
-		? { ...state, isLoading: false, error: action.payload }
-		: action.type === types.SIGN_IN_UP_SUCCESS
-		? { ...state, isLoading: false, isLoggedIn: true }
-		: action.type === types.SIGNOUT_SUCCESS
-		? { ...state, isLoading: false, isLoggedIn: false, user: false }
-		: action.type === types.SET_USER
-		? { ...state, user: action.payload, isLoggedIn: true }
-		: action.type === types.IS_NOT_LOGGED_IN
-		? { ...state, isLoggedIn: false }
-		: state
+	switch (action.type) {
+		case types.FETCH_REQ:
+			return { ...state, isLoading: true }
+
+		case types.FETCH_FAILED:
+			return { ...state, isLoading: false, error: action.payload }
+
+		case types.SIGN_IN_SUCCESS:
+			return { ...state, isLoading: false, isLoggedIn: true }
+
+		case types.SIGNOUT_SUCCESS:
+			return { ...state, isLoading: false, isLoggedIn: false, user: null }
+
+		case types.SET_USER:
+			return { ...state, user: action.payload, isLoggedIn: true }
+
+		case types.IS_NOT_LOGGED_IN:
+			return { ...state, isLoggedIn: false }
+
+		default:
+			return state
+	}
 }
