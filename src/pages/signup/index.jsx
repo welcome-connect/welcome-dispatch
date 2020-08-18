@@ -12,12 +12,15 @@ const SignUpPage = () => (
 			</div>
 		</div>
 		<div className="right-container">
+			<div className="logo-container">
+				<Logo main="white" accent="#00D084" />
+			</div>
+			<SignUpForm />
 			<Link href="/">
 				<span className="signin">
 					already a member? <strong>Sign in</strong>
 				</span>
 			</Link>
-			<SignUpForm />
 		</div>
 	</PageLayout>
 )
@@ -35,7 +38,7 @@ const PageLayout = styled.main`
 			height: 30vh;
 
 			svg {
-				width: 155px;
+				width: 120px;
 				height: auto;
 			}
 		}
@@ -84,7 +87,7 @@ const PageLayout = styled.main`
 			display: none;
 
 			svg {
-				width: 155px;
+				width: 120px;
 				height: auto;
 			}
 		}
@@ -96,10 +99,10 @@ const PageLayout = styled.main`
 			.logo-container {
 				width: min(380px, 95vw);
 				display: block;
-				padding: 2rem 0;
+				padding: 1rem 0;
 				position: absolute;
 				top: 0;
-				left: 5vw;
+				left: 4vw;
 			}
 		}
 	}

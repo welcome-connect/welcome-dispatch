@@ -5,13 +5,15 @@ import Link from 'next/link'
 
 import { useAuthState, useAuthSetters } from '../../contexts/auth/AuthProvider'
 
-import Button from '../../styles/styled-components/Button'
-import Input from '../../styles/styled-components/Input'
-import Label from '../../styles/styled-components/Label'
-import Form from '../../styles/styled-components/Form'
-import ErrorMessage from '../../styles/styled-components/ErrorMessage'
+import {
+	FieldGroup,
+	Label,
+	Input,
+	ErrorMessage,
+	Button,
+	Form,
+} from '../../styles/styled-components'
 
-// TODO: needs form validation and error handling
 export const SignInForm = () => {
 	const { register, handleSubmit, errors } = useForm()
 	const router = useRouter()
@@ -28,7 +30,7 @@ export const SignInForm = () => {
 		<div>
 			<ModifiedForm onSubmit={handleSubmit(onSubmit)}>
 				<h1>Sign in to Welcome</h1>
-				<div className="label-input-container">
+				<FieldGroup className="label-input-container">
 					<Label htmlFor="email">Email</Label>
 					<Input
 						type="text"
@@ -46,8 +48,8 @@ export const SignInForm = () => {
 					{errors.email && (
 						<ErrorMessage htmlFor="email">{errors.email.message}</ErrorMessage>
 					)}
-				</div>
-				<div className="label-input-container">
+				</FieldGroup>
+				<FieldGroup className="label-input-container">
 					{/** TODO: need to create forgot password functionality */}
 					<Label htmlFor="password">Password</Label>
 					<Link href="/forgot-password">
@@ -66,12 +68,11 @@ export const SignInForm = () => {
 					{errors.password && (
 						<ErrorMessage htmlFor="password">{errors.password.message}</ErrorMessage>
 					)}
-				</div>
+				</FieldGroup>
 				<Button isPrimary type="submit" style={{ width: '100%' }}>
 					Sign In
 				</Button>
 			</ModifiedForm>
-			{/* )} */}
 		</div>
 	)
 }
@@ -88,31 +89,6 @@ const ModifiedForm = styled(Form)`
 
 		@media (max-width: 768px) {
 			font-size: 1.75rem;
-		}
-	}
-
-	.label-input-container {
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		position: relative;
-		margin-bottom: 2rem;
-
-		.forgot-password {
-			position: absolute;
-			right: 0;
-			font-size: 14px;
-			font-weight: 300;
-			text-decoration: none;
-			color: ${({ theme: { colors } }) => colors.text_light};
-			cursor: pointer;
-
-			&:hover,
-			&:active,
-			&:focus {
-				color: ${({ theme: { colors } }) => colors.text};
-				text-decoration: underline;
-			}
 		}
 	}
 `

@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-const ErrorMessage = styled.label`
+export const ErrorMessage = styled.label`
 	display: flex;
 	align-items: center;
 	position: absolute;
@@ -15,5 +15,3 @@ const ErrorMessage = styled.label`
 	top: 100%;
 	right: 0;
 `
-
-export default ErrorMessage

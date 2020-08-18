@@ -40,7 +40,7 @@ const PageLayout = styled.main`
 			height: 30vh;
 
 			svg {
-				width: 155px;
+				width: 120px;
 				height: auto;
 			}
 		}
@@ -89,7 +89,7 @@ const PageLayout = styled.main`
 			display: none;
 
 			svg {
-				width: 155px;
+				width: 120px;
 				height: auto;
 			}
 		}
@@ -101,10 +101,10 @@ const PageLayout = styled.main`
 			.logo-container {
 				width: min(380px, 95vw);
 				display: block;
-				padding: 2rem 0;
+				padding: 1rem 0;
 				position: absolute;
 				top: 0;
-				left: 5vw;
+				left: 4vw;
 			}
 		}
 	}

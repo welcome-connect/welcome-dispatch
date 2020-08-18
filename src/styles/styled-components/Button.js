@@ -1,8 +1,8 @@
 import styled, { css } from 'styled-components'
 
-const Button = styled.button`
+export const Button = styled.button`
   padding: .5rem 1rem;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   border-radius: 5px;
   cursor: pointer;
   font-size: 1rem;
@@ -67,5 +67,3 @@ const Button = styled.button`
 			border: 1px solid ${({ theme: { colors } }) => colors.text_light};
 		`}
 `
-
-export default Button

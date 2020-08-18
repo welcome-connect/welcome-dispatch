@@ -3,20 +3,21 @@ import { useRef } from 'react'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 
-import { useAuthSetters, useAuthState } from '../../contexts/auth/AuthProvider'
-
-import Button from '../../styles/styled-components/Button'
-import Input from '../../styles/styled-components/Input'
-import Label from '../../styles/styled-components/Label'
-import Form from '../../styles/styled-components/Form'
-import ErrorMessage from '../../styles/styled-components/ErrorMessage'
+import { useAuthSetters } from '../../contexts/auth/AuthProvider'
+import {
+	FieldGroup,
+	Label,
+	Input,
+	ErrorMessage,
+	Button,
+	Form,
+} from '../../styles/styled-components'
 
 export const SignUpForm = () => {
 	const { register, handleSubmit, errors, watch } = useForm()
 	const password = useRef({})
 	password.current = watch('password', '')
 	const { signup } = useAuthSetters()
-	const { user } = useAuthState()
 
 	const router = useRouter()
 
@@ -29,7 +30,7 @@ export const SignUpForm = () => {
 		<div>
 			<ModifiedForm onSubmit={handleSubmit(onSubmit)}>
 				<h1>Sign up to Welcome</h1>
-				<div className="label-input-container">
+				<FieldGroup className="label-input-container">
 					<Label htmlFor="name">Full Name</Label>
 					<Input
 						type="text"
@@ -43,8 +44,8 @@ export const SignUpForm = () => {
 					{errors.name && (
 						<ErrorMessage htmlFor="name">{errors.name.message}</ErrorMessage>
 					)}
-				</div>
-				<div className="label-input-container">
+				</FieldGroup>
+				<FieldGroup className="label-input-container">
 					<Label htmlFor="email">Email</Label>
 					<Input
 						type=""
@@ -62,8 +63,8 @@ export const SignUpForm = () => {
 					{errors.email && (
 						<ErrorMessage htmlFor="email">{errors.email.message}</ErrorMessage>
 					)}
-				</div>
-				<div className="label-input-container">
+				</FieldGroup>
+				<FieldGroup className="label-input-container">
 					<Label htmlFor="password">Password</Label>
 					<Input
 						type="password"
@@ -81,8 +82,8 @@ export const SignUpForm = () => {
 					{errors.password && (
 						<ErrorMessage htmlFor="password">{errors.password.message}</ErrorMessage>
 					)}
-				</div>
-				<div className="label-input-container">
+				</FieldGroup>
+				<FieldGroup className="label-input-container">
 					<Label htmlFor="passwordConfirm">Confirm Password</Label>
 					<Input
 						type="password"
@@ -104,12 +105,11 @@ export const SignUpForm = () => {
 							{errors.passwordConfirm.message}
 						</ErrorMessage>
 					)}
-				</div>
+				</FieldGroup>
 				<Button isPrimary type="submit" style={{ width: '100%' }}>
 					Sign Up
 				</Button>
 			</ModifiedForm>
-			{/* )} */}
 		</div>
 	)
 }
@@ -127,17 +127,5 @@ const ModifiedForm = styled(Form)`
 		@media (max-width: 768px) {
 			font-size: 1.75rem;
 		}
-	}
-
-	.label-input-container {
-		display: flex;
-		flex-direction: column;
-		min-width: 300px;
-		position: relative;
-		margin-bottom: 2rem;
-	}
-
-	label + button {
-		margin-top: 0.5rem;
 	}
 `
