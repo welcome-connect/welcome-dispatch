@@ -21,9 +21,9 @@ export const SignUpForm = () => {
 
 	const router = useRouter()
 
-	const onSubmit = data => {
-		signup(data)
-		router.push('/dashboard')
+	const onSubmit = async data => {
+		await signup(data)
+		router.push('/dispatch')
 	}
 
 	return (
@@ -41,9 +41,7 @@ export const SignUpForm = () => {
 						placeholder="enter your name"
 						hasError={errors.name}
 					/>
-					{errors.name && (
-						<ErrorMessage htmlFor="name">{errors.name.message}</ErrorMessage>
-					)}
+					{errors.name && <ErrorMessage htmlFor="name">{errors.name.message}</ErrorMessage>}
 				</FieldGroup>
 				<FieldGroup className="label-input-container">
 					<Label htmlFor="email">Email</Label>
@@ -60,9 +58,7 @@ export const SignUpForm = () => {
 						placeholder="enter your email"
 						hasError={errors.email}
 					/>
-					{errors.email && (
-						<ErrorMessage htmlFor="email">{errors.email.message}</ErrorMessage>
-					)}
+					{errors.email && <ErrorMessage htmlFor="email">{errors.email.message}</ErrorMessage>}
 				</FieldGroup>
 				<FieldGroup className="label-input-container">
 					<Label htmlFor="password">Password</Label>
@@ -94,16 +90,13 @@ export const SignUpForm = () => {
 								value: 6,
 								message: 'Need a minimum of 6 characters',
 							},
-							validate: value =>
-								value === password.current || 'The passwords do not match',
+							validate: value => value === password.current || 'The passwords do not match',
 						})}
 						placeholder="confirm your password"
 						hasError={errors.passwordConfirm}
 					/>
 					{errors.passwordConfirm && (
-						<ErrorMessage htmlFor="password">
-							{errors.passwordConfirm.message}
-						</ErrorMessage>
+						<ErrorMessage htmlFor="password">{errors.passwordConfirm.message}</ErrorMessage>
 					)}
 				</FieldGroup>
 				<Button isPrimary type="submit" style={{ width: '100%' }}>

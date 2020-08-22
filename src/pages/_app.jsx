@@ -1,8 +1,10 @@
-import { ThemeProvider } from 'styled-components'
 import Head from 'next/head'
+import { ThemeProvider } from 'styled-components'
 
 import { theme, GlobalStyles } from '../styles'
+
 import AuthProvider from '../contexts/auth/AuthProvider'
+import NavigationProvider from '../contexts/navigation/NavigationProvider'
 
 function MyApp({ Component, pageProps }) {
 	return (
@@ -12,8 +14,10 @@ function MyApp({ Component, pageProps }) {
 			</Head>
 			<ThemeProvider theme={theme}>
 				<AuthProvider>
-					<GlobalStyles />
-					<Component {...pageProps} />
+					<NavigationProvider>
+						<GlobalStyles />
+						<Component {...pageProps} />
+					</NavigationProvider>
 				</AuthProvider>
 			</ThemeProvider>
 		</>

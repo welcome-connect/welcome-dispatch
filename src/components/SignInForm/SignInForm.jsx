@@ -23,7 +23,7 @@ export const SignInForm = () => {
 
 	const onSubmit = async ({ email, password }) => {
 		await signin(email, password)
-		router.push('/dashboard')
+		router.push('/dispatch')
 	}
 
 	return (
@@ -58,7 +58,6 @@ export const SignInForm = () => {
 					<Input
 						type="password"
 						name="password"
-						ref={register}
 						ref={register({
 							required: 'Your password is required',
 						})}

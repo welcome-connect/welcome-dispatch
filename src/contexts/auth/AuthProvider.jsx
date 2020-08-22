@@ -1,4 +1,4 @@
-import { createContext, useEffect, useReducer, useContext, ReactChildren, ReactChild } from 'react'
+import { createContext, useEffect, useReducer, useContext } from 'react'
 import { useRouter } from 'next/router'
 
 import { auth, createUserDocument } from '../../services/firebase'
@@ -65,17 +65,20 @@ const AuthProvider = ({ children }) => {
 
 	// Handles user on user change and on app mount / unmount
 	const handleUser = user => {
+		console.log('USER: ', user)
+
 		if (!user) {
 			if (router.pathname.indexOf('/signup') > -1) {
 				return
 			} else {
 				router.push('/')
+				return
 			}
 		}
 
 		// Setting user to auth state
 		dispatch({ type: types.SET_USER, payload: user })
-		// router.push('/dashboard')
+		router.push('/dispatch')
 	}
 
 	useEffect(() => {

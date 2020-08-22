@@ -18,6 +18,8 @@ export const createUserDocument = async (newUser, data) => {
 				createdAt,
 				...data,
 			})
+
+			await newUser.updateProfile({ ...data })
 		} catch (error) {
 			console.error('Error creating new user: ', error.message)
 		}
