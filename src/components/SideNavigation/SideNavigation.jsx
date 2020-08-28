@@ -1,11 +1,11 @@
 import styled from 'styled-components'
 import { LeftArrowIcon, RightArrowIcon, DispatchIcon, LogoMark, Logo } from '../_icons'
-import { useStateNavigation, useSetNavigation } from '../../contexts/navigation/NavigationProvider'
 import NavLink from './NavLink'
+import { useNavigationState, useNavigationSetters } from '../../contexts/navigation'
 
-const SideNavigation = () => {
-	const { isSideNavExpanded } = useStateNavigation()
-	const { openSideNav, closeSideNav } = useSetNavigation()
+export const SideNavigation = () => {
+	const { isSideNavExpanded } = useNavigationState()
+	const { openSideNav, closeSideNav } = useNavigationSetters()
 
 	return (
 		<NavigationContainer className="side-nav">
@@ -72,5 +72,3 @@ const NavigationContainer = styled.nav`
 		font-size: 0.9rem;
 	}
 `
-
-export default SideNavigation

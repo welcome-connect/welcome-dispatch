@@ -3,8 +3,8 @@ import { ThemeProvider } from 'styled-components'
 
 import { theme, GlobalStyles } from '../styles'
 
-import AuthProvider from '../contexts/auth/AuthProvider'
-import NavigationProvider from '../contexts/navigation/NavigationProvider'
+import { NavigationProvider } from '../contexts/navigation'
+import { AuthProvider } from '../contexts/auth'
 
 function MyApp({ Component, pageProps }) {
 	return (

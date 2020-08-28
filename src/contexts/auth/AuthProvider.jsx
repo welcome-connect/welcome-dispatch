@@ -13,7 +13,7 @@ export const useAuthState = () => useContext(AuthStateContext)
 export const useAuthSetters = () => useContext(AuthSetterContext)
 
 // Auth provider that makes auth object and makes it available when calling useAuth()
-const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }) => {
 	const [state, dispatch] = useReducer(authReducer, initialState)
 	const router = useRouter()
 
@@ -95,5 +95,3 @@ const AuthProvider = ({ children }) => {
 		</AuthSetterContext.Provider>
 	)
 }
-
-export default AuthProvider

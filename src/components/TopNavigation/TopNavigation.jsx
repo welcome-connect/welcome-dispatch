@@ -1,87 +1,47 @@
 import styled, { css } from 'styled-components'
-import { useState } from 'react'
-import { useRouter } from 'next/router'
 
-import { Logo, UserAvatarIcon, LogoutIcon, SettingsIcon } from '../_icons'
-import { useAuthSetters, useAuthState } from '../../contexts/auth/AuthProvider'
+import { UserAvatarIcon } from '../_icons'
+import { useAuthState } from '../../contexts/auth/AuthProvider'
+import { UserDropdown } from '../UserDropdown'
+import { useNavigationSetters, useNavigationState } from '../../contexts/navigation'
 
-const TopNavigation = ({ title, icon }) => {
-	const { signout } = useAuthSetters()
+export const TopNavigation = ({ title, icon }) => {
 	const { user } = useAuthState()
-	const handleSignout = () => signout()
 
-	const router = useRouter()
-	const atInbox = router.pathname === '/inbox'
+	const { toggleUserDropdownMenu } = useNavigationSetters()
+	const { isUserDropdownOpen } = useNavigationState()
 
-	const [avatarDropdownToggle, setAvatarDropdownToggle] = useState(false)
-	const toggleAvatarDropdown = () => {
-		setAvatarDropdownToggle(!avatarDropdownToggle)
+	const handleUserDropdown = e => {
+		e.preventDefault()
+		e.stopPropagation()
+		if (isUserDropdownOpen) {
+			toggleUserDropdownMenu()
+		}
+	}
+
+	const handleAvatarOnClick = e => {
+		e.preventDefault()
+		e.stopPropagation()
+		toggleUserDropdownMenu()
 	}
 
 	return (
-		<NavigationContainer className="top-nav" atInbox={atInbox}>
+		<NavigationContainer className="top-nav" onClick={handleUserDropdown}>
 			<div className="grid-left">
 				{icon}
 				<span>{title}</span>
 			</div>
 			<div className="grid-center"></div>
 			<div className="grid-right">
-				<div className="avatar" onClick={toggleAvatarDropdown}>
+				<div className="avatar" onClick={handleAvatarOnClick}>
 					<p className="username">{user?.displayName}</p>
 					<UserAvatarIcon />
-					<DropDown className={avatarDropdownToggle ? 'toggle' : ''}>
-						<DropDownItem onClick={handleSignout}>
-							<LogoutIcon />
-							Logout
-						</DropDownItem>
-						<DropDownItem onClick={handleSignout}>
-							<SettingsIcon />
-							Settings
-						</DropDownItem>
-					</DropDown>
+					<UserDropdown />
 				</div>
 			</div>
 		</NavigationContainer>
 	)
 }
-
-const DropDown = styled.ul`
-	position: absolute;
-	right: 0;
-	top: 100%;
-	background-color: ${({ theme: { colors } }) => colors.primary};
-	color: ${({ theme: { colors } }) => colors.text_white};
-	list-style: none;
-	border-radius: 5px;
-	visibility: hidden;
-	opacity: 0;
-	transition: all 150ms ease-in-out;
-	min-width: 150px;
-	z-index: 1;
-
-	&.toggle {
-		visibility: visible;
-		opacity: 1;
-		transform: translateY(15px);
-		transition: all 150ms ease-in-out;
-	}
-`
-
-const DropDownItem = styled.li`
-	padding: 0.5rem 1rem;
-	text-align: end;
-	cursor: pointer;
-
-	display: flex;
-	justify-content: flex-start;
-	align-items: center;
-
-	svg {
-		margin-right: 1rem;
-    height: 24px;
-    width: auto;
-	}
-`
 
 const NavigationContainer = styled.header`
 	display: grid;
@@ -181,5 +141,3 @@ const NavigationContainer = styled.header`
 		}
 	}
 `
-
-export default TopNavigation
