@@ -51,3 +51,41 @@ export const updateUser = async (uid, data) => {
 
 	return getUserDocument(uid)
 }
+
+// CHANGE AUTH EMAIL
+export const changeAuthEmail = async (user, newEmail) => {
+	if (!user) throw new Error('User object required')
+	if (!newEmail) throw new Error('New email required')
+
+	await user.updateEmail(newEmail)
+	await updateUser(user.uid, { email: newEmail })
+
+	const updated_user = await getUserDocument(user.uid)
+
+	return updated_user
+}
+
+// CHANGE AUTH DISPLAY NAME
+export const changeDisplayName = async (user, newDisplayName) => {
+	if (!user) throw new Error('User object required')
+	if (!newDisplayName) throw new Error('New display name required')
+
+	await user.updateProfile({ displayName: newDisplayName })
+	await updateUser(user.uid, { displayName: newDisplayName })
+
+	const updated_user = await getUserDocument(user.uid)
+
+	return updated_user
+}
+
+//CHAGE HONE NUMBER
+export const changePhoneNumber = async (user, newPhoneNumber) => {
+	if (!user) throw new Error('User object required')
+	if (!newPhoneNumber) throw new Error('New phone number required')
+
+	await user.updateProfile({ phoneNumber: newPhoneNumber })
+	await updateUser(user.uid, { phoneNumber: newPhoneNumber })
+
+	const updated_user = await getUserDocument(user.uid)
+	return updated_user
+}

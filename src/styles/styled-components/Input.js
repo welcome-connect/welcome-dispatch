@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components'
 
 export const Input = styled.input`
 	font-size: 14px;
-	padding: 0.4rem 1rem;
+	padding: 0.5rem 0.5rem;
 	border-radius: 4px;
 	border: 2px solid ${({ theme: { colors } }) => colors.border_light};
 	color: ${({ theme: { colors } }) => colors.text_light};

@@ -1,7 +1,7 @@
 import { createContext, useEffect, useReducer, useContext } from 'react'
 import { useRouter } from 'next/router'
 
-import { auth, createUserDocument } from '../../services/firebase'
+import { auth, createUserDocument, getUserDocument } from '../../services/firebase'
 import { types, initialState, authReducer } from './state'
 
 // Creates context
@@ -63,8 +63,11 @@ export const AuthProvider = ({ children }) => {
 		}
 	}
 
+	// Set user object
+	const setUserObj = user => dispatch({ type: types.SET_USER_OBJ, payload: user })
+
 	// Handles user on user change and on app mount / unmount
-	const handleUser = user => {
+	const handleUser = async user => {
 		console.log('USER: ', user)
 
 		if (!user) {
@@ -76,8 +79,10 @@ export const AuthProvider = ({ children }) => {
 			}
 		}
 
+		const userObj = await getUserDocument(user.uid)
 		// Setting user to auth state
 		dispatch({ type: types.SET_USER, payload: user })
+		dispatch({ type: types.SET_USER_OBJ, payload: userObj })
 		router.push('/dispatch')
 	}
 
@@ -90,7 +95,7 @@ export const AuthProvider = ({ children }) => {
 	}, [router.pathname])
 
 	return (
-		<AuthSetterContext.Provider value={{ signin, signup, signout }}>
+		<AuthSetterContext.Provider value={{ signin, signup, signout, setUserObj }}>
 			<AuthStateContext.Provider value={{ ...state }}>{children}</AuthStateContext.Provider>
 		</AuthSetterContext.Provider>
 	)

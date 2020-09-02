@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import navItems from './nav_items'
 
@@ -10,18 +10,26 @@ import { DispatcherSettings } from './DispatcherSettings'
 
 export const Settings = () => {
 	const [selectedSetting, setSelectedSetting] = useState(<AccountSettings />)
+	const [isSelected, setIsSelected] = useState('account')
 
 	const selectSetting = setting => {
-		console.log({ setting })
 		switch (setting) {
 			case 'account':
-				return setSelectedSetting(<AccountSettings />)
+				setIsSelected('account')
+				setSelectedSetting(<AccountSettings />)
+				break
 			case 'teams':
-				return setSelectedSetting(<TeamSettings />)
+				setIsSelected('teams')
+				setSelectedSetting(<TeamSettings />)
+				break
 			case 'agents':
-				return setSelectedSetting(<AgentSettings />)
+				setIsSelected('agents')
+				setSelectedSetting(<AgentSettings />)
+				break
 			case 'dispatchers':
-				return setSelectedSetting(<DispatcherSettings />)
+				setIsSelected('dispatchers')
+				setSelectedSetting(<DispatcherSettings />)
+				break
 			default:
 				null
 		}
@@ -31,7 +39,10 @@ export const Settings = () => {
 		<Container>
 			<SettingsNav>
 				{navItems.map(navItem => (
-					<NavItem key={navItem.name} onClick={() => selectSetting(navItem.name.toLowerCase())}>
+					<NavItem
+						key={navItem.name}
+						onClick={() => selectSetting(navItem.name.toLowerCase())}
+						isSelected={isSelected === navItem.name.toLowerCase()}>
 						{navItem.svg}
 						{navItem.name}
 					</NavItem>
@@ -51,14 +62,15 @@ const SettingsNav = styled.nav`
 	display: flex;
 	flex-direction: column;
 	height: 100%;
+
 	border-right: 1px solid ${({ theme }) => theme.colors.border_darker};
 `
 const NavItem = styled.span`
 	display: flex;
 	align-items: center;
-	margin-bottom: 0.5rem;
 	padding: 0.5rem 1rem;
 	cursor: pointer;
+	color: ${({ theme }) => theme.colors.text};
 
 	svg {
 		margin-right: 0.5rem;
@@ -69,7 +81,25 @@ const NavItem = styled.span`
 	&:hover {
 		background: ${({ theme }) => theme.colors.bg.hover};
 	}
+
+	${({ isSelected }) =>
+		isSelected &&
+		css`
+			background: ${({ theme }) => theme.colors.primary};
+			color: white;
+
+			&:hover {
+				background: ${({ theme }) => theme.colors.primary};
+			}
+
+			svg {
+				path {
+					stroke: white;
+				}
+			}
+		`}
 `
 const SelectedView = styled.section`
-	padding-left: 1rem;
+	padding: 0 2rem 0 1rem;
+	flex-grow: 1;
 `

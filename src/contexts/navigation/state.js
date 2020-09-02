@@ -13,7 +13,6 @@ export const initialState = {
 }
 
 export const navigationReducer = (state, action) => {
-	console.log({ state, action })
 	switch (action.type) {
 		case types.EXPAND_SIDENAV:
 			return { ...state, isSideNavExpanded: true }
