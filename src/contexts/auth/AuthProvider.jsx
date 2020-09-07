@@ -5,12 +5,10 @@ import { auth, createUserDocument, getUserDocument } from '../../services/fireba
 import { types, initialState, authReducer } from './state'
 
 // Creates context
-export const AuthStateContext = createContext()
-export const AuthSetterContext = createContext()
+export const AuthContext = createContext()
 
 // Hooks for child components to get access to the auth state and setters
-export const useAuthState = () => useContext(AuthStateContext)
-export const useAuthSetters = () => useContext(AuthSetterContext)
+export const useAuth = () => useContext(AuthContext)
 
 // Auth provider that makes auth object and makes it available when calling useAuth()
 export const AuthProvider = ({ children }) => {
@@ -64,12 +62,10 @@ export const AuthProvider = ({ children }) => {
 	}
 
 	// Set user object
-	const setUserObj = user => dispatch({ type: types.SET_USER_OBJ, payload: user })
+	const setUserDoc = user => dispatch({ type: types.SET_USER_DOC, payload: user })
 
 	// Handles user on user change and on app mount / unmount
 	const handleUser = async user => {
-		console.log('USER: ', user)
-
 		if (!user) {
 			if (router.pathname.indexOf('/signup') > -1) {
 				return
@@ -79,10 +75,10 @@ export const AuthProvider = ({ children }) => {
 			}
 		}
 
-		const userObj = await getUserDocument(user.uid)
+		const userDoc = await getUserDocument(user.uid)
 		// Setting user to auth state
 		dispatch({ type: types.SET_USER, payload: user })
-		dispatch({ type: types.SET_USER_OBJ, payload: userObj })
+		dispatch({ type: types.SET_USER_DOC, payload: userDoc })
 		router.push('/dispatch')
 	}
 
@@ -95,8 +91,8 @@ export const AuthProvider = ({ children }) => {
 	}, [router.pathname])
 
 	return (
-		<AuthSetterContext.Provider value={{ signin, signup, signout, setUserObj }}>
-			<AuthStateContext.Provider value={{ ...state }}>{children}</AuthStateContext.Provider>
-		</AuthSetterContext.Provider>
+		<AuthContext.Provider value={{ ...state, signin, signup, signout, setUserDoc }}>
+			{children}
+		</AuthContext.Provider>
 	)
 }

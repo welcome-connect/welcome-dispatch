@@ -1,15 +1,14 @@
 import styled, { css } from 'styled-components'
 
 import { UserAvatarIcon } from '../_icons'
-import { useAuthState } from '../../contexts/auth/AuthProvider'
+import { useAuth } from '../../contexts/auth/AuthProvider'
 import { UserDropdown } from '../UserDropdown'
-import { useNavigationSetters, useNavigationState } from '../../contexts/navigation'
+import { useNavigation } from '../../contexts/navigation'
 
 export const TopNavigation = ({ title, icon }) => {
-	const { user } = useAuthState()
+	const { userAuth } = useAuth()
 
-	const { toggleUserDropdownMenu } = useNavigationSetters()
-	const { isUserDropdownOpen } = useNavigationState()
+	const { isUserDropdownOpen, toggleUserDropdownMenu } = useNavigation()
 
 	const handleUserDropdown = e => {
 		e.preventDefault()
@@ -34,7 +33,7 @@ export const TopNavigation = ({ title, icon }) => {
 			<div className="grid-center"></div>
 			<div className="grid-right">
 				<div className="avatar" onClick={handleAvatarOnClick}>
-					<p className="username">{user?.displayName}</p>
+					<p className="username">{userAuth?.displayName}</p>
 					<UserAvatarIcon />
 					<UserDropdown />
 				</div>

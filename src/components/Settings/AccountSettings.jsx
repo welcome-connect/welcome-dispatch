@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { useForm } from 'react-hook-form'
 import { useEffect } from 'react'
 
-import { useAuthState } from '../../contexts/auth'
+import { useAuth } from '../../contexts/auth'
 import { formatPhoneNumber } from '../../utils'
 import { useUpdateUserProfile } from '../../hooks'
 
@@ -17,7 +17,7 @@ import {
 
 export const AccountSettings = () => {
 	const { register, errors, handleSubmit, setValue } = useForm()
-	const { user, userObj } = useAuthState()
+	const { userAuth, userDoc } = useAuth()
 	const {
 		isLoading,
 		isSuccess,
@@ -27,10 +27,10 @@ export const AccountSettings = () => {
 	} = useUpdateUserProfile()
 
 	useEffect(() => {
-		setValue('displayName', user.displayName)
-		setValue('email', user.email)
-		setValue('phoneNumber', formatPhoneNumber(userObj.phoneNumber, '($2) $3-$4'))
-	}, [user, userObj])
+		setValue('displayName', userAuth.displayName)
+		setValue('email', userAuth.email)
+		setValue('phoneNumber', formatPhoneNumber(userDoc.phoneNumber, '($2) $3-$4'))
+	}, [userAuth, userDoc])
 
 	const onSubmit = async data => {
 		await updateUserProfile(data)
@@ -45,7 +45,7 @@ export const AccountSettings = () => {
 						type="text"
 						name="displayName"
 						ref={register}
-						placeholder={user.displayName}
+						placeholder={userAuth.displayName}
 						hasError={errors.displayName}
 					/>
 				</ModifiedFieldGroup>
@@ -72,7 +72,7 @@ export const AccountSettings = () => {
 						hasError={errors.phoneNumber}
 					/>
 				</ModifiedFieldGroup>
-				<Button isPrimary>Save</Button>
+				<ModifiedButton isPrimary>Save</ModifiedButton>
 			</ModifiedForm>
 			{isLoading ? <p>Loading...</p> : null}
 			{isSuccess ? <p>Updated !</p> : null}
@@ -89,6 +89,8 @@ export const AccountSettings = () => {
 
 const Container = styled.div`
 	width: 100%;
+	height: 100%;
+	position: relative;
 `
 const ModifiedForm = styled(Form)`
 	padding: 1rem 0;
@@ -107,4 +109,10 @@ const ModifiedFieldGroup = styled(FieldGroup)`
 const ModifiedErrorMessage = styled(ErrorMessage)`
 	position: static;
 	font-size: 1rem;
+`
+
+const ModifiedButton = styled(Button)`
+	position: absolute;
+	right: 0;
+	bottom: 12px;
 `

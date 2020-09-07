@@ -1,7 +1,1 @@
-export {
-	NavigationProvider,
-	useNavigationState,
-	useNavigationSetters,
-	NavigationStateContext,
-	NavigationSetContext,
-} from './NavigationProvider'
+export { NavigationProvider, useNavigation, NavigationContext } from './NavigationProvider'

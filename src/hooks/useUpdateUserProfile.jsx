@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { formatPhoneNumber } from '../utils'
-import { useAuthSetters, useAuthState } from '../contexts/auth'
+import { useAuth } from '../contexts/auth'
 import { changeDisplayName, changeAuthEmail, changePhoneNumber } from '../services/firebase/users'
 
 export const useUpdateUserProfile = () => {
@@ -9,8 +9,7 @@ export const useUpdateUserProfile = () => {
 	const [hasNoChanges, setHasNoChanges] = useState(false)
 	const [authRequired, setAuthRequired] = useState(false)
 
-	const { user, userObj } = useAuthState()
-	const { setUserObj } = useAuthSetters()
+	const { setUserDoc, userAuth, userDoc } = useAuth()
 
 	const updateUserProfile = async ({ displayName, email, phoneNumber }) => {
 		setLoading(true)
@@ -22,9 +21,9 @@ export const useUpdateUserProfile = () => {
 		let updatedUser
 
 		if (
-			displayName === user.displayName &&
-			email === user.email &&
-			formattedPhone === userObj.phoneNumber
+			displayName === userAuth.displayName &&
+			email === userAuth.email &&
+			formattedPhone === userDoc.phoneNumber
 		) {
 			setLoading(false)
 			setHasNoChanges(true)
@@ -32,12 +31,13 @@ export const useUpdateUserProfile = () => {
 		}
 
 		try {
-			if (displayName !== user.displayName) updatedUser = await changeDisplayName(user, displayName)
-			if (email !== user.email) updatedUser = await changeAuthEmail(user, email)
-			if (formattedPhone !== userObj.phoneNumber)
-				updatedUser = await changePhoneNumber(user, formattedPhone)
+			if (displayName !== userAuth.displayName)
+				updatedUser = await changeDisplayName(userAuth, displayName)
+			if (email !== userAuth.email) updatedUser = await changeAuthEmail(userAuth, email)
+			if (formattedPhone !== userDoc.phoneNumber)
+				updatedUser = await changePhoneNumber(userAuth, formattedPhone)
 
-			setUserObj(updatedUser)
+			setUserDoc(updatedUser)
 			setLoading(false)
 			setSuccess(true)
 		} catch (error) {

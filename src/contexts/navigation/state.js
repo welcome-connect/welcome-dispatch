@@ -4,12 +4,14 @@ export const types = {
 
 	TOGGLE_USERDROPDOWN_MENU: 'TOGGLE_USERDROPDOWN_MENU',
 	TOGGLE_SETTINGS_MODAL: 'TOGGLE_SETTINGS_MODAL',
+	TOGGLE_TEAM_EDIT_MODAL: 'TOGGLE_TEAM_EDIT_MODAL',
 }
 
 export const initialState = {
 	isSideNavExpanded: false,
 	isUserDropdownOpen: false,
 	isSettingsOpen: false,
+	isTeamEditOpen: false,
 }
 
 export const navigationReducer = (state, action) => {
@@ -25,6 +27,9 @@ export const navigationReducer = (state, action) => {
 
 		case types.TOGGLE_SETTINGS_MODAL:
 			return { ...state, isSettingsOpen: !state.isSettingsOpen }
+
+		case types.TOGGLE_TEAM_EDIT_MODAL:
+			return { ...state, isTeamEditOpen: !state.isTeamEditOpen }
 
 		default:
 			return state

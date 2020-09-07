@@ -100,6 +100,6 @@ const NavItem = styled.span`
 		`}
 `
 const SelectedView = styled.section`
-	padding: 0 2rem 0 1rem;
+	padding: 0 32px 0 32px;
 	flex-grow: 1;
 `

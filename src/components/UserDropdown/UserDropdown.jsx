@@ -1,13 +1,12 @@
 import styled from 'styled-components'
 
 import { LogoutIcon, SettingsIcon } from '../_icons'
-import { useAuthSetters } from '../../contexts/auth/AuthProvider'
-import { useNavigationState, useNavigationSetters } from '../../contexts/navigation'
+import { useAuth } from '../../contexts/auth/AuthProvider'
+import { useNavigation } from '../../contexts/navigation'
 
 export const UserDropdown = () => {
-	const { isUserDropdownOpen } = useNavigationState()
-	const { toggleSettingsModal } = useNavigationSetters()
-	const { signout } = useAuthSetters()
+	const { toggleSettingsModal, isUserDropdownOpen } = useNavigation()
+	const { signout } = useAuth()
 	const handleSignout = () => signout()
 
 	return (

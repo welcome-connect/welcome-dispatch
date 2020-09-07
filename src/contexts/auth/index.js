@@ -1,7 +1,1 @@
-export {
-	AuthProvider,
-	useAuthSetters,
-	useAuthState,
-	AuthSetterContext,
-	AuthStateContext,
-} from './AuthProvider'
+export { AuthProvider, useAuth, AuthContext } from './AuthProvider'

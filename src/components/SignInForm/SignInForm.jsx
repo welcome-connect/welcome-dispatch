@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import Link from 'next/link'
 
-import { useAuthState, useAuthSetters } from '../../contexts/auth/AuthProvider'
+import { useAuth } from '../../contexts/auth/AuthProvider'
 
 import {
 	FieldGroup,
@@ -18,8 +18,7 @@ export const SignInForm = () => {
 	const { register, handleSubmit, errors } = useForm()
 	const router = useRouter()
 
-	const { user } = useAuthState()
-	const { signin } = useAuthSetters()
+	const { signin } = useAuth()
 
 	const onSubmit = async ({ email, password }) => {
 		await signin(email, password)

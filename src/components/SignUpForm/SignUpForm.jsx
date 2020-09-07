@@ -3,7 +3,7 @@ import { useRef } from 'react'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 
-import { useAuthSetters } from '../../contexts/auth/AuthProvider'
+import { useAuth } from '../../contexts/auth/AuthProvider'
 import {
 	FieldGroup,
 	Label,
@@ -17,7 +17,7 @@ export const SignUpForm = () => {
 	const { register, handleSubmit, errors, watch } = useForm()
 	const password = useRef({})
 	password.current = watch('password', '')
-	const { signup } = useAuthSetters()
+	const { signup } = useAuth()
 
 	const router = useRouter()
 

@@ -2,32 +2,47 @@ import styled, { css } from 'styled-components'
 
 import { TopNavigation } from '../TopNavigation'
 import { SideNavigation } from '../SideNavigation'
-import { useNavigationState, useNavigationSetters } from '../../contexts/navigation'
+import { useNavigation } from '../../contexts/navigation'
 import { ModalContainer } from '../ModalContainer'
 import { Settings } from '../Settings'
+import { TeamModal } from '../Settings/TeamModal'
+import { SettingsProvider } from '../../contexts/settings'
 
 export const Layout = ({ children, title, icon }) => {
-	const { isSideNavExpanded, isUserDropdownOpen, isSettingsOpen } = useNavigationState()
-	const { toggleUserDropdownMenu, toggleSettingsModal } = useNavigationSetters()
+	const {
+		toggleUserDropdownMenu,
+		toggleSettingsModal,
+		toggleTeamEditModal,
+		isSideNavExpanded,
+		isUserDropdownOpen,
+		isSettingsOpen,
+		isTeamEditOpen,
+	} = useNavigation()
 
 	const handleBgClick = e => {
 		e.stopPropagation()
 		if (isUserDropdownOpen) toggleUserDropdownMenu()
 		if (isSettingsOpen) toggleSettingsModal()
+		if (isTeamEditOpen) toggleTeamEditModal()
 	}
-
-	console.log({ isSettingsOpen })
 
 	return (
 		<Container className={isSideNavExpanded ? 'menu-open' : null}>
-			{isUserDropdownOpen || isSettingsOpen ? (
-				<ModalBackground onClick={handleBgClick} isUserDropdownOpen={isUserDropdownOpen} />
-			) : null}
-			{isSettingsOpen ? (
-				<ModalContainer>
-					<Settings />
-				</ModalContainer>
-			) : null}
+			<SettingsProvider>
+				{isUserDropdownOpen || isSettingsOpen ? (
+					<ModalBackground onClick={handleBgClick} isUserDropdownOpen={isUserDropdownOpen} />
+				) : null}
+				{isSettingsOpen ? (
+					<ModalContainer>
+						<Settings />
+					</ModalContainer>
+				) : null}
+				{isTeamEditOpen ? (
+					<ModalContainer>
+						<TeamModal />
+					</ModalContainer>
+				) : null}
+			</SettingsProvider>
 			<TopNavigation title={title} icon={icon} />
 			<SideNavigation />
 			<PageContainer>{children}</PageContainer>

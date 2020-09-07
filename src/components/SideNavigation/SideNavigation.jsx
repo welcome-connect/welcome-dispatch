@@ -1,11 +1,10 @@
 import styled from 'styled-components'
 import { LeftArrowIcon, RightArrowIcon, DispatchIcon, LogoMark, Logo } from '../_icons'
 import NavLink from './NavLink'
-import { useNavigationState, useNavigationSetters } from '../../contexts/navigation'
+import { useNavigation } from '../../contexts/navigation'
 
 export const SideNavigation = () => {
-	const { isSideNavExpanded } = useNavigationState()
-	const { openSideNav, closeSideNav } = useNavigationSetters()
+	const { openSideNav, closeSideNav, isSideNavExpanded } = useNavigation()
 
 	return (
 		<NavigationContainer className="side-nav">
