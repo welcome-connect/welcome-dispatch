@@ -13,6 +13,7 @@ import {
 	FieldGroup,
 	Button,
 	ErrorMessage,
+	SettingsInput,
 } from '../../styles/styled-components'
 
 export const AccountSettings = () => {
@@ -41,7 +42,7 @@ export const AccountSettings = () => {
 			<ModifiedForm onSubmit={handleSubmit(onSubmit)}>
 				<ModifiedFieldGroup>
 					<Label htmlFor="displayName">Display name</Label>
-					<ModifiedInput
+					<SettingsInput
 						type="text"
 						name="displayName"
 						ref={register}
@@ -51,7 +52,7 @@ export const AccountSettings = () => {
 				</ModifiedFieldGroup>
 				<ModifiedFieldGroup>
 					<Label htmlFor="email">Email</Label>
-					<ModifiedInput
+					<SettingsInput
 						type="text"
 						name="email"
 						ref={register({
@@ -65,7 +66,7 @@ export const AccountSettings = () => {
 				</ModifiedFieldGroup>
 				<ModifiedFieldGroup>
 					<Label htmlFor="phoneNumber">Phone number</Label>
-					<ModifiedInput
+					<SettingsInput
 						type="text"
 						name="phoneNumber"
 						ref={register}
@@ -96,10 +97,6 @@ const ModifiedForm = styled(Form)`
 	padding: 1rem 0;
 	background-color: transparent;
 	width: 100%;
-`
-
-const ModifiedInput = styled(Input)`
-	background-color: transparent;
 `
 
 const ModifiedFieldGroup = styled(FieldGroup)`

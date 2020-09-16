@@ -41,7 +41,6 @@ export const useUpdateUserProfile = () => {
 			setLoading(false)
 			setSuccess(true)
 		} catch (error) {
-			console.log(error)
 			if (error.code === 'auth/requires-recent-login') {
 				setAuthRequired(true)
 				setLoading(false)

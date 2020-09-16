@@ -6,5 +6,5 @@ export const formatPhoneNumber = (phoneNumber, format = '+1$2$3$4') => {
 	// Group4: Subscriber Number (ex: 1234)
 	// Group5: Extension (ex: 5678)
 
-	return phoneNumber.replace(regex, format)
+	return phoneNumber?.replace(regex, format)
 }

@@ -1,4 +1,6 @@
+import { FieldValue } from '@google-cloud/firestore'
 import { auth, db, functions, firebase } from './index'
+import { getUserDocument } from './users'
 
 // CREATE TEAM
 export const createTeam = async newTeam => {
@@ -49,5 +51,20 @@ export const updateTeam = async (id, data) => {
 // DELETE TEAM
 
 // ADD AGENT TO TEAM
+export const addAgentToTeam = async (teamId, agentId) => {
+	if (!teamId || !agentId) return new Error('Team id and agent id are required')
+
+	const teamRef = db.collection('teams').doc(teamId)
+	const agentRef = db.collection('users').doc(agentId)
+
+	try {
+		await agentRef.update({ teams: FieldValue.arrayUnion(teamId) })
+		await teamRef.update({ agent_count: FieldValue.increment(1) })
+	} catch (error) {
+		console.error('Error updating team and/or agent: ', error.message)
+	}
+
+	return { updated_team: getTeam(teamId), updated_agent: getUserDocument(agentId) }
+}
 
 // REMOVE AGENT FROM TEAM

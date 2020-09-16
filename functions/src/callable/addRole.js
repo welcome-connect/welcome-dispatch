@@ -1,7 +1,7 @@
 const functions = require('firebase-functions')
 const { admin } = require('../admin')
 
-exports.addRole = functions.https.onCall((data, context) => {
+module.exports = functions.https.onCall((data, context) => {
 	//check request is made by admin
 	if (context.auth.token.admin !== true) {
 		return { error: 'only admins can add other admins' }

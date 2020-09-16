@@ -1,43 +1,54 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
+import { useEffect } from 'react'
+
 import { useNavigation } from '../../contexts/navigation'
+import { useSettings } from '../../contexts/settings'
+
 import { EditIcon, LessIcon, AddIcon } from '../_icons'
+import { Team } from './Team'
+import { useTeams } from '../../hooks'
 
 export const TeamSettings = () => {
 	const { toggleTeamEditModal } = useNavigation()
+	const { setSelectedTeam, selectedTeam, setIsEditingTeam } = useSettings()
+	const { teams, loading } = useTeams()
 
-	const teams = [
-		{ name: 'Houston', dispatcher_count: 5, agent_count: 3, id: '6a54sd6f87a6s5d4f1' },
-		{ name: 'Dallas', dispatcher_count: 8, agent_count: 16, id: '6a54sdasdf6f87a6s5d4f1' },
-		{
-			name: 'San Antonio',
-			dispatcher_count: 2,
-			agent_count: 2,
-			id: '6a54sdasdf6f8oiuw9e7r6s5d4f1',
-		},
-	]
+	useEffect(() => {
+		setSelectedTeam(null)
+	}, [])
+
+	const handleEdit = () => {
+		setIsEditingTeam(true)
+		toggleTeamEditModal()
+	}
+
+	const handleAdd = () => {
+		setIsEditingTeam(false)
+		toggleTeamEditModal()
+	}
+
+	const handleMinus = () => {}
 
 	return (
 		<Container>
 			<p>Teams</p>
-			<Teams>
-				{teams.map(team => (
-					<Team key={team.id}>
-						<span>{team.name}</span>
-						<div>
-							<span>{`Dispatchers: ${team.dispatcher_count}`}</span>
-							<span>{`Agents: ${team.agent_count}`}</span>
-						</div>
-					</Team>
-				))}
-			</Teams>
+			{loading ? (
+				<p>loading...</p>
+			) : (
+				<Teams>
+					{teams?.map(team => (
+						<Team team={team} key={team.id} />
+					))}
+				</Teams>
+			)}
 			<IconRow>
-				<IconWrapper onClick={toggleTeamEditModal}>
+				<IconWrapper onClick={selectedTeam ? handleEdit : null} isDisabled={!selectedTeam}>
 					<EditIcon />
 				</IconWrapper>
-				<IconWrapper>
+				<IconWrapper onClick={selectedTeam ? handleMinus : null} isDisabled={!selectedTeam}>
 					<LessIcon />
 				</IconWrapper>
-				<IconWrapper onClick={toggleTeamEditModal}>
+				<IconWrapper onClick={handleAdd}>
 					<AddIcon />
 				</IconWrapper>
 			</IconRow>
@@ -66,30 +77,21 @@ const IconWrapper = styled.span`
 		height: 24px;
 		width: auto;
 	}
+
+	${({ isDisabled }) =>
+		isDisabled &&
+		css`
+			cursor: initial;
+			svg {
+				path {
+					stroke: ${({ theme }) => theme.colors.gray.accent};
+				}
+			}
+		`}
 `
 
 const Teams = styled.div`
 	width: 100%;
 	height: min(200px, 85%);
 	margin-top: 8px;
-`
-
-const Team = styled.div`
-	background: white;
-	border-radius: 4px;
-	padding: 8px;
-	margin-bottom: 8px;
-
-	cursor: pointer;
-	div {
-		span {
-			margin-right: 16px;
-			font-size: 14px;
-			color: ${({ theme }) => theme.colors.text_light};
-		}
-	}
-
-	&:hover {
-		background: ${({ theme }) => theme.colors.bg.hover};
-	}
 `

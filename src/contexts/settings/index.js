@@ -1,1 +1,1 @@
-export { SettingsProvider } from './SettingsProvider'
+export { SettingsProvider, useSettings, SettingsContext } from './SettingsProvider'
