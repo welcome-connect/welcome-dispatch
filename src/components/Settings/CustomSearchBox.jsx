@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
-import { FieldGroup, Input, Label, SettingsInput } from '../../styles/styled-components'
+import { FieldGroup, Label, SettingsInput } from '../../styles/styled-components'
 
 export const CustomSearchBox = connectSearchBox(
 	({ label, currentRefinement, refine, placeholder }) => {

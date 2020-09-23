@@ -2,22 +2,23 @@ import styled, { css } from 'styled-components'
 import { useEffect } from 'react'
 import { useSettings } from '../../contexts/settings'
 
-export const Team = ({ team: { name, dispatcher_count, agent_count, id }, team }) => {
+export const Agent = ({ agent: { displayName, id }, agent }) => {
 	const { setSelected, isSelected } = useSettings()
 	const isCardSelected = isSelected?.id === id
 
+	const handleClick = agent => {
+		setSelected(agent)
+		console.log(agent)
+	}
+
 	return (
-		<TeamCard isCardSelected={isCardSelected} onClick={() => setSelected(team)}>
-			<Title>{name}</Title>
-			<CountContainer>
-				<Count>{`Dispatchers: ${dispatcher_count}`}</Count>
-				<Count>{`Agents: ${agent_count}`}</Count>
-			</CountContainer>
-		</TeamCard>
+		<AgentCard isCardSelected={isCardSelected} onClick={() => handleClick(agent)}>
+			<Name>{displayName}</Name>
+		</AgentCard>
 	)
 }
 
-const TeamCard = styled.div`
+const AgentCard = styled.div`
 	background: white;
 	border-radius: 4px;
 	padding: 8px;
@@ -36,10 +37,4 @@ const TeamCard = styled.div`
 		`}
 `
 
-const Title = styled.span``
-const CountContainer = styled.div``
-const Count = styled.span`
-	margin-right: 16px;
-	font-size: 14px;
-	color: #4d5770;
-`
+const Name = styled.span``

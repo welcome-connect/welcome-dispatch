@@ -1,19 +1,19 @@
-import { useState } from 'react'
 import { connectHits } from 'react-instantsearch-dom'
 import styled, { css } from 'styled-components'
 import { useSettings } from '../../contexts/settings'
 import { useTeamAgents, useTeamDispatchers } from '../../hooks'
+import { capitalize } from '../../utils'
 
-export const CustomHits = connectHits(props => {
+export const CustomHits = connectHits(({ hits }) => {
 	const {
 		setSelectedAgents,
 		setSelectedDispatchers,
-		selectedTeam,
+		isSelected,
 		selectedAgents,
 		selectedDispatchers,
 	} = useSettings()
-	const { agents } = useTeamAgents(selectedTeam?.id)
-	const { dispatchers } = useTeamDispatchers(selectedTeam?.id)
+	const { agents } = useTeamAgents(isSelected?.id)
+	const { dispatchers } = useTeamDispatchers(isSelected?.id)
 
 	const handleClick = hit => {
 		if (hit.role === 'agent') {
@@ -21,17 +21,19 @@ export const CustomHits = connectHits(props => {
 				agents.find(agent => agent.id === hit.id) ||
 				selectedAgents.find(agent => agent.id === hit.id)
 			if (!hasValue) setSelectedAgents(hit)
-		} else {
+		} else if (hit.role === 'dispatcher') {
 			const hasValue =
 				dispatchers.find(dispatcher => dispatcher.id === hit.id) ||
 				selectedDispatchers.find(dispatcher => dispatcher.id === hit.id)
 			if (!hasValue) setSelectedDispatchers(hit)
+		} else {
+			console.log('User does not have a role assigned')
 		}
 	}
 
 	return (
 		<Container>
-			{props.hits.map(hit => {
+			{hits.map(hit => {
 				const hasAgent =
 					agents.find(agent => agent.id === hit.id) ||
 					selectedAgents.find(agent => agent.id === hit.id)
@@ -43,9 +45,9 @@ export const CustomHits = connectHits(props => {
 						key={hit.objectID}
 						onClick={() => handleClick(hit)}
 						hasUser={hit.role === 'agent' ? hasAgent : hasDispatcher}>
-						<strong>{hit.name || hit.displayName}</strong>
+						<span>{hit.name || hit.displayName}</span>
 						<span>
-							{hit.role.charAt(0).toUpperCase() + hit.role.slice(1)}
+							{capitalize(hit.role)}
 							{hasAgent || hasDispatcher ? ' - on team' : ''}
 						</span>
 					</ListItem>
@@ -57,6 +59,7 @@ export const CustomHits = connectHits(props => {
 
 const Container = styled.ul`
 	list-style: none;
+	padding: 0 4px;
 `
 
 const ListItem = styled.li`
@@ -64,11 +67,13 @@ const ListItem = styled.li`
 	display: flex;
 	justify-content: space-between;
 	cursor: pointer;
+	font-size: 14px;
+	color: ${({ theme }) => theme.colors.primary};
 
 	${({ hasUser }) =>
 		hasUser &&
 		css`
-			color: ${({ theme }) => theme.colors.indigo.accent};
-      cursor: initial;
+			color: ${({ theme }) => theme.colors.accent};
+			cursor: initial;
 		`}
 `

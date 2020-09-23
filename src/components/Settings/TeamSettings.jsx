@@ -9,22 +9,23 @@ import { Team } from './Team'
 import { useTeams } from '../../hooks'
 
 export const TeamSettings = () => {
-	const { toggleTeamEditModal } = useNavigation()
-	const { setSelectedTeam, selectedTeam, setIsEditingTeam } = useSettings()
+	const { toggleTeamModal } = useNavigation()
+	const { setSelected, isSelected, setIsEditing } = useSettings()
 	const { teams, loading } = useTeams()
 
 	useEffect(() => {
-		setSelectedTeam(null)
+		setSelected(null)
 	}, [])
 
 	const handleEdit = () => {
-		setIsEditingTeam(true)
-		toggleTeamEditModal()
+		setIsEditing(true)
+		toggleTeamModal()
 	}
 
 	const handleAdd = () => {
-		setIsEditingTeam(false)
-		toggleTeamEditModal()
+		setIsEditing(false)
+		setSelected(null)
+		toggleTeamModal()
 	}
 
 	const handleMinus = () => {}
@@ -42,10 +43,10 @@ export const TeamSettings = () => {
 				</Teams>
 			)}
 			<IconRow>
-				<IconWrapper onClick={selectedTeam ? handleEdit : null} isDisabled={!selectedTeam}>
+				<IconWrapper onClick={isSelected ? handleEdit : null} isDisabled={!isSelected}>
 					<EditIcon />
 				</IconWrapper>
-				<IconWrapper onClick={selectedTeam ? handleMinus : null} isDisabled={!selectedTeam}>
+				<IconWrapper onClick={isSelected ? handleMinus : null} isDisabled={!isSelected}>
 					<LessIcon />
 				</IconWrapper>
 				<IconWrapper onClick={handleAdd}>

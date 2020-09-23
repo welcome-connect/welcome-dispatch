@@ -8,8 +8,8 @@ export const useSettings = () => useContext(SettingsContext)
 export const SettingsProvider = ({ children }) => {
 	const [state, dispatch] = useReducer(settingsReducer, initialState)
 
-	const setIsEditingTeam = status => dispatch({ type: types.SET_TEAM_EDITING, payload: status })
-	const setSelectedTeam = team => dispatch({ type: types.SET_SELECTED_TEAM, payload: team })
+	const setIsEditing = status => dispatch({ type: types.SET_TEAM_EDITING, payload: status })
+	const setSelected = team => dispatch({ type: types.SET_SELECTED, payload: team })
 
 	const setSelectedAgents = agentsArr =>
 		dispatch({ type: types.SET_SELECTED_AGENTS, payload: agentsArr })
@@ -21,8 +21,8 @@ export const SettingsProvider = ({ children }) => {
 		<SettingsContext.Provider
 			value={{
 				...state,
-				setIsEditingTeam,
-				setSelectedTeam,
+				setIsEditing,
+				setSelected,
 				setSelectedAgents,
 				setSelectedDispatchers,
 			}}>

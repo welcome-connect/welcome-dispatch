@@ -1,3 +1,4 @@
+require('firebase-functions/lib/logger/compat')
 const c = require('./callable')
 const t = require('./trigger')
 
@@ -16,3 +17,6 @@ exports.triggerDeleteFromShowingsIndex = t.algolia.deleteFromShowingsIndex
 exports.triggerAddToTeamsIndex = t.algolia.addToTeamsIndex
 exports.triggerUpdateTeamsIndex = t.algolia.updateTeamsIndex
 exports.triggerDeleteFromTeamsIndex = t.algolia.deleteFromTeamsIndex
+
+// USER TRIGGERS
+exports.triggerUpdateTeamCount = t.users.updateTeamCount

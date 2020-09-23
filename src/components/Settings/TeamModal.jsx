@@ -8,25 +8,20 @@ import { searchClient } from '../../services/algolia'
 import { useNavigation } from '../../contexts/navigation'
 import { useTeamAgents, useTeamDispatchers, useUsersSub } from '../../hooks'
 
-import {
-	Button,
-	Form,
-	Input,
-	FieldGroup,
-	Label,
-	SettingsInput,
-} from '../../styles/styled-components'
+import { Button, Form, FieldGroup, Label, SettingsInput } from '../../styles/styled-components'
 
 import { CustomHits } from './CustomHit'
 import { CustomSearchBox } from './CustomSearchBox'
+import { IndexResults } from './IndexResults'
+import { addUserToTeam, createTeam } from '../../services/firebase/teams'
 
 export const TeamModal = () => {
-	const { toggleTeamEditModal } = useNavigation()
+	const { toggleTeamModal } = useNavigation()
 	const { register, errors, handleSubmit, setValue } = useForm()
 	const {
-		isEditingTeam,
-		selectedTeam,
-		setSelectedTeam,
+		isEditing,
+		isSelected,
+		setSelected,
 		selectedAgents,
 		selectedDispatchers,
 		setSelectedAgents,
@@ -34,40 +29,58 @@ export const TeamModal = () => {
 	} = useSettings()
 
 	const { refresh } = useUsersSub()
-	const { agents } = useTeamAgents(selectedTeam?.id)
-	const { dispatchers } = useTeamDispatchers(selectedTeam?.id)
+	const { agents } = useTeamAgents(isSelected?.id)
+	const { dispatchers } = useTeamDispatchers(isSelected?.id)
 
-	const onSubmit = () => {
-		setSelectedTeam(null)
+	const onSubmit = async ({ name }) => {
+		try {
+			let newTeam
+			if (isEditing) newTeam = await createTeam({ name, id: isSelected.id })
+			else newTeam = await createTeam({ name })
+
+			const users = [...selectedAgents, ...selectedDispatchers]
+			const requests = users.map(user => addUserToTeam(newTeam.id, user.id))
+			await Promise.all(requests)
+		} catch (error) {
+			console.error('Error creating new team: ', error.message)
+		}
+
+		onCancel()
+	}
+
+	const onCancel = () => {
+		setSelected(null)
 		setSelectedAgents()
 		setSelectedDispatchers()
-		toggleTeamEditModal()
+		toggleTeamModal()
 	}
 
 	useEffect(() => {
-		if (isEditingTeam) {
-			setValue('name', selectedTeam.name)
+		setSelectedAgents()
+		setSelectedDispatchers()
+		if (isEditing) {
+			setValue('name', isSelected.name)
 		}
 	}, [])
 
-	console.log('RE-RENDERING!!!', {
-		agents,
-		dispatchers,
-		selectedTeam,
-		selectedAgents,
-		selectedDispatchers,
-		isEditingTeam,
-	})
-
 	return (
 		<Container>
-			<h1>{isEditingTeam ? `Editing ${selectedTeam?.name} Team` : 'Adding New Team'}</h1>
+			<h1>{isEditing ? `Editing ${isSelected?.name} Team` : 'Adding New Team'}</h1>
 			<ModifiedForm onSubmit={handleSubmit(onSubmit)}>
 				<ModifiedFieldGroup>
 					<Label htmlFor="name">Name</Label>
-					<SettingsInput type="text" name="name" ref={register} hasError={errors.name} />
+					<SettingsInput
+						type="text"
+						name="name"
+						ref={register({ required: 'Name is required' })}
+						hasError={errors.name}
+						placeholder="Enter team name"
+					/>
 				</ModifiedFieldGroup>
-				<ModifiedButton isPrimary>{isEditingTeam ? 'Save' : 'Add'}</ModifiedButton>
+				<ModifiedButton isPrimary>{isEditing ? 'Save' : 'Add'}</ModifiedButton>
+				<ModifiedButton isPrimary className="cancel" onClick={onCancel}>
+					Cancel
+				</ModifiedButton>
 			</ModifiedForm>
 			<ListContainer>
 				<ModifiedLabel>Agents</ModifiedLabel>
@@ -100,9 +113,11 @@ export const TeamModal = () => {
 				</List>
 			</ListContainer>
 			<InstantSearch indexName="prod_USERS" searchClient={searchClient} refresh={refresh}>
-				<Configure hitsPerPage={4} />
 				<CustomSearchBox label="Search User" placeholder="Enter user name" />
-				<CustomHits />
+				<IndexResults>
+					<Configure hitsPerPage={4} />
+					<CustomHits />
+				</IndexResults>
 			</InstantSearch>
 		</Container>
 	)
@@ -128,6 +143,10 @@ const ModifiedButton = styled(Button)`
 	position: absolute;
 	right: 32px;
 	bottom: 12px;
+
+	&.cancel {
+		left: 32px;
+	}
 `
 
 const ListContainer = styled.ul``
@@ -142,6 +161,7 @@ const List = styled(FieldGroup)`
 const ListItem = styled.li`
 	display: flex;
 	justify-content: space-between;
+	font-size: 14px;
 `
 const ModifiedLabel = styled(Label)`
 	color: ${({ theme: { colors } }) => colors.text};

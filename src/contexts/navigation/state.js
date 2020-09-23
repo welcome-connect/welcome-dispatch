@@ -4,14 +4,16 @@ export const types = {
 
 	TOGGLE_USERDROPDOWN_MENU: 'TOGGLE_USERDROPDOWN_MENU',
 	TOGGLE_SETTINGS_MODAL: 'TOGGLE_SETTINGS_MODAL',
-	TOGGLE_TEAM_EDIT_MODAL: 'TOGGLE_TEAM_EDIT_MODAL',
+	TOGGLE_TEAM_MODAL: 'TOGGLE_TEAM_MODAL',
+	TOGGLE_AGENT_MODAL: 'TOGGLE_AGENT_MODAL',
 }
 
 export const initialState = {
 	isSideNavExpanded: false,
 	isUserDropdownOpen: false,
 	isSettingsOpen: false,
-	isTeamEditOpen: false,
+	isTeamModalOpen: false,
+	isAgentModalOpen: false,
 }
 
 export const navigationReducer = (state, action) => {
@@ -28,8 +30,11 @@ export const navigationReducer = (state, action) => {
 		case types.TOGGLE_SETTINGS_MODAL:
 			return { ...state, isSettingsOpen: !state.isSettingsOpen }
 
-		case types.TOGGLE_TEAM_EDIT_MODAL:
-			return { ...state, isTeamEditOpen: !state.isTeamEditOpen }
+		case types.TOGGLE_TEAM_MODAL:
+			return { ...state, isTeamModalOpen: !state.isTeamModalOpen }
+
+		case types.TOGGLE_AGENT_MODAL:
+			return { ...state, isAgentModalOpen: !state.isAgentModalOpen }
 
 		default:
 			return state

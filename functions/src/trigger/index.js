@@ -1,2 +1,3 @@
 const algolia = require('./algolia')
-module.exports = { algolia }
+const users = require('./users')
+module.exports = { algolia, users }

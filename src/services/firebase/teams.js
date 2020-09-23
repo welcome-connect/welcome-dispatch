@@ -1,24 +1,31 @@
-import { FieldValue } from '@google-cloud/firestore'
 import { auth, db, functions, firebase } from './index'
 import { getUserDocument } from './users'
 
 // CREATE TEAM
-export const createTeam = async newTeam => {
-	if (!newTeam) throw new Error('Team information required')
+export const createTeam = async team => {
+	console.log({ team })
+	if (!team) throw new Error('Team information required')
 
-	const teamRef = db.collection('teams').doc()
+	let teamRef
+	if (team.id) teamRef = db.collection('teams').doc(team.id)
+	else teamRef = db.collection('teams').doc()
+
 	const teamSnapshot = await teamRef.get()
+	console.log({ teamSnapshot: teamSnapshot.data(), teamRef })
 
 	if (!teamSnapshot.exists) {
+		console.log('TEAM DOESNT EXISTS', teamSnapshot.exists)
 		const createdAt = firebase.firestore.FieldValue.serverTimestamp()
-		const teamModel = { id: teamRef.id, createdAt, ...newTeam }
+		const teamModel = { id: teamRef.id, createdAt, agent_count: 0, dispatcher_count: 0, ...team }
 
 		try {
 			await teamRef.set(teamModel)
-			return getTeamDocument()
+			return getTeam(teamRef.id)
 		} catch (error) {
 			console.error('Error creating new team: ', error.message)
 		}
+	} else {
+		return getTeam(team.id)
 	}
 }
 
@@ -51,20 +58,19 @@ export const updateTeam = async (id, data) => {
 // DELETE TEAM
 
 // ADD AGENT TO TEAM
-export const addAgentToTeam = async (teamId, agentId) => {
-	if (!teamId || !agentId) return new Error('Team id and agent id are required')
+export const addUserToTeam = async (teamId, userId) => {
+	if (!teamId || !userId) return new Error('Team id and agent id are required')
 
-	const teamRef = db.collection('teams').doc(teamId)
-	const agentRef = db.collection('users').doc(agentId)
+	const userRef = db.collection('users').doc(userId)
+	console.log({ userRef })
 
 	try {
-		await agentRef.update({ teams: FieldValue.arrayUnion(teamId) })
-		await teamRef.update({ agent_count: FieldValue.increment(1) })
+		await userRef.update({ teams: firebase.firestore.FieldValue.arrayUnion(teamId) })
 	} catch (error) {
 		console.error('Error updating team and/or agent: ', error.message)
 	}
 
-	return { updated_team: getTeam(teamId), updated_agent: getUserDocument(agentId) }
+	return { updated_team: getTeam(teamId), updated_agent: getUserDocument(userId) }
 }
 
 // REMOVE AGENT FROM TEAM

@@ -13,7 +13,8 @@ export const NavigationProvider = ({ children }) => {
 
 	const toggleUserDropdownMenu = () => dispatch({ type: types.TOGGLE_USERDROPDOWN_MENU })
 	const toggleSettingsModal = () => dispatch({ type: types.TOGGLE_SETTINGS_MODAL })
-	const toggleTeamEditModal = () => dispatch({ type: types.TOGGLE_TEAM_EDIT_MODAL })
+	const toggleTeamModal = () => dispatch({ type: types.TOGGLE_TEAM_MODAL })
+	const toggleAgentModal = () => dispatch({ type: types.TOGGLE_AGENT_MODAL })
 
 	return (
 		<NavigationContext.Provider
@@ -23,7 +24,8 @@ export const NavigationProvider = ({ children }) => {
 				openSideNav,
 				toggleUserDropdownMenu,
 				toggleSettingsModal,
-				toggleTeamEditModal,
+				toggleTeamModal,
+				toggleAgentModal,
 			}}>
 			{children}
 		</NavigationContext.Provider>

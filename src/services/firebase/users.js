@@ -16,6 +16,7 @@ export const createUserDocument = async (newUser, data) => {
 				id: newUser.uid,
 				email,
 				createdAt,
+				teams: [],
 				...data,
 			})
 
@@ -43,6 +44,7 @@ export const getUserDocument = async uid => {
 
 // UPDATE USER
 export const updateUser = async (uid, data) => {
+	console.log({ uid, data })
 	try {
 		await db.collection('users').doc(uid).update(data)
 	} catch (error) {

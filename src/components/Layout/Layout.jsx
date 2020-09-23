@@ -7,23 +7,27 @@ import { ModalContainer } from '../ModalContainer'
 import { Settings } from '../Settings'
 import { TeamModal } from '../Settings/TeamModal'
 import { SettingsProvider } from '../../contexts/settings'
+import { AgentModal } from '../Settings/AgentModal'
 
 export const Layout = ({ children, title, icon }) => {
 	const {
 		toggleUserDropdownMenu,
 		toggleSettingsModal,
-		toggleTeamEditModal,
+		toggleTeamModal,
+		toggleAgentModal,
 		isSideNavExpanded,
 		isUserDropdownOpen,
 		isSettingsOpen,
-		isTeamEditOpen,
+		isTeamModalOpen,
+		isAgentModalOpen,
 	} = useNavigation()
 
 	const handleBgClick = e => {
 		e.stopPropagation()
 		if (isUserDropdownOpen) toggleUserDropdownMenu()
 		if (isSettingsOpen) toggleSettingsModal()
-		if (isTeamEditOpen) toggleTeamEditModal()
+		if (isTeamModalOpen) toggleTeamModal()
+		if (isAgentModalOpen) toggleAgentModal()
 	}
 
 	return (
@@ -37,9 +41,14 @@ export const Layout = ({ children, title, icon }) => {
 						<Settings />
 					</ModalContainer>
 				) : null}
-				{isTeamEditOpen ? (
+				{isTeamModalOpen ? (
 					<ModalContainer>
 						<TeamModal />
+					</ModalContainer>
+				) : null}
+				{isAgentModalOpen ? (
+					<ModalContainer>
+						<AgentModal />
 					</ModalContainer>
 				) : null}
 			</SettingsProvider>
