@@ -3,7 +3,7 @@ import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/functions'
 
-import { createUserDocument, getUserDocument, updateUser } from './users'
+import { createUserDocument, getUserDocument, updateUserDocument } from './users'
 
 const config = {
 	apiKey: process.env.FIREBASE_API_KEY,
@@ -23,4 +23,4 @@ const auth = firebase.auth()
 const db = firebase.firestore()
 const functions = firebase.functions()
 
-export { db, auth, firebase, functions, createUserDocument, getUserDocument, updateUser }
+export { db, auth, firebase, functions, createUserDocument, getUserDocument, updateUserDocument }

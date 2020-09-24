@@ -1,10 +1,10 @@
 import { connectHits } from 'react-instantsearch-dom'
 import styled, { css } from 'styled-components'
 import { useSettings } from '../../contexts/settings'
-import { useTeamAgents, useTeamDispatchers } from '../../hooks'
+import { useFirestoreSub } from '../../hooks'
 import { capitalize } from '../../utils'
 
-export const CustomHits = connectHits(({ hits }) => {
+export const TeamUsersHits = connectHits(({ hits }) => {
 	const {
 		setSelectedAgents,
 		setSelectedDispatchers,
@@ -12,8 +12,20 @@ export const CustomHits = connectHits(({ hits }) => {
 		selectedAgents,
 		selectedDispatchers,
 	} = useSettings()
-	const { agents } = useTeamAgents(isSelected?.id)
-	const { dispatchers } = useTeamDispatchers(isSelected?.id)
+
+	const [agents] = useFirestoreSub('users', {
+		where: [
+			['teams', 'array-contains', isSelected?.id],
+			['role', '==', 'agent'],
+		],
+	})
+
+	const [dispatchers] = useFirestoreSub('users', {
+		where: [
+			['teams', 'array-contains', isSelected?.id],
+			['role', '==', 'dispatcher'],
+		],
+	})
 
 	const handleClick = hit => {
 		if (hit.role === 'agent') {

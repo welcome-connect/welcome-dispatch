@@ -12,18 +12,18 @@ export const useUpdateUserProfile = () => {
 	const { setUserDoc, userAuth, userDoc } = useAuth()
 
 	const updateUserProfile = async ({ displayName, email, phoneNumber }) => {
+		console.log({ displayName, email, phoneNumber })
 		setLoading(true)
 		setSuccess(false)
 		setHasNoChanges(false)
 		setAuthRequired(false)
 
-		const formattedPhone = formatPhoneNumber(phoneNumber)
 		let updatedUser
 
 		if (
 			displayName === userAuth.displayName &&
 			email === userAuth.email &&
-			formattedPhone === userDoc.phoneNumber
+			phoneNumber === userDoc.phoneNumber
 		) {
 			setLoading(false)
 			setHasNoChanges(true)
@@ -34,8 +34,8 @@ export const useUpdateUserProfile = () => {
 			if (displayName !== userAuth.displayName)
 				updatedUser = await changeDisplayName(userAuth, displayName)
 			if (email !== userAuth.email) updatedUser = await changeAuthEmail(userAuth, email)
-			if (formattedPhone !== userDoc.phoneNumber)
-				updatedUser = await changePhoneNumber(userAuth, formattedPhone)
+			if (phoneNumber !== userDoc.phoneNumber)
+				updatedUser = await changePhoneNumber(userAuth, phoneNumber)
 
 			setUserDoc(updatedUser)
 			setLoading(false)
@@ -44,7 +44,9 @@ export const useUpdateUserProfile = () => {
 			if (error.code === 'auth/requires-recent-login') {
 				setAuthRequired(true)
 				setLoading(false)
+				console.error(error)
 			}
+			console.error(error)
 		}
 	}
 

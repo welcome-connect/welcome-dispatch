@@ -43,7 +43,7 @@ export const getUserDocument = async uid => {
 }
 
 // UPDATE USER
-export const updateUser = async (uid, data) => {
+export const updateUserDocument = async (uid, data) => {
 	console.log({ uid, data })
 	try {
 		await db.collection('users').doc(uid).update(data)
@@ -60,7 +60,7 @@ export const changeAuthEmail = async (user, newEmail) => {
 	if (!newEmail) throw new Error('New email required')
 
 	await user.updateEmail(newEmail)
-	await updateUser(user.uid, { email: newEmail })
+	await updateUserDocument(user.uid, { email: newEmail })
 
 	const updated_user = await getUserDocument(user.uid)
 
@@ -73,7 +73,7 @@ export const changeDisplayName = async (user, newDisplayName) => {
 	if (!newDisplayName) throw new Error('New display name required')
 
 	await user.updateProfile({ displayName: newDisplayName })
-	await updateUser(user.uid, { displayName: newDisplayName })
+	await updateUserDocument(user.uid, { displayName: newDisplayName })
 
 	const updated_user = await getUserDocument(user.uid)
 
@@ -86,7 +86,7 @@ export const changePhoneNumber = async (user, newPhoneNumber) => {
 	if (!newPhoneNumber) throw new Error('New phone number required')
 
 	await user.updateProfile({ phoneNumber: newPhoneNumber })
-	await updateUser(user.uid, { phoneNumber: newPhoneNumber })
+	await updateUserDocument(user.uid, { phoneNumber: newPhoneNumber })
 
 	const updated_user = await getUserDocument(user.uid)
 	return updated_user

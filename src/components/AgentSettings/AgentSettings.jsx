@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components'
-import { useEffect } from 'react'
+import { memo, useEffect } from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
 import { searchClient } from '../../services/algolia'
@@ -9,9 +9,9 @@ import { useSettings } from '../../contexts/settings'
 
 import { AddIcon, EditIcon, LessIcon } from '../_icons'
 import { AgentHits } from './AgentHits'
-import { CustomSearchBox } from './CustomSearchBox'
+import { CustomSearchBox } from '../Algolia'
 
-export const DispatcherSettings = () => {
+export const AgentSettings = memo(() => {
 	const { toggleAgentModal } = useNavigation()
 	const { setSelected, isSelected, setIsEditing } = useSettings()
 
@@ -35,7 +35,7 @@ export const DispatcherSettings = () => {
 	return (
 		<Container>
 			<InstantSearch indexName="prod_USERS" searchClient={searchClient}>
-				<Configure filters="role:dispatcher" />
+				<Configure filters="role:agent" />
 				<CustomSearchBox label="Search User" placeholder="Enter user name" />
 				<AgentHits />
 			</InstantSearch>
@@ -53,7 +53,7 @@ export const DispatcherSettings = () => {
 			</IconRow>
 		</Container>
 	)
-}
+})
 
 const Container = styled.div`
 	height: 100%;

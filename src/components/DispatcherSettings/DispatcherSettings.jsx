@@ -1,17 +1,19 @@
 import styled, { css } from 'styled-components'
-import { useEffect } from 'react'
+import { memo, useEffect } from 'react'
+import { Configure, InstantSearch } from 'react-instantsearch-dom'
+
+import { searchClient } from '../../services/algolia'
 
 import { useNavigation } from '../../contexts/navigation'
 import { useSettings } from '../../contexts/settings'
 
-import { EditIcon, LessIcon, AddIcon } from '../_icons'
-import { Team } from './Team'
-import { useTeams } from '../../hooks'
+import { AddIcon, EditIcon, LessIcon } from '../_icons'
+import { AgentHits } from '../AgentSettings'
+import { CustomSearchBox } from '../Algolia'
 
-export const TeamSettings = () => {
-	const { toggleTeamModal } = useNavigation()
+export const DispatcherSettings = memo(() => {
+	const { toggleAgentModal } = useNavigation()
 	const { setSelected, isSelected, setIsEditing } = useSettings()
-	const { teams, loading } = useTeams()
 
 	useEffect(() => {
 		setSelected(null)
@@ -19,29 +21,25 @@ export const TeamSettings = () => {
 
 	const handleEdit = () => {
 		setIsEditing(true)
-		toggleTeamModal()
+		toggleAgentModal()
 	}
 
 	const handleAdd = () => {
 		setIsEditing(false)
 		setSelected(null)
-		toggleTeamModal()
+		toggleAgentModal()
 	}
 
 	const handleMinus = () => {}
 
 	return (
 		<Container>
-			<p>Teams</p>
-			{loading ? (
-				<p>loading...</p>
-			) : (
-				<Teams>
-					{teams?.map(team => (
-						<Team team={team} key={team.id} />
-					))}
-				</Teams>
-			)}
+			<InstantSearch indexName="prod_USERS" searchClient={searchClient}>
+				<Configure filters="role:dispatcher" />
+				<CustomSearchBox label="Search User" placeholder="Enter user name" />
+				<AgentHits />
+			</InstantSearch>
+
 			<IconRow>
 				<IconWrapper onClick={isSelected ? handleEdit : null} isDisabled={!isSelected}>
 					<EditIcon />
@@ -55,7 +53,7 @@ export const TeamSettings = () => {
 			</IconRow>
 		</Container>
 	)
-}
+})
 
 const Container = styled.div`
 	height: 100%;
@@ -89,10 +87,4 @@ const IconWrapper = styled.span`
 				}
 			}
 		`}
-`
-
-const Teams = styled.div`
-	width: 100%;
-	height: min(200px, 85%);
-	margin-top: 8px;
 `

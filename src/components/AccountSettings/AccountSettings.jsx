@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { useForm } from 'react-hook-form'
-import { useEffect } from 'react'
+import { memo, useEffect } from 'react'
 
 import { useAuth } from '../../contexts/auth'
 import { formatPhoneNumber } from '../../utils'
@@ -8,7 +8,6 @@ import { useUpdateUserProfile } from '../../hooks'
 
 import {
 	Form,
-	Input,
 	Label,
 	FieldGroup,
 	Button,
@@ -16,7 +15,7 @@ import {
 	SettingsInput,
 } from '../../styles/styled-components'
 
-export const AccountSettings = () => {
+export const AccountSettings = memo(() => {
 	const { register, errors, handleSubmit, setValue } = useForm()
 	const { userAuth, userDoc } = useAuth()
 	const {
@@ -34,7 +33,7 @@ export const AccountSettings = () => {
 	}, [userAuth, userDoc])
 
 	const onSubmit = async data => {
-		await updateUserProfile(data)
+		await updateUserProfile({ ...data, phoneNumber: formatPhoneNumber(data.phoneNumber) })
 	}
 
 	return (
@@ -86,7 +85,7 @@ export const AccountSettings = () => {
 			) : null}
 		</Container>
 	)
-}
+})
 
 const Container = styled.div`
 	width: 100%;

@@ -5,9 +5,9 @@ import { SideNavigation } from '../SideNavigation'
 import { useNavigation } from '../../contexts/navigation'
 import { ModalContainer } from '../ModalContainer'
 import { Settings } from '../Settings'
-import { TeamModal } from '../Settings/TeamModal'
+import { TeamModal } from '../TeamSettings'
 import { SettingsProvider } from '../../contexts/settings'
-import { AgentModal } from '../Settings/AgentModal'
+import { AgentModal } from '../AgentSettings'
 
 export const Layout = ({ children, title, icon }) => {
 	const {

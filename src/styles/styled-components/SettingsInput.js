@@ -33,4 +33,9 @@ export const SettingsInput = styled.input`
 				transition: all 150ms ease-in-out;
 			}
 		`}
+
+	&:disabled {
+		background: ${({ theme }) => theme.colors.bg.hover};
+		border: 2px solid ${({ theme: { colors } }) => colors.bg.hover};
+	}
 `

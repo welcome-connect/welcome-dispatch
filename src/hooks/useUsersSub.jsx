@@ -6,8 +6,10 @@ export const useUsersSub = () => {
 
 	useEffect(() => {
 		const unsubscribe = db.collection('users').onSnapshot(snapshot => {
-			setTimeout(() => setRefresh(false), 2000)
+			const id = setTimeout(() => setRefresh(false), 2000)
 			setRefresh(true)
+
+			return clearTimeout(id)
 		})
 
 		return () => unsubscribe()

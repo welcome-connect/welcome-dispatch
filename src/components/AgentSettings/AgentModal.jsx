@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { useSettings } from '../../contexts/settings'
 import { InstantSearch, Configure } from 'react-instantsearch-dom'
 import styled from 'styled-components'
@@ -9,10 +7,10 @@ import { useNavigation } from '../../contexts/navigation'
 
 import { Button, Form, FieldGroup, ErrorMessage } from '../../styles/styled-components'
 
-import { CustomSearchBox } from './CustomSearchBox'
-import { IndexResults } from './IndexResults'
-import { EditAgentForm } from './EditAgentForm'
-import { updateUser } from '../../services/firebase'
+import { CustomSearchBox } from '../Algolia'
+import { IndexResults } from '../Algolia/IndexResults'
+import { EditUserForm } from '../EditUserForm'
+import { updateUserDocument } from '../../services/firebase'
 import { AgentHits } from './AgentHits'
 import { useUsersSub } from '../../hooks'
 
@@ -22,11 +20,11 @@ export const AgentModal = () => {
 	const { toggleAgentModal } = useNavigation()
 
 	if (isEditing) {
-		return <EditAgentForm />
+		return <EditUserForm />
 	}
 
 	const onAdd = async agent => {
-		if (agent) await updateUser(agent.id, { role: 'agent' })
+		if (agent) await updateUserDocument(agent.id, { role: 'agent' })
 		setSelected(null)
 		toggleAgentModal()
 	}

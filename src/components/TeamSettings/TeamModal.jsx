@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSettings } from '../../contexts/settings'
 import { InstantSearch, Configure } from 'react-instantsearch-dom'
@@ -6,13 +6,13 @@ import styled from 'styled-components'
 
 import { searchClient } from '../../services/algolia'
 import { useNavigation } from '../../contexts/navigation'
-import { useTeamAgents, useTeamDispatchers, useUsersSub } from '../../hooks'
+import { useFirestoreSub, useUsersSub } from '../../hooks'
 
 import { Button, Form, FieldGroup, Label, SettingsInput } from '../../styles/styled-components'
 
-import { CustomHits } from './CustomHit'
-import { CustomSearchBox } from './CustomSearchBox'
-import { IndexResults } from './IndexResults'
+import { TeamUsersHits } from './TeamUsersHits'
+import { CustomSearchBox } from '../Algolia'
+import { IndexResults } from '../Algolia/IndexResults'
 import { addUserToTeam, createTeam } from '../../services/firebase/teams'
 
 export const TeamModal = () => {
@@ -29,8 +29,20 @@ export const TeamModal = () => {
 	} = useSettings()
 
 	const { refresh } = useUsersSub()
-	const { agents } = useTeamAgents(isSelected?.id)
-	const { dispatchers } = useTeamDispatchers(isSelected?.id)
+
+	const [agents] = useFirestoreSub('users', {
+		where: [
+			['teams', 'array-contains', isSelected?.id],
+			['role', '==', 'agent'],
+		],
+	})
+
+	const [dispatchers] = useFirestoreSub('users', {
+		where: [
+			['teams', 'array-contains', isSelected?.id],
+			['role', '==', 'dispatcher'],
+		],
+	})
 
 	const onSubmit = async ({ name }) => {
 		try {
@@ -116,7 +128,7 @@ export const TeamModal = () => {
 				<CustomSearchBox label="Search User" placeholder="Enter user name" />
 				<IndexResults>
 					<Configure hitsPerPage={4} />
-					<CustomHits />
+					<TeamUsersHits />
 				</IndexResults>
 			</InstantSearch>
 		</Container>

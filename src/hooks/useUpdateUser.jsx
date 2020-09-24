@@ -1,36 +1,33 @@
 import { useState } from 'react'
-import { updateUser } from '../services/firebase'
-import { formatPhoneNumber } from '../utils'
+import { updateUserDocument } from '../services/firebase'
 
-export const useUpdateAgent = () => {
+export const useUpdateUser = () => {
 	const [isLoading, setLoading] = useState(false)
 	const [isSuccess, setSuccess] = useState(false)
 	const [hasNoChanges, setHasNoChanges] = useState(false)
 	const [authRequired, setAuthRequired] = useState(false)
 
-	const updateAgent = async (agent, changes) => {
-		console.log({ agent, changes })
+	const updateUser = async (user, changes) => {
 		setLoading(true)
 		setSuccess(false)
 		setHasNoChanges(false)
 		setAuthRequired(false)
 
-		const formattedPhone = formatPhoneNumber(changes.phoneNumber)
 		let updatedUser
 
 		if (
-			agent.displayName === changes.displayName &&
-			agent.email === changes.email &&
-			formattedPhone === agent.phoneNumber
+			user.displayName === changes.displayName &&
+			user.email === changes.email &&
+			user.phoneNumber === changes.phoneNumber
 		) {
 			setLoading(false)
 			setHasNoChanges(true)
-			return
+			return user
 		}
 
 		try {
 			console.log('UPDATING USER')
-			updatedUser = await updateUser(agent.id, changes)
+			updatedUser = await updateUserDocument(user.id, changes)
 			console.log({ updatedUser })
 			setLoading(false)
 			setSuccess(true)
@@ -44,5 +41,5 @@ export const useUpdateAgent = () => {
 		}
 	}
 
-	return { isLoading, isSuccess, hasNoChanges, authRequired, updateAgent }
+	return { isLoading, isSuccess, hasNoChanges, authRequired, updateUser }
 }

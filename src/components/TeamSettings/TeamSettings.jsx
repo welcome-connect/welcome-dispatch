@@ -1,19 +1,20 @@
 import styled, { css } from 'styled-components'
-import { useEffect } from 'react'
-import { Configure, InstantSearch } from 'react-instantsearch-dom'
-
-import { searchClient } from '../../services/algolia'
+import { memo, useEffect } from 'react'
 
 import { useNavigation } from '../../contexts/navigation'
 import { useSettings } from '../../contexts/settings'
 
-import { AddIcon, EditIcon, LessIcon } from '../_icons'
-import { AgentHits } from './AgentHits'
-import { CustomSearchBox } from './CustomSearchBox'
+import { EditIcon, LessIcon, AddIcon } from '../_icons'
+import { Team } from './Team'
+import { useFirestoreSub } from '../../hooks'
 
-export const AgentSettings = () => {
-	const { toggleAgentModal } = useNavigation()
+export const TeamSettings = memo(() => {
+	const { toggleTeamModal } = useNavigation()
 	const { setSelected, isSelected, setIsEditing } = useSettings()
+
+	const [teams, status] = useFirestoreSub('teams')
+
+	const isLoading = status === 'loading'
 
 	useEffect(() => {
 		setSelected(null)
@@ -21,25 +22,29 @@ export const AgentSettings = () => {
 
 	const handleEdit = () => {
 		setIsEditing(true)
-		toggleAgentModal()
+		toggleTeamModal()
 	}
 
 	const handleAdd = () => {
 		setIsEditing(false)
 		setSelected(null)
-		toggleAgentModal()
+		toggleTeamModal()
 	}
 
 	const handleMinus = () => {}
 
 	return (
 		<Container>
-			<InstantSearch indexName="prod_USERS" searchClient={searchClient}>
-				<Configure filters="role:agent" />
-				<CustomSearchBox label="Search User" placeholder="Enter user name" />
-				<AgentHits />
-			</InstantSearch>
-
+			<p>Teams</p>
+			{isLoading ? (
+				<p>loading...</p>
+			) : (
+				<Teams>
+					{teams?.map(team => (
+						<Team team={team} key={team.id} />
+					))}
+				</Teams>
+			)}
 			<IconRow>
 				<IconWrapper onClick={isSelected ? handleEdit : null} isDisabled={!isSelected}>
 					<EditIcon />
@@ -53,7 +58,7 @@ export const AgentSettings = () => {
 			</IconRow>
 		</Container>
 	)
-}
+})
 
 const Container = styled.div`
 	height: 100%;
@@ -87,4 +92,10 @@ const IconWrapper = styled.span`
 				}
 			}
 		`}
+`
+
+const Teams = styled.div`
+	width: 100%;
+	height: min(200px, 85%);
+	margin-top: 8px;
 `

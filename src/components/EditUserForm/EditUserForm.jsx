@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import styled from 'styled-components'
 import { useNavigation } from '../../contexts/navigation'
 import { useSettings } from '../../contexts/settings'
-import { useUpdateAgent } from '../../hooks'
+import { useUpdateUser } from '../../hooks'
 import {
 	Button,
 	ErrorMessage,
@@ -14,14 +14,17 @@ import {
 } from '../../styles/styled-components'
 import { formatPhoneNumber } from '../../utils'
 
-export const EditAgentForm = () => {
+export const EditUserForm = () => {
 	const { register, errors, handleSubmit, setValue } = useForm()
 	const { isEditing, isSelected, setSelected } = useSettings()
 	const { toggleAgentModal } = useNavigation()
-	const { isLoading, isSuccess, hasNoChanges, authRequired, updateAgent } = useUpdateAgent()
+	const { isLoading, isSuccess, hasNoChanges, authRequired, updateUser } = useUpdateUser()
 
 	const onSubmit = async data => {
-		const { phoneNumber } = await updateAgent(isSelected, data)
+		const { phoneNumber } = await updateUser(isSelected, {
+			...data,
+			phoneNumber: formatPhoneNumber(data.phoneNumber),
+		})
 		setValue('phoneNumber', formatPhoneNumber(phoneNumber, '($2) $3-$4'))
 		const id = setTimeout(() => toggleAgentModal(), 600)
 		return () => clearTimeout(id)
@@ -50,6 +53,7 @@ export const EditAgentForm = () => {
 						name="displayName"
 						ref={register}
 						hasError={errors.displayName}
+						disabled
 					/>
 				</ModifiedFieldGroup>
 				<ModifiedFieldGroup>
@@ -64,6 +68,7 @@ export const EditAgentForm = () => {
 							},
 						})}
 						hasError={errors.email}
+						disabled
 					/>
 				</ModifiedFieldGroup>
 				<ModifiedFieldGroup>

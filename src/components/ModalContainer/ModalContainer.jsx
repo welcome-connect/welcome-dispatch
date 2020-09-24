@@ -1,8 +1,9 @@
+import { memo } from 'react'
 import styled from 'styled-components'
 
-export const ModalContainer = ({ children }) => {
+export const ModalContainer = memo(({ children }) => {
 	return <Container>{children}</Container>
-}
+})
 
 const Container = styled.div`
 	position: absolute;

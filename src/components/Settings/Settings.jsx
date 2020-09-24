@@ -3,10 +3,10 @@ import styled, { css } from 'styled-components'
 
 import navItems from './nav_items'
 
-import { AccountSettings } from './AccountSettings'
-import { TeamSettings } from './TeamSettings'
-import { AgentSettings } from './AgentSettings'
-import { DispatcherSettings } from './DispatcherSettings'
+import { AccountSettings } from '../AccountSettings'
+import { TeamSettings } from '../TeamSettings'
+import { AgentSettings } from '../AgentSettings'
+import { DispatcherSettings } from '../DispatcherSettings'
 
 export const Settings = () => {
 	const [selectedSetting, setSelectedSetting] = useState(<AccountSettings />)
