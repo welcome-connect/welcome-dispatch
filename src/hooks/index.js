@@ -1,5 +1,4 @@
 export { useWindowSize } from './useWindowSize'
 export { useUpdateUserProfile } from './useUpdateUserProfile'
-export { useUsersSub } from './useUsersSub'
 export { useUpdateUser } from './useUpdateUser'
 export { useFirestoreSub } from './useFirestoreSub'

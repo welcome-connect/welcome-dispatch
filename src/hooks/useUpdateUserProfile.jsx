@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { formatPhoneNumber } from '../utils'
 import { useAuth } from '../contexts/auth'
 import { changeDisplayName, changeAuthEmail, changePhoneNumber } from '../services/firebase/users'
 

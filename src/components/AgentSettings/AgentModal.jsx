@@ -12,11 +12,9 @@ import { IndexResults } from '../Algolia/IndexResults'
 import { EditUserForm } from '../EditUserForm'
 import { updateUserDocument } from '../../services/firebase'
 import { AgentHits } from './AgentHits'
-import { useUsersSub } from '../../hooks'
 
 export const AgentModal = () => {
 	const { isEditing, setSelected, isSelected } = useSettings()
-	const { refresh } = useUsersSub()
 	const { toggleAgentModal } = useNavigation()
 
 	if (isEditing) {
@@ -36,7 +34,7 @@ export const AgentModal = () => {
 
 	return (
 		<Container>
-			<InstantSearch indexName="prod_USERS" searchClient={searchClient} refresh={refresh}>
+			<InstantSearch indexName="prod_USERS" searchClient={searchClient}>
 				<CustomSearchBox label="Search User" placeholder="Enter user name" />
 				<IndexResults>
 					<Configure hitsPerPage={4} />

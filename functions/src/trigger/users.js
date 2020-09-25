@@ -6,26 +6,25 @@ exports.updateTeamCount = functions.firestore.document('users/{userId}').onUpdat
 	const newData = change.after.data()
 	const currentData = change.before.data()
 
-	const teamsHasChange = newData.teams.length !== currentData.teams.length
-	if (!teamsHasChange) return
+	const hasNoChange = newData.teams.length === currentData.teams.length
+	if (hasNoChange) return
 
-	const [newTeamId] = findSymmetricDiff(newData.teams, currentData.teams)
+	const removedFromTeam = newData.teams.length < currentData.teams.length
+	const addedToTeam = newData.teams.length > currentData.teams.length
 
-	const teamRef = db.collection('teams').doc(newTeamId)
+	const [teamId] = findSymmetricDiff(newData.teams, currentData.teams)
+	const teamRef = db.collection('teams').doc(teamId)
+	const attribute = `${newData.role}_count`
 
-	if (newData.role === 'agent') {
-		teamRef.update({ agent_count: admin.firestore.FieldValue.increment(1) })
-	}
-
-	if (newData.role === 'dispatcher') {
-		teamRef.update({ dispatcher_count: admin.firestore.FieldValue.increment(1) })
-	}
+	if (addedToTeam) teamRef.update({ [attribute]: admin.firestore.FieldValue.increment(1) })
+	if (removedFromTeam) teamRef.update({ [attribute]: admin.firestore.FieldValue.increment(-1) })
 
 	console.log({
 		message: 'THERE HAS BEEN A CHANGE TO THE TEAMS',
 		newData,
 		currentData,
-		newTeamId,
+		teamId,
 	})
+
 	return
 })

@@ -6,7 +6,7 @@ import styled from 'styled-components'
 
 import { searchClient } from '../../services/algolia'
 import { useNavigation } from '../../contexts/navigation'
-import { useFirestoreSub, useUsersSub } from '../../hooks'
+import { useFirestoreSub } from '../../hooks'
 
 import { Button, Form, FieldGroup, Label, SettingsInput } from '../../styles/styled-components'
 
@@ -27,8 +27,6 @@ export const TeamModal = () => {
 		setSelectedAgents,
 		setSelectedDispatchers,
 	} = useSettings()
-
-	const { refresh } = useUsersSub()
 
 	const [agents] = useFirestoreSub('users', {
 		where: [
@@ -124,7 +122,7 @@ export const TeamModal = () => {
 					))}
 				</List>
 			</ListContainer>
-			<InstantSearch indexName="prod_USERS" searchClient={searchClient} refresh={refresh}>
+			<InstantSearch indexName="prod_USERS" searchClient={searchClient}>
 				<CustomSearchBox label="Search User" placeholder="Enter user name" />
 				<IndexResults>
 					<Configure hitsPerPage={4} />
