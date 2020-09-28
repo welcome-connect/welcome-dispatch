@@ -1,19 +1,17 @@
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSettings } from '../../contexts/settings'
-import { InstantSearch, Configure } from 'react-instantsearch-dom'
 import styled from 'styled-components'
 
-import { searchClient } from '../../services/algolia'
 import { useNavigation } from '../../contexts/navigation'
 import { useFirestoreSub } from '../../hooks'
 
 import { Button, Form, FieldGroup, Label, SettingsInput } from '../../styles/styled-components'
 
-import { TeamUsersHits } from './TeamUsersHits'
-import { CustomSearchBox } from '../Algolia'
-import { IndexResults } from '../Algolia/IndexResults'
+import { TeamUsersHit } from './TeamUsersHit'
 import { addUserToTeam, createTeam } from '../../services/firebase/teams'
+import { SearchProvider } from '../../contexts/search/SearchProvider'
+import { Configure, Hits, SearchBox } from '../Search'
 
 export const TeamModal = () => {
 	const { toggleTeamModal } = useNavigation()
@@ -41,6 +39,8 @@ export const TeamModal = () => {
 			['role', '==', 'dispatcher'],
 		],
 	})
+
+	const [users] = useFirestoreSub('users')
 
 	const onSubmit = async ({ name }) => {
 		try {
@@ -122,13 +122,11 @@ export const TeamModal = () => {
 					))}
 				</List>
 			</ListContainer>
-			<InstantSearch indexName="prod_USERS" searchClient={searchClient}>
-				<CustomSearchBox label="Search User" placeholder="Enter user name" />
-				<IndexResults>
-					<Configure hitsPerPage={4} />
-					<TeamUsersHits />
-				</IndexResults>
-			</InstantSearch>
+			<SearchProvider data={users}>
+				<Configure filters={['displayName', 'email', 'role']} display={false} hitsPerPage={4} />
+				<SearchBox label="Search users" />
+				<Hits hitComponent={TeamUsersHit} />
+			</SearchProvider>
 		</Container>
 	)
 }

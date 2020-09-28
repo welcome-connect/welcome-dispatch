@@ -17,6 +17,7 @@ export const createUserDocument = async (newUser, data) => {
 				email,
 				createdAt,
 				teams: [],
+				role: '',
 				...data,
 			})
 

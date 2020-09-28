@@ -1,0 +1,1 @@
+export { UserHit } from './UserHit'

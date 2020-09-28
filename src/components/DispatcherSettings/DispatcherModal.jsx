@@ -12,9 +12,9 @@ import { UserHit } from '../UserHit'
 import { useFirestoreSub } from '../../hooks'
 import { SearchProvider } from '../../contexts/search/SearchProvider'
 
-export const AgentModal = () => {
+export const DispatcherModal = () => {
 	const { isEditing, setSelected, isSelected } = useSettings()
-	const { toggleAgentModal } = useNavigation()
+	const { toggleDispatcherModal } = useNavigation()
 
 	const [users] = useFirestoreSub('users', {
 		where: ['role', '==', ''],
@@ -24,15 +24,15 @@ export const AgentModal = () => {
 		return <EditUserForm />
 	}
 
-	const onAdd = async agent => {
-		if (agent) await updateUserDocument(agent.id, { role: 'agent' })
+	const onAdd = async dispatcher => {
+		if (dispatcher) await updateUserDocument(dispatcher.id, { role: 'dispatcher' })
 		setSelected(null)
-		toggleAgentModal()
+		toggleDispatcherModal()
 	}
 
 	const onCancel = () => {
 		setSelected(null)
-		toggleAgentModal()
+		toggleDispatcherModal()
 	}
 
 	return (

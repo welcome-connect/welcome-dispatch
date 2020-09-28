@@ -20,7 +20,7 @@ export const useFirestoreSub = (path, options = {}) => {
 					ref = ref.where(w[0], w[1], w[2] || '')
 				})
 			} else {
-				ref = ref.where(w[0], w[1], w[2] || '')
+				ref = ref.where(where[0], where[1], where[2] || '')
 			}
 		}
 

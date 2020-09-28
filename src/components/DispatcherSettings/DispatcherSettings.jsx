@@ -1,19 +1,22 @@
 import styled, { css } from 'styled-components'
 import { memo, useEffect } from 'react'
-import { Configure, InstantSearch } from 'react-instantsearch-dom'
-
-import { searchClient } from '../../services/algolia'
 
 import { useNavigation } from '../../contexts/navigation'
 import { useSettings } from '../../contexts/settings'
 
 import { AddIcon, EditIcon, LessIcon } from '../_icons'
-import { AgentHits } from '../AgentSettings'
-import { CustomSearchBox } from '../Algolia'
+import { SearchProvider } from '../../contexts/search/SearchProvider'
+import { Configure, Hits, SearchBox } from '../Search'
+import { UserHit } from '../UserHit'
+import { useFirestoreSub } from '../../hooks'
 
 export const DispatcherSettings = memo(() => {
-	const { toggleAgentModal } = useNavigation()
+	const { toggleDispatcherModal } = useNavigation()
 	const { setSelected, isSelected, setIsEditing } = useSettings()
+
+	const [dispatchers] = useFirestoreSub('users', {
+		where: ['role', '==', 'dispatcher'],
+	})
 
 	useEffect(() => {
 		setSelected(null)
@@ -21,24 +24,24 @@ export const DispatcherSettings = memo(() => {
 
 	const handleEdit = () => {
 		setIsEditing(true)
-		toggleAgentModal()
+		toggleDispatcherModal()
 	}
 
 	const handleAdd = () => {
 		setIsEditing(false)
 		setSelected(null)
-		toggleAgentModal()
+		toggleDispatcherModal()
 	}
 
 	const handleMinus = () => {}
 
 	return (
 		<Container>
-			<InstantSearch indexName="prod_USERS" searchClient={searchClient}>
-				<Configure filters="role:dispatcher" />
-				<CustomSearchBox label="Search User" placeholder="Enter user name" />
-				<AgentHits />
-			</InstantSearch>
+			<SearchProvider data={dispatchers}>
+				<Configure filters={['displayName', 'email']} />
+				<SearchBox label="Search users" />
+				<Hits hitComponent={UserHit} />
+			</SearchProvider>
 
 			<IconRow>
 				<IconWrapper onClick={isSelected ? handleEdit : null} isDisabled={!isSelected}>

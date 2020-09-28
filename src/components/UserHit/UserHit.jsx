@@ -1,24 +1,22 @@
-import styled, { css } from 'styled-components'
-import { useEffect } from 'react'
-import { useSettings } from '../../contexts/settings'
+import styled, { css } from "styled-components"
+import { useSettings } from "../../contexts/settings"
 
-export const Agent = ({ agent: { displayName, id }, agent }) => {
+export const UserHit = ({ hit: { id, displayName }, hit }) => {
 	const { setSelected, isSelected } = useSettings()
 	const isCardSelected = isSelected?.id === id
 
-	const handleClick = agent => {
-		setSelected(agent)
-		console.log(agent)
+	const handleClick = hit => {
+		setSelected(hit)
 	}
 
 	return (
-		<AgentCard isCardSelected={isCardSelected} onClick={() => handleClick(agent)}>
+		<UserCard isCardSelected={isCardSelected} onClick={() => handleClick(hit)}>
 			<Name>{displayName}</Name>
-		</AgentCard>
+		</UserCard>
 	)
 }
 
-const AgentCard = styled.div`
+const UserCard = styled.div`
 	background: white;
 	border-radius: 4px;
 	padding: 8px;

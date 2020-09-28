@@ -26,6 +26,7 @@ export const EditUserForm = () => {
 			phoneNumber: formatPhoneNumber(data.phoneNumber),
 		})
 		setValue('phoneNumber', formatPhoneNumber(phoneNumber, '($2) $3-$4'))
+		setSelected(null)
 		const id = setTimeout(() => toggleAgentModal(), 600)
 		return () => clearTimeout(id)
 	}

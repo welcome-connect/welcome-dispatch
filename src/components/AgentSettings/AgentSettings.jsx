@@ -1,19 +1,22 @@
 import styled, { css } from 'styled-components'
 import { memo, useEffect } from 'react'
-import { Configure, InstantSearch } from 'react-instantsearch-dom'
-
-import { searchClient } from '../../services/algolia'
 
 import { useNavigation } from '../../contexts/navigation'
 import { useSettings } from '../../contexts/settings'
+import { useFirestoreSub } from '../../hooks'
 
 import { AddIcon, EditIcon, LessIcon } from '../_icons'
-import { AgentHits } from './AgentHits'
-import { CustomSearchBox } from '../Algolia'
+import { SearchProvider } from '../../contexts/search/SearchProvider'
+import { Configure, Hits, SearchBox } from '../Search'
+import { UserHit } from '../UserHit'
 
 export const AgentSettings = memo(() => {
 	const { toggleAgentModal } = useNavigation()
 	const { setSelected, isSelected, setIsEditing } = useSettings()
+
+	const [agents] = useFirestoreSub('users', {
+		where: ['role', '==', 'agent'],
+	})
 
 	useEffect(() => {
 		setSelected(null)
@@ -34,11 +37,11 @@ export const AgentSettings = memo(() => {
 
 	return (
 		<Container>
-			<InstantSearch indexName="prod_USERS" searchClient={searchClient}>
-				<Configure filters="role:agent" />
-				<CustomSearchBox label="Search User" placeholder="Enter user name" />
-				<AgentHits />
-			</InstantSearch>
+			<SearchProvider data={agents}>
+				<Configure filters={['displayName', 'email']} />
+				<SearchBox label="Search users" />
+				<Hits hitComponent={UserHit} />
+			</SearchProvider>
 
 			<IconRow>
 				<IconWrapper onClick={isSelected ? handleEdit : null} isDisabled={!isSelected}>

@@ -6,6 +6,7 @@ export const types = {
 	TOGGLE_SETTINGS_MODAL: 'TOGGLE_SETTINGS_MODAL',
 	TOGGLE_TEAM_MODAL: 'TOGGLE_TEAM_MODAL',
 	TOGGLE_AGENT_MODAL: 'TOGGLE_AGENT_MODAL',
+	TOGGLE_DISPATCHER_MODAL: 'TOGGLE_DISPATCHER_MODAL',
 }
 
 export const initialState = {
@@ -14,9 +15,11 @@ export const initialState = {
 	isSettingsOpen: false,
 	isTeamModalOpen: false,
 	isAgentModalOpen: false,
+	isDispatcherModalOpen: false,
 }
 
 export const navigationReducer = (state, action) => {
+	console.log({ state, action })
 	switch (action.type) {
 		case types.EXPAND_SIDENAV:
 			return { ...state, isSideNavExpanded: true }
@@ -35,6 +38,9 @@ export const navigationReducer = (state, action) => {
 
 		case types.TOGGLE_AGENT_MODAL:
 			return { ...state, isAgentModalOpen: !state.isAgentModalOpen }
+
+		case types.TOGGLE_DISPATCHER_MODAL:
+			return { ...state, isDispatcherModalOpen: !state.isDispatcherModalOpen }
 
 		default:
 			return state
