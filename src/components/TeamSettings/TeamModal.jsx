@@ -40,7 +40,9 @@ export const TeamModal = () => {
 		],
 	})
 
-	const [users] = useFirestoreSub('users')
+	const [users] = useFirestoreSub('users', {
+		where: ['role', '!=', ''],
+	})
 
 	const onSubmit = async ({ name }) => {
 		try {

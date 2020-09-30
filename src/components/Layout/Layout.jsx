@@ -3,12 +3,14 @@ import styled, { css } from 'styled-components'
 import { TopNavigation } from '../TopNavigation'
 import { SideNavigation } from '../SideNavigation'
 import { useNavigation } from '../../contexts/navigation'
-import { ModalContainer } from '../ModalContainer'
+import { ModalContainer, NewShowingModal } from '../ModalContainer'
 import { Settings } from '../Settings'
 import { TeamModal } from '../TeamSettings'
 import { SettingsProvider } from '../../contexts/settings'
 import { AgentModal } from '../AgentSettings'
 import { DispatcherModal } from '../DispatcherSettings'
+import { DispatchProvider } from '../../contexts/dispatch'
+import { NewShowingForm } from '../NewShowingForm/NewShowingForm'
 
 export const Layout = ({ children, title, icon }) => {
 	const {
@@ -17,12 +19,14 @@ export const Layout = ({ children, title, icon }) => {
 		toggleTeamModal,
 		toggleAgentModal,
 		toggleDispatcherModal,
+		toggleNewShowingModal,
 		isSideNavExpanded,
 		isUserDropdownOpen,
 		isSettingsOpen,
 		isTeamModalOpen,
 		isAgentModalOpen,
 		isDispatcherModalOpen,
+		isNewShowingModalOpen,
 	} = useNavigation()
 
 	const handleBgClick = e => {
@@ -32,12 +36,13 @@ export const Layout = ({ children, title, icon }) => {
 		if (isTeamModalOpen) toggleTeamModal()
 		if (isAgentModalOpen) toggleAgentModal()
 		if (isDispatcherModalOpen) toggleDispatcherModal()
+		if (isNewShowingModalOpen) toggleNewShowingModal()
 	}
 
 	return (
 		<Container className={isSideNavExpanded ? 'menu-open' : null}>
 			<SettingsProvider>
-				{isUserDropdownOpen || isSettingsOpen ? (
+				{isUserDropdownOpen || isSettingsOpen || isNewShowingModalOpen ? (
 					<ModalBackground onClick={handleBgClick} isUserDropdownOpen={isUserDropdownOpen} />
 				) : null}
 				{isSettingsOpen ? (
@@ -64,7 +69,15 @@ export const Layout = ({ children, title, icon }) => {
 
 			<TopNavigation title={title} icon={icon} />
 			<SideNavigation />
-			<PageContainer>{children}</PageContainer>
+
+			<DispatchProvider>
+				{isNewShowingModalOpen ? (
+					<NewShowingModal>
+						<NewShowingForm />
+					</NewShowingModal>
+				) : null}
+				<PageContainer>{children}</PageContainer>
+			</DispatchProvider>
 		</Container>
 	)
 }
@@ -113,6 +126,7 @@ const ModalBackground = styled.div`
 	height: 100%;
 	z-index: 10;
 	background: rgba(0, 0, 0, 0.3);
+	transition: all 150ms ease-in-out;
 
 	${({ isUserDropdownOpen }) =>
 		isUserDropdownOpen &&
@@ -124,5 +138,4 @@ const ModalBackground = styled.div`
 
 const PageContainer = styled.main`
 	background-color: ${({ theme: { colors } }) => colors.bg.primary};
-	padding: 1rem;
 `

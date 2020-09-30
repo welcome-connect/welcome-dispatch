@@ -7,6 +7,7 @@ export const types = {
 	TOGGLE_TEAM_MODAL: 'TOGGLE_TEAM_MODAL',
 	TOGGLE_AGENT_MODAL: 'TOGGLE_AGENT_MODAL',
 	TOGGLE_DISPATCHER_MODAL: 'TOGGLE_DISPATCHER_MODAL',
+	TOGGLE_NEW_SHOWING_MODAL: 'TOGGLE_NEW_SHOWING_MODAL',
 }
 
 export const initialState = {
@@ -16,16 +17,17 @@ export const initialState = {
 	isTeamModalOpen: false,
 	isAgentModalOpen: false,
 	isDispatcherModalOpen: false,
+	isNewShowingModalOpen: false,
 }
 
 export const navigationReducer = (state, action) => {
 	console.log({ state, action })
 	switch (action.type) {
 		case types.EXPAND_SIDENAV:
-			return { ...state, isSideNavExpanded: true }
+			return { ...state, isSideNavExpanded: true, isUserDropdownOpen: false }
 
 		case types.CLOSE_SIDENAV:
-			return { ...state, isSideNavExpanded: false }
+			return { ...state, isSideNavExpanded: false, isUserDropdownOpen: false }
 
 		case types.TOGGLE_USERDROPDOWN_MENU:
 			return { ...state, isUserDropdownOpen: !state.isUserDropdownOpen }
@@ -34,13 +36,24 @@ export const navigationReducer = (state, action) => {
 			return { ...state, isSettingsOpen: !state.isSettingsOpen }
 
 		case types.TOGGLE_TEAM_MODAL:
-			return { ...state, isTeamModalOpen: !state.isTeamModalOpen }
+			return { ...state, isTeamModalOpen: !state.isTeamModalOpen, isUserDropdownOpen: false }
 
 		case types.TOGGLE_AGENT_MODAL:
-			return { ...state, isAgentModalOpen: !state.isAgentModalOpen }
+			return { ...state, isAgentModalOpen: !state.isAgentModalOpen, isUserDropdownOpen: false }
 
 		case types.TOGGLE_DISPATCHER_MODAL:
-			return { ...state, isDispatcherModalOpen: !state.isDispatcherModalOpen }
+			return {
+				...state,
+				isDispatcherModalOpen: !state.isDispatcherModalOpen,
+				isUserDropdownOpen: false,
+			}
+
+		case types.TOGGLE_NEW_SHOWING_MODAL:
+			return {
+				...state,
+				isNewShowingModalOpen: !state.isNewShowingModalOpen,
+				isUserDropdownOpen: false,
+			}
 
 		default:
 			return state

@@ -35,6 +35,7 @@ const DropDown = styled.ul`
 	min-width: 150px;
 	z-index: 10;
 	overflow: hidden;
+	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
 
 	&.toggle {
 		visibility: visible;

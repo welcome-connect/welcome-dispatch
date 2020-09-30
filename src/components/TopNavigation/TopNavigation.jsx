@@ -48,7 +48,8 @@ const NavigationContainer = styled.header`
 	align-items: center;
 	width: 100%;
 	background-color: ${({ theme: { colors } }) => colors.bg.white};
-	z-index: 0;
+	z-index: 1;
+	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
 
 	grid-template-areas: 'grid-left grid-center grid-right';
 

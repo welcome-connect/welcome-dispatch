@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { useSearch } from '../../contexts/search/SearchProvider'
 
-export const Hits = ({ hitComponent: HitComponent }) => {
+export const Hits = ({ hitComponent: HitComponent, ...props }) => {
 	const { data, displayTrigger } = useSearch()
 
 	return (
@@ -9,7 +9,7 @@ export const Hits = ({ hitComponent: HitComponent }) => {
 			{displayTrigger
 				? data.map(hit => (
 						<ListItem key={hit.id}>
-							<HitComponent hit={hit} />
+							<HitComponent hit={hit} {...props} />
 						</ListItem>
 				  ))
 				: null}

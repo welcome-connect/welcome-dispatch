@@ -16,6 +16,7 @@ export const NavigationProvider = ({ children }) => {
 	const toggleTeamModal = () => dispatch({ type: types.TOGGLE_TEAM_MODAL })
 	const toggleAgentModal = () => dispatch({ type: types.TOGGLE_AGENT_MODAL })
 	const toggleDispatcherModal = () => dispatch({ type: types.TOGGLE_DISPATCHER_MODAL })
+	const toggleNewShowingModal = () => dispatch({ type: types.TOGGLE_NEW_SHOWING_MODAL })
 
 	return (
 		<NavigationContext.Provider
@@ -28,6 +29,7 @@ export const NavigationProvider = ({ children }) => {
 				toggleTeamModal,
 				toggleAgentModal,
 				toggleDispatcherModal,
+				toggleNewShowingModal,
 			}}>
 			{children}
 		</NavigationContext.Provider>

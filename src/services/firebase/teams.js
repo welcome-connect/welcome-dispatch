@@ -1,4 +1,4 @@
-import { auth, db, functions, firebase } from './index'
+import { auth, db, firebase } from './index'
 import { getUserDocument } from './users'
 
 // CREATE TEAM

@@ -10,5 +10,29 @@ export const GlobalStyles = createGlobalStyle`
 
 	body {
 		font-family: 'Roboto';
+
+		h1, h2, h3, p, span, a {
+			color: ${({ theme }) => theme.colors.text};
+		}
+	}
+
+	/* GOOGLE AUTOCOMPLETE */
+	.pac-container {
+		.pac-item {
+			&:hover {
+				background: ${({ theme }) => theme.colors.bg.hover};
+			}
+			.pac-item-query {
+				font-size: 1rem;
+			}
+			
+			span:last-child {
+				font-size: 14px;
+			}
+		}
+
+		&::after {
+			display: none;
+		}
 	}
 `
