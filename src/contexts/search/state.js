@@ -5,6 +5,8 @@ export const types = {
 	SET_DATA: 'SET_DATA',
 	SET_DISPLAY: 'SET_DISPLAY',
 	SET_HITS_PER_PAGE: 'SET_HITS_PER_PAGE',
+	SET_SELECTED_HIT: 'SET_SELECTED_HIT',
+	SET_DISPLAY_QUERY: 'SET_DISPLAY_QUERY',
 }
 
 export const initialState = {
@@ -14,9 +16,12 @@ export const initialState = {
 	display: true,
 	displayTrigger: true,
 	hitsPerPage: 0,
+	selectedHit: null,
+	displayQuery: '',
 }
 
 export const searchReducer = (state, action) => {
+	console.log({ state, action })
 	const currFilters = state.filters
 
 	switch (action.type) {
@@ -46,6 +51,17 @@ export const searchReducer = (state, action) => {
 		case types.REMOVE_FROM_FILTERS:
 			const toBeRemoved = Array.isArray(action.payload) ? [...action.payload] : [action.payload]
 			return { ...state, filters: currFilters.filter(attr => !toBeRemoved.includes(attr)) }
+
+		case types.SET_SELECTED_HIT:
+			return {
+				...state,
+				selectedHit: action.payload,
+				displayTrigger: false,
+				query: action.payload[state.displayQuery],
+			}
+
+		case types.SET_DISPLAY_QUERY:
+			return { ...state, displayQuery: action.payload }
 
 		default:
 			return state

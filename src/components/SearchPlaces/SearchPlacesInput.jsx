@@ -28,12 +28,15 @@ export const SearchPlacesInput = () => {
 
 	return (
 		<Autocomplete onPlaceChanged={onPlaceChanged} onLoad={onPlacesLoad}>
-			<SettingsInput
-				type="text"
-				placeholder="🔍  Search for an address"
-				value={query}
-				onChange={e => setQuery(e.target.value)}
-			/>
+			<SingleFieldGroup>
+				<Label htmlFor="first_name">First name</Label>
+				<SettingsInput
+					type="text"
+					placeholder="🔍  Search for an address"
+					value={query}
+					onChange={e => setQuery(e.target.value)}
+				/>
+			</SingleFieldGroup>
 		</Autocomplete>
 	)
 }

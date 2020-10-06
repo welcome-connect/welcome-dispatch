@@ -33,10 +33,21 @@ export const SearchProvider = ({ children, data = [] }) => {
 		dispatch({ type: types.REMOVE_FROM_FILTERS, payload: filters })
 	const setDisplay = bool => dispatch({ type: types.SET_DISPLAY, payload: bool })
 	const setHitsPerPage = num => dispatch({ type: types.SET_HITS_PER_PAGE, payload: num })
+	const setSelectedHit = hit => dispatch({ type: types.SET_SELECTED_HIT, payload: hit })
+	const setDisplayQuery = query => dispatch({ type: types.SET_DISPLAY_QUERY, payload: query })
 
 	return (
 		<SearchContext.Provider
-			value={{ ...state, setQuery, addToFilters, removeFromFilters, setDisplay, setHitsPerPage }}>
+			value={{
+				...state,
+				setQuery,
+				addToFilters,
+				removeFromFilters,
+				setDisplay,
+				setHitsPerPage,
+				setSelectedHit,
+				setDisplayQuery,
+			}}>
 			{children}
 		</SearchContext.Provider>
 	)

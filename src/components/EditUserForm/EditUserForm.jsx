@@ -17,7 +17,7 @@ import { formatPhoneNumber } from '../../utils'
 export const EditUserForm = () => {
 	const { register, errors, handleSubmit, setValue } = useForm()
 	const { isEditing, isSelected, setSelected } = useSettings()
-	const { toggleAgentModal } = useNavigation()
+	const { toggleAgentModal, toggleDispatcherModal } = useNavigation()
 	const { isLoading, isSuccess, hasNoChanges, authRequired, updateUser } = useUpdateUser()
 
 	const onSubmit = async data => {
@@ -33,7 +33,7 @@ export const EditUserForm = () => {
 
 	const onCancel = () => {
 		setSelected(null)
-		toggleAgentModal()
+		isSelected.role === 'agent' ? toggleAgentModal() : toggleDispatcherModal()
 	}
 
 	useEffect(() => {

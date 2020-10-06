@@ -1,22 +1,20 @@
 import styled, { css } from 'styled-components'
-import { useForm } from 'react-hook-form'
+import { useCallback, useEffect, useState } from 'react'
+import { Autocomplete } from '@react-google-maps/api'
 
 import { useNavigation } from '../../contexts/navigation'
 
 import {
 	Button,
-	ErrorMessage,
 	FieldGroup,
 	Form,
 	Label,
 	SettingsInput,
 	Textarea,
 } from '../../styles/styled-components'
-import { formatPhoneNumber, getAddress } from '../../utils'
-import { useCallback, useEffect, useState } from 'react'
+import { capitalize, formatPhoneNumber, getAddress } from '../../utils'
 import { useDispatch } from '../../contexts/dispatch'
-import { Autocomplete } from '@react-google-maps/api'
-import { SearchProvider } from '../../contexts/search/SearchProvider'
+import { SearchProvider, useSearch } from '../../contexts/search/SearchProvider'
 import { Configure, Hits, SearchBox } from '../Search'
 import { useFirestoreSub } from '../../hooks'
 
@@ -25,8 +23,10 @@ export const NewShowingForm = () => {
 	const { placeToBeAdded, setPlaceToBeAdded } = useDispatch()
 
 	const [autocomplete, setAutocomplete] = useState(null)
-	const [selected, setSelected] = useState(null)
+	const [selectedAgent, setSelectedAgent] = useState(null)
+	const [selectedLead, setSelectedLead] = useState(null)
 	const [formData, setFormData] = useState({})
+	const [formErrors, setFormErrors] = useState({})
 	const [stage, setStage] = useState(1)
 
 	const onPlacesLoad = useCallback(autocomplete => {
@@ -44,17 +44,50 @@ export const NewShowingForm = () => {
 	})
 
 	useEffect(() => {
-		if (placeToBeAdded) {
+		if (!placeToBeAdded) {
+			document.querySelector('#formatted_address').focus()
+		} else {
 			setFormData({
 				...formData,
 				formatted_address: getAddress(placeToBeAdded).formatted_address,
 			})
 		}
-	}, [])
+	}, [placeToBeAdded])
+
+	useEffect(() => {
+		if (!selectedLead) {
+			document.querySelector("input[name='search']").focus()
+		} else {
+			setFormData({
+				...formData,
+				phone_number: formatPhoneNumber(selectedLead.phoneNumber, '($2) $3-$4'),
+				lead_name: selectedLead.displayName,
+			})
+		}
+	}, [selectedLead])
+
+	useEffect(() => {
+		if (!selectedAgent) {
+			document.querySelector("input[name='search']").focus()
+		} else {
+			setFormData({
+				...formData,
+				agent_name: selectedAgent.displayName,
+			})
+		}
+	}, [selectedAgent])
+
+	useEffect(() => {
+		if (formData.formatted_address === '') {
+			setPlaceToBeAdded(null)
+		}
+	}, [formData.formatted_address])
 
 	const handleChange = e => {
 		setFormData({ ...formData, [e.target.name]: e.target.value })
 	}
+
+	console.log({ placeToBeAdded })
 
 	const handleStage = e => {
 		e.preventDefault()
@@ -66,13 +99,52 @@ export const NewShowingForm = () => {
 		toggleNewShowingModal()
 	}
 
-	const onSubmit = data => {
-		console.log(data)
-		toggleNewShowingModal()
-		setPlaceToBeAdded(null)
+	const validateForm = data => {
+		const required = [
+			'formatted_address',
+			'price',
+			'sqft',
+			'phone_number',
+			'lead_name',
+			'bedrooms',
+			'bathrooms',
+			'date',
+			'start_time',
+			'end_time',
+			'agent_name',
+		]
+
+		const difference = required.filter(x => !data[x] && data[x]?.legnth !== 0)
+
+		const errors = difference.map(key => {
+			return {
+				[key]: {
+					message: `${key
+						.replace('_', ' ')
+						.split(' ')
+						.map((word, i) => (i === 0 ? capitalize(word) : word))
+						.join(' ')} is required`,
+				},
+			}
+		})
+
+		if (errors.length > 0) {
+			setFormErrors(errors)
+			return false
+		} else {
+			setFormErrors({})
+			return true
+		}
 	}
 
-	console.log({ formData })
+	const onSubmit = async data => {
+		const valid = validateForm(data)
+		console.log({ valid })
+		// toggleNewShowingModal()
+		// setPlaceToBeAdded(null)
+	}
+
+	console.log({ formData, formErrors })
 
 	return (
 		<Container>
@@ -83,26 +155,29 @@ export const NewShowingForm = () => {
 					<>
 						<Section>
 							<h2>Lead Details</h2>
-							<Col>
+							{!selectedLead ? (
+								<SearchProvider data={agents}>
+									<Configure
+										filters={['displayName', 'email']}
+										display={false}
+										hitsPerPage={3}
+										displayQuery="displayName"
+									/>
+									<SearchBox label="Name" />
+									<Hits hitComponent={Hit} selected={selectedLead} setSelected={setSelectedLead} />
+								</SearchProvider>
+							) : (
 								<SingleFieldGroup>
-									<Label htmlFor="first_name">First name</Label>
+									<Label htmlFor="lead_name">Name</Label>
 									<SettingsInput
 										type="text"
-										name="first_name"
-										value={formData.first_name}
-										onChange={e => handleChange(e)}
+										name="lead_name"
+										value={formData.lead_name}
+										onChange={e => setSelectedLead(null)}
+										required
 									/>
 								</SingleFieldGroup>
-								<SingleFieldGroup>
-									<Label htmlFor="last_name">Last name</Label>
-									<SettingsInput
-										type="text"
-										name="last_name"
-										value={formData.last_name}
-										onChange={e => handleChange(e)}
-									/>
-								</SingleFieldGroup>
-							</Col>
+							)}
 							<SingleFieldGroup>
 								<Label htmlFor="phone_number">Phone number</Label>
 								<SettingsInput
@@ -110,6 +185,7 @@ export const NewShowingForm = () => {
 									name="phone_number"
 									value={formData.phone_number}
 									onChange={e => handleChange(e)}
+									required
 								/>
 							</SingleFieldGroup>
 						</Section>
@@ -124,6 +200,7 @@ export const NewShowingForm = () => {
 											type="text"
 											placeholder="🔍  Search for an address"
 											name="formatted_address"
+											id="formatted_address"
 											value={formData.formatted_address}
 											onChange={e => handleChange(e)}
 										/>
@@ -137,6 +214,7 @@ export const NewShowingForm = () => {
 										name="formatted_address"
 										value={formData.formatted_address}
 										onChange={e => handleChange(e)}
+										required
 									/>
 								</SingleFieldGroup>
 							)}
@@ -148,6 +226,7 @@ export const NewShowingForm = () => {
 										name="price"
 										value={formData.price}
 										onChange={e => handleChange(e)}
+										required
 									/>
 								</SingleFieldGroup>
 								<SingleFieldGroup>
@@ -157,6 +236,7 @@ export const NewShowingForm = () => {
 										name="sqft"
 										value={formData.sqft}
 										onChange={e => handleChange(e)}
+										required
 									/>
 								</SingleFieldGroup>
 							</Col>
@@ -168,6 +248,7 @@ export const NewShowingForm = () => {
 										name="bedrooms"
 										value={formData.bedrooms}
 										onChange={e => handleChange(e)}
+										required
 									/>
 								</SingleFieldGroup>
 								<SingleFieldGroup>
@@ -177,9 +258,17 @@ export const NewShowingForm = () => {
 										name="bathrooms"
 										value={formData.bathrooms}
 										onChange={e => handleChange(e)}
+										required
 									/>
 								</SingleFieldGroup>
 							</Col>
+						</Section>
+					</>
+				) : null}
+				{stage === 2 ? (
+					<>
+						<Section>
+							<h2>Additional Property Details</h2>
 							<Col>
 								<SingleFieldGroup>
 									<Label htmlFor="construction_age">Age of construction</Label>
@@ -200,24 +289,7 @@ export const NewShowingForm = () => {
 									/>
 								</SingleFieldGroup>
 							</Col>
-							<Col>
-								<SingleFieldGroup>
-									<Label htmlFor="flooded">Flooded</Label>
-									<SettingsInput
-										type="text"
-										name="flooded"
-										value={formData.flooded}
-										onChange={e => handleChange(e)}
-									/>
-								</SingleFieldGroup>
-							</Col>
-						</Section>
-					</>
-				) : null}
-				{stage === 2 ? (
-					<>
-						<Section>
-							<h2>Property Financial Details</h2>
+
 							<Col>
 								<SingleFieldGroup>
 									<Label htmlFor="financing_considered">Financing considered</Label>
@@ -258,6 +330,17 @@ export const NewShowingForm = () => {
 									/>
 								</SingleFieldGroup>
 							</Col>
+							<Col>
+								<SingleFieldGroup>
+									<Label htmlFor="flooded">Flooded</Label>
+									<SettingsInput
+										type="text"
+										name="flooded"
+										value={formData.flooded}
+										onChange={e => handleChange(e)}
+									/>
+								</SingleFieldGroup>
+							</Col>
 						</Section>
 					</>
 				) : null}
@@ -274,6 +357,7 @@ export const NewShowingForm = () => {
 									name="date"
 									value={formData.date}
 									onChange={e => handleChange(e)}
+									required
 								/>
 							</SingleFieldGroup>
 							<Col>
@@ -282,8 +366,12 @@ export const NewShowingForm = () => {
 									<SettingsInput
 										type="time"
 										name="start_time"
+										step="300"
+										min="09:00"
+										max="19:30"
 										value={formData.start_time}
 										onChange={e => handleChange(e)}
+										required
 									/>
 								</SingleFieldGroup>
 								<SingleFieldGroup>
@@ -291,8 +379,12 @@ export const NewShowingForm = () => {
 									<SettingsInput
 										type="time"
 										name="end_time"
+										step="300"
+										min="09:00"
+										max="19:30"
 										value={formData.end_time}
 										onChange={e => handleChange(e)}
+										required
 									/>
 								</SingleFieldGroup>
 							</Col>
@@ -305,12 +397,34 @@ export const NewShowingForm = () => {
 									onChange={e => handleChange(e)}
 								/>
 							</SingleFieldGroup>
-							<SearchProvider data={agents}>
-								<Configure filters={['displayName', 'email']} display={false} hitsPerPage={3} />
-								<SearchBox label="Search users" />
-								<Hits hitComponent={Hit} setSelected={setSelected} selected={selected} />
-							</SearchProvider>
-						</Section>{' '}
+							{!selectedAgent ? (
+								<SearchProvider data={agents}>
+									<Configure
+										filters={['displayName', 'email']}
+										display={false}
+										hitsPerPage={3}
+										displayQuery="displayName"
+									/>
+									<SearchBox label="Agent" />
+									<Hits
+										hitComponent={Hit}
+										setSelected={setSelectedAgent}
+										selected={selectedAgent}
+									/>
+								</SearchProvider>
+							) : (
+								<SingleFieldGroup>
+									<Label htmlFor="agent_name">Agent</Label>
+									<SettingsInput
+										type="text"
+										name="agent_name"
+										value={selectedAgent.displayName}
+										onChange={e => setSelectedAgent(null)}
+										required
+									/>
+								</SingleFieldGroup>
+							)}
+						</Section>
 					</>
 				) : null}
 				<ButtonContainer>
@@ -335,8 +449,11 @@ export const NewShowingForm = () => {
 
 const Hit = ({ hit, setSelected, selected }) => {
 	const isCardSelected = selected?.id === hit.id
+	const { setSelectedHit } = useSearch()
+
 	const handleClick = hit => {
 		setSelected(hit)
+		setSelectedHit(hit)
 	}
 
 	return (
@@ -399,11 +516,6 @@ const ModifiedForm = styled(Form)`
 
 const SingleFieldGroup = styled(FieldGroup)`
 	margin-bottom: 1rem;
-`
-
-const ModifiedErrorMessage = styled(ErrorMessage)`
-	position: static;
-	font-size: 1rem;
 `
 
 const Section = styled.div`

@@ -33,6 +33,7 @@ const Label = styled.span`
 	display: block;
 	line-height: 1rem;
 	font-weight: 400;
+	color: white;
 `
 
 const NavigationContainer = styled.nav`

@@ -17,7 +17,7 @@ const NavLink = ({ href, children }) => {
 }
 
 const ListItem = styled.li`
-	background-color: ${({ isActive }) => (isActive ? 'rgba(255, 255, 255, 0.2)' : null)};
+	background-color: ${({ isActive }) => (isActive ? 'rgba(255, 255, 255, 0.1)' : null)};
 	padding: 0.75rem 0;
 	min-height: 50px;
 	display: flex;

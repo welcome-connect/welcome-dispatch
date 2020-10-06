@@ -1,11 +1,10 @@
 import styled from 'styled-components'
-import { useCallback, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useLoadScript, Marker, InfoWindow, GoogleMap } from '@react-google-maps/api'
 
 import { SearchPlaces } from '../SearchPlaces'
 import mapStyles from './mapStyles'
 import { useDispatch } from '../../contexts/dispatch'
-import { getAddress } from '../../utils'
 import { useNavigation } from '../../contexts/navigation'
 
 const libraries = ['places']
@@ -39,6 +38,15 @@ export const Map = () => {
 		mapRef.current.panTo({ lat, lng })
 		mapRef.current.setZoom(13)
 	}, [])
+
+	useEffect(() => {
+		if (placeToBeAdded) {
+			panTo({
+				lat: placeToBeAdded.geometry.location.lat(),
+				lng: placeToBeAdded.geometry.location.lng(),
+			})
+		}
+	}, [placeToBeAdded])
 
 	if (loadError) return 'Error loading maps'
 	if (!isLoaded) return 'Loading Maps'
