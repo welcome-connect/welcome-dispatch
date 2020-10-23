@@ -49,5 +49,5 @@ const Input = styled(SettingsInput)`
 	top: 2rem;
 	left: 50%;
 	transform: translateX(-50%);
-	font-size: 1rem;
+	font-size: 0.9rem;
 `

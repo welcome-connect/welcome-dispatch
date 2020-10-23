@@ -107,6 +107,7 @@ const Container = styled.div`
 	padding: 8px 32px;
 	position: relative;
 `
+
 const ModifiedButton = styled(Button)`
 	position: absolute;
 	right: 32px;

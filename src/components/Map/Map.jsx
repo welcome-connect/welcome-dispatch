@@ -1,11 +1,14 @@
 import styled from 'styled-components'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLoadScript, Marker, InfoWindow, GoogleMap } from '@react-google-maps/api'
 
 import { SearchPlaces } from '../SearchPlaces'
 import mapStyles from './mapStyles'
 import { useDispatch } from '../../contexts/dispatch'
 import { useNavigation } from '../../contexts/navigation'
+import { MarkerSet } from './MarkerSet'
+import { useFirestoreSub } from '../../hooks'
+import { format } from 'date-fns'
 
 const libraries = ['places']
 const mapContainerStyle = {
@@ -22,8 +25,17 @@ const options = {
 export const Map = () => {
 	const mapRef = useRef()
 
-	const { placeToBeAdded, setPlaceToBeAdded } = useDispatch()
+	const {
+		placeToBeAdded,
+		teamAgents,
+		setEditShowing,
+		editShowing,
+		observedDate,
+		selectedTeam,
+	} = useDispatch()
 	const { toggleNewShowingModal } = useNavigation()
+
+	const [hoveredShowing, setHoveredShowing] = useState(null)
 
 	const { isLoaded, loadError } = useLoadScript({
 		googleMapsApiKey: process.env.FIREBASE_API_KEY,
@@ -34,10 +46,17 @@ export const Map = () => {
 		mapRef.current = map
 	}, [])
 
-	const panTo = useCallback(({ lat, lng }) => {
-		mapRef.current.panTo({ lat, lng })
-		mapRef.current.setZoom(13)
+	const panTo = useCallback(({ lat, lng }, zoom = 13) => {
+		if (!isLoaded) {
+			mapRef?.current?.panTo({ lat, lng })
+			mapRef?.current?.setZoom(zoom)
+		}
 	}, [])
+
+	const hanleEditShowing = showing => {
+		setEditShowing(showing)
+		toggleNewShowingModal()
+	}
 
 	useEffect(() => {
 		if (placeToBeAdded) {
@@ -47,6 +66,25 @@ export const Map = () => {
 			})
 		}
 	}, [placeToBeAdded])
+
+	useEffect(() => {
+		if (selectedTeam) {
+			panTo(
+				{
+					lat: selectedTeam.coords.latitude,
+					lng: selectedTeam.coords.longitude,
+				},
+				10,
+			)
+		}
+	}, [selectedTeam])
+
+	const [unAssignedShowings] = useFirestoreSub('showings', {
+		where: [
+			['agent', '==', 'unassigned'],
+			['date.string', '==', format(observedDate, 'MM/dd/yyyy')],
+		],
+	})
 
 	if (loadError) return 'Error loading maps'
 	if (!isLoaded) return 'Loading Maps'
@@ -60,7 +98,7 @@ export const Map = () => {
 				options={options}
 				onLoad={onMapLoad}>
 				<SearchPlaces panTo={panTo} />
-				{placeToBeAdded ? (
+				{placeToBeAdded && !editShowing ? (
 					<Marker
 						position={{
 							lat: placeToBeAdded.geometry.location.lat(),
@@ -70,6 +108,49 @@ export const Map = () => {
 						icon="./icons/addPin.svg"
 					/>
 				) : null}
+
+				{teamAgents.map(agent => (
+					<MarkerSet
+						key={agent.id}
+						agent={agent}
+						hanleEditShowing={hanleEditShowing}
+						setHoveredShowing={setHoveredShowing}
+					/>
+				))}
+
+				{unAssignedShowings.map(showing => (
+					<Marker
+						key={showing.id}
+						position={{
+							lat: showing.places.coords.lat,
+							lng: showing.places.coords.lng,
+						}}
+						icon="./icons/unassignedPin.svg"
+						onClick={() => hanleEditShowing(showing)}
+						onMouseOver={() => setHoveredShowing(showing)}
+						onMouseOut={() => setHoveredShowing(null)}
+					/>
+				))}
+
+				{hoveredShowing ? (
+					<InfoWindow
+						position={{
+							lat: hoveredShowing.places.coords.lat,
+							lng: hoveredShowing.places.coords.lng,
+						}}
+						options={{ pixelOffset: { height: -40, width: 0 } }}>
+						<InfoWindowContent>
+							<h3>{hoveredShowing.propertyDetails.address.split(',').slice(0, 3).concat()}</h3>
+							<p>
+								{hoveredShowing.agent !== 'unassigned'
+									? `Assigned to ${hoveredShowing.agent.displayName}`
+									: 'Unassigned'}
+							</p>
+							<p>{`Starts at ${hoveredShowing.startTime} until ${hoveredShowing.endTime}`}</p>
+							<p>{`Lead: ${hoveredShowing.lead.displayName}`}</p>
+						</InfoWindowContent>
+					</InfoWindow>
+				) : null}
 			</GoogleMap>
 		</Container>
 	)
@@ -77,4 +158,10 @@ export const Map = () => {
 
 const Container = styled.div`
 	border-left: 1px solid ${({ theme }) => theme.colors.border_darker};
+`
+
+const InfoWindowContent = styled.div`
+	p {
+		font-size: 0.9rem;
+	}
 `

@@ -7,6 +7,7 @@ export const theme = {
 		text: '#242935',
 		text_light: '#8496AE',
 		text_white: '#FFFFFF',
+		text_disabled: '#7783A1',
 		bg: {
 			primary: '#F2F5F9',
 			light: '#FCFCFD',

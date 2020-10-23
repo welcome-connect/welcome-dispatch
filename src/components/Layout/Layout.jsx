@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components'
 import { TopNavigation } from '../TopNavigation'
 import { SideNavigation } from '../SideNavigation'
 import { useNavigation } from '../../contexts/navigation'
-import { ModalContainer, NewShowingModal } from '../ModalContainer'
+import { ModalContainer, NewLeadModal, NewShowingModal } from '../ModalContainer'
 import { Settings } from '../Settings'
 import { TeamModal } from '../TeamSettings'
 import { SettingsProvider } from '../../contexts/settings'
@@ -11,6 +11,7 @@ import { AgentModal } from '../AgentSettings'
 import { DispatcherModal } from '../DispatcherSettings'
 import { DispatchProvider } from '../../contexts/dispatch'
 import { NewShowingForm } from '../NewShowingForm/NewShowingForm'
+import { NewLeadForm } from '../NewLeadForm'
 
 export const Layout = ({ children, title, icon }) => {
 	const {
@@ -19,7 +20,8 @@ export const Layout = ({ children, title, icon }) => {
 		toggleTeamModal,
 		toggleAgentModal,
 		toggleDispatcherModal,
-		toggleNewShowingModal,
+		// toggleNewShowingModal,
+		toggleNewLeadModal,
 		isSideNavExpanded,
 		isUserDropdownOpen,
 		isSettingsOpen,
@@ -27,6 +29,7 @@ export const Layout = ({ children, title, icon }) => {
 		isAgentModalOpen,
 		isDispatcherModalOpen,
 		isNewShowingModalOpen,
+		isNewLeadModalOpen,
 	} = useNavigation()
 
 	const handleBgClick = e => {
@@ -36,13 +39,14 @@ export const Layout = ({ children, title, icon }) => {
 		if (isTeamModalOpen) toggleTeamModal()
 		if (isAgentModalOpen) toggleAgentModal()
 		if (isDispatcherModalOpen) toggleDispatcherModal()
-		if (isNewShowingModalOpen) toggleNewShowingModal()
+		// if (isNewShowingModalOpen) toggleNewShowingModal()
+		if (isNewLeadModalOpen) toggleNewLeadModal()
 	}
 
 	return (
 		<Container className={isSideNavExpanded ? 'menu-open' : null}>
 			<SettingsProvider>
-				{isUserDropdownOpen || isSettingsOpen || isNewShowingModalOpen ? (
+				{isUserDropdownOpen || isSettingsOpen || isNewShowingModalOpen || isNewLeadModalOpen ? (
 					<ModalBackground onClick={handleBgClick} isUserDropdownOpen={isUserDropdownOpen} />
 				) : null}
 				{isSettingsOpen ? (
@@ -66,6 +70,12 @@ export const Layout = ({ children, title, icon }) => {
 					</ModalContainer>
 				) : null}
 			</SettingsProvider>
+
+			{isNewLeadModalOpen ? (
+				<NewLeadModal>
+					<NewLeadForm />
+				</NewLeadModal>
+			) : null}
 
 			<TopNavigation title={title} icon={icon} />
 			<SideNavigation />

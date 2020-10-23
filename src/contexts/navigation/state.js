@@ -8,6 +8,7 @@ export const types = {
 	TOGGLE_AGENT_MODAL: 'TOGGLE_AGENT_MODAL',
 	TOGGLE_DISPATCHER_MODAL: 'TOGGLE_DISPATCHER_MODAL',
 	TOGGLE_NEW_SHOWING_MODAL: 'TOGGLE_NEW_SHOWING_MODAL',
+	TOGGLE_NEW_LEAD_MODAL: 'TOGGLE_NEW_LEAD_MODAL',
 }
 
 export const initialState = {
@@ -18,6 +19,7 @@ export const initialState = {
 	isAgentModalOpen: false,
 	isDispatcherModalOpen: false,
 	isNewShowingModalOpen: false,
+	isNewLeadModalOpen: false,
 }
 
 export const navigationReducer = (state, action) => {
@@ -52,6 +54,13 @@ export const navigationReducer = (state, action) => {
 			return {
 				...state,
 				isNewShowingModalOpen: !state.isNewShowingModalOpen,
+				isUserDropdownOpen: false,
+			}
+
+		case types.TOGGLE_NEW_LEAD_MODAL:
+			return {
+				...state,
+				isNewLeadModalOpen: !state.isNewLeadModalOpen,
 				isUserDropdownOpen: false,
 			}
 

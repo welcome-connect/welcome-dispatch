@@ -6,6 +6,7 @@ import { useNavigation } from '../../contexts/navigation'
 
 import {
 	Button,
+	ErrorMessage,
 	FieldGroup,
 	Form,
 	Label,
@@ -17,16 +18,19 @@ import { useDispatch } from '../../contexts/dispatch'
 import { SearchProvider, useSearch } from '../../contexts/search/SearchProvider'
 import { Configure, Hits, SearchBox } from '../Search'
 import { useFirestoreSub } from '../../hooks'
+import { format } from 'date-fns'
+import { createShowing, updateShowing } from '../../services/firebase/showings'
 
 export const NewShowingForm = () => {
 	const { toggleNewShowingModal } = useNavigation()
-	const { placeToBeAdded, setPlaceToBeAdded } = useDispatch()
+	const { placeToBeAdded, setPlaceToBeAdded, editShowing, setEditShowing } = useDispatch()
 
 	const [autocomplete, setAutocomplete] = useState(null)
 	const [selectedAgent, setSelectedAgent] = useState(null)
 	const [selectedLead, setSelectedLead] = useState(null)
 	const [formData, setFormData] = useState({})
 	const [formErrors, setFormErrors] = useState({})
+	const [submitError, setSubmitError] = useState(null)
 	const [stage, setStage] = useState(1)
 
 	const onPlacesLoad = useCallback(autocomplete => {
@@ -43,9 +47,49 @@ export const NewShowingForm = () => {
 		where: ['role', '==', 'agent'],
 	})
 
+	const [leads] = useFirestoreSub('leads')
+
+	console.log({ editShowing })
+
+	useEffect(() => {
+		if (editShowing) {
+			if (editShowing.agent !== 'unassigned') setSelectedAgent(editShowing.agent)
+			setSelectedLead(editShowing.lead)
+			setPlaceToBeAdded({
+				...editShowing.places,
+				geometry: {
+					location: {
+						lat: () => editShowing.places.coords.lat,
+						lng: () => editShowing.places.coords.lng,
+					},
+				},
+				address_components: [],
+			})
+			setFormData({
+				lead_name: editShowing.lead.displayName,
+				phone_number: formatPhoneNumber(editShowing.lead.phoneNumber, '($2) $3-$4'),
+				formatted_address: editShowing.propertyDetails.address,
+				price: editShowing.propertyDetails.price,
+				sqft: editShowing.propertyDetails.sqft,
+				bedrooms: editShowing.propertyDetails.bedrooms,
+				bathrooms: editShowing.propertyDetails.bathrooms,
+				construction_age: editShowing.propertyDetails.constructionAge || '',
+				days_on_market: editShowing.propertyDetails.daysOnMarket || '',
+				financing_considered: editShowing.propertyDetails.financingConsidered || '',
+				tax_rate: editShowing.propertyDetails.taxRate || '',
+				maintenance_fee: editShowing.propertyDetails.maintenanceFee || '',
+				other_fees: editShowing.propertyDetails.otherFees || '',
+				flooded: editShowing.propertyDetails.flooded || '',
+				date: format(new Date(editShowing.date.string), 'yyyy-MM-dd'),
+				start_time: editShowing.startTime,
+				end_time: editShowing.endTime,
+			})
+		}
+	}, [editShowing])
+
 	useEffect(() => {
 		if (!placeToBeAdded) {
-			document.querySelector('#formatted_address').focus()
+			document.querySelector('#formatted_address')?.focus()
 		} else {
 			setFormData({
 				...formData,
@@ -56,7 +100,7 @@ export const NewShowingForm = () => {
 
 	useEffect(() => {
 		if (!selectedLead) {
-			document.querySelector("input[name='search']").focus()
+			document.querySelector("input[name='search']")?.focus()
 		} else {
 			setFormData({
 				...formData,
@@ -68,7 +112,7 @@ export const NewShowingForm = () => {
 
 	useEffect(() => {
 		if (!selectedAgent) {
-			document.querySelector("input[name='search']").focus()
+			document.querySelector("input[name='search']")?.focus()
 		} else {
 			setFormData({
 				...formData,
@@ -87,8 +131,6 @@ export const NewShowingForm = () => {
 		setFormData({ ...formData, [e.target.name]: e.target.value })
 	}
 
-	console.log({ placeToBeAdded })
-
 	const handleStage = e => {
 		e.preventDefault()
 		if (stage === 3) onSubmit(formData)
@@ -96,6 +138,8 @@ export const NewShowingForm = () => {
 	}
 
 	const onCancel = () => {
+		setEditShowing(null)
+		setPlaceToBeAdded(null)
 		toggleNewShowingModal()
 	}
 
@@ -111,7 +155,6 @@ export const NewShowingForm = () => {
 			'date',
 			'start_time',
 			'end_time',
-			'agent_name',
 		]
 
 		const difference = required.filter(x => !data[x] && data[x]?.legnth !== 0)
@@ -139,16 +182,38 @@ export const NewShowingForm = () => {
 
 	const onSubmit = async data => {
 		const valid = validateForm(data)
-		console.log({ valid })
-		// toggleNewShowingModal()
-		// setPlaceToBeAdded(null)
-	}
 
-	console.log({ formData, formErrors })
+		try {
+			if (valid && !editShowing) {
+				const newShowing = await createShowing({
+					data,
+					places: getAddress(placeToBeAdded),
+					placeToBeAdded,
+					agent: selectedAgent,
+					lead: selectedLead,
+				})
+				console.log({ newShowing })
+				toggleNewShowingModal()
+				setPlaceToBeAdded(null)
+			} else if (valid && editShowing) {
+				const updatedShowing = await updateShowing(editShowing.id, {
+					...editShowing,
+					agent: selectedAgent,
+				})
+				console.log({ updatedShowing })
+				toggleNewShowingModal()
+				setPlaceToBeAdded(null)
+				setEditShowing(null)
+			}
+		} catch (error) {
+			console.error('Error submitting showing: ', error.message)
+			setSubmitError({ message: error.message })
+		}
+	}
 
 	return (
 		<Container>
-			<h1>New Showing</h1>
+			<h1>{editShowing ? `Edit Showing` : 'New Showing'}</h1>
 
 			<ModifiedForm>
 				{stage === 1 ? (
@@ -156,9 +221,9 @@ export const NewShowingForm = () => {
 						<Section>
 							<h2>Lead Details</h2>
 							{!selectedLead ? (
-								<SearchProvider data={agents}>
+								<SearchProvider data={leads}>
 									<Configure
-										filters={['displayName', 'email']}
+										filters={['displayName', 'phoneNumber']}
 										display={false}
 										hitsPerPage={3}
 										displayQuery="displayName"
@@ -424,6 +489,9 @@ export const NewShowingForm = () => {
 									/>
 								</SingleFieldGroup>
 							)}
+							{submitError ? (
+								<ModifiedErrorMessage>{submitError.message}</ModifiedErrorMessage>
+							) : null}
 						</Section>
 					</>
 				) : null}
@@ -459,15 +527,25 @@ const Hit = ({ hit, setSelected, selected }) => {
 	return (
 		<UserCard isCardSelected={isCardSelected} onClick={() => handleClick(hit)}>
 			<Name>{hit.displayName}</Name>
+			{hit.phoneNumber ? <Name>{formatPhoneNumber(hit.phoneNumber, '($2) $3-$4')}</Name> : null}
 		</UserCard>
 	)
 }
+
+const ModifiedErrorMessage = styled(ErrorMessage)`
+	position: static;
+	margin-top: 1rem;
+	font-size: 0.9rem;
+`
 
 const UserCard = styled.div`
 	background: white;
 	border-radius: 4px;
 	padding: 8px;
 	margin-bottom: 8px;
+	display: flex;
+	justify-content: space-between;
+	font-size: 14px;
 
 	cursor: pointer;
 

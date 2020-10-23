@@ -1,26 +1,9 @@
 import styled from 'styled-components'
 
-import { LogoutIcon, SettingsIcon } from '../_icons'
-import { useAuth } from '../../contexts/auth/AuthProvider'
-import { useNavigation } from '../../contexts/navigation'
+export const TeamsDropdown = () => {
+	return <DropDown>
 
-export const UserDropdown = () => {
-	const { toggleSettingsModal, isUserDropdownOpen } = useNavigation()
-	const { signout } = useAuth()
-	const handleSignout = () => signout()
-
-	return (
-		<DropDown className={isUserDropdownOpen ? 'toggle' : ''}>
-			<DropDownItem onClick={handleSignout}>
-				<LogoutIcon />
-				Logout
-			</DropDownItem>
-			<DropDownItem onClick={toggleSettingsModal}>
-				<SettingsIcon />
-				Settings
-			</DropDownItem>
-		</DropDown>
-	)
+  </DropDown>
 }
 
 const DropDown = styled.ul`

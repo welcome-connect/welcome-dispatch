@@ -5,7 +5,7 @@ export const ErrorMessage = styled.label`
 	align-items: center;
 	position: absolute;
 	margin: 0.25rem 0 0;
-	border-radius: 5px;
+	border-radius: 4px;
 	font-size: 1rem;
 	font-weight: 400;
 	font-size: 14px;

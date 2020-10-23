@@ -7,6 +7,7 @@ export const types = {
 
 	SET_USER: 'SET_USER',
 	SET_USER_DOC: 'SET_USER_DOC',
+	SET_USER_TEAM: 'SET_USER_TEAM',
 
 	IS_NOT_LOGGED_IN: 'IS_NOT_LOGGED_IN',
 }
@@ -14,6 +15,7 @@ export const types = {
 export const initialState = {
 	userAuth: null,
 	userDoc: null,
+	userTeam: null,
 	isLoggedIn: false,
 	isLoading: false,
 	error: null,
@@ -38,6 +40,9 @@ export const authReducer = (state, action) => {
 
 		case types.SET_USER_DOC:
 			return { ...state, userDoc: action.payload }
+
+		case types.SET_USER_TEAM:
+			return { ...state, userTeam: action.payload }
 
 		case types.IS_NOT_LOGGED_IN:
 			return { ...state, isLoggedIn: false }

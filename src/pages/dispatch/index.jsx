@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { Layout } from '../../components/Layout'
 import { Map } from '../../components/Map'
-import { Schedule } from '../../components/Schedule'
+import { ScheduleView } from '../../components/ScheduleView'
 import { CalendarIcon } from '../../components/_icons'
 import { format } from 'date-fns'
 
@@ -9,9 +9,9 @@ const DispatchPage = () => {
 	console.log('****** RERENDERING !!!')
 
 	return (
-		<Layout title={`Dispatch - ${format(Date.now(), 'EEEE, LLLL do')}`} icon={<CalendarIcon />}>
+		<Layout title="Dispatch" icon={<CalendarIcon />}>
 			<Grid>
-				<Schedule />
+				<ScheduleView />
 				<Map />
 			</Grid>
 		</Layout>

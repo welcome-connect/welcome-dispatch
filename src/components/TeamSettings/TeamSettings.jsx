@@ -96,6 +96,7 @@ const IconWrapper = styled.span`
 
 const Teams = styled.div`
 	width: 100%;
-	height: min(200px, 85%);
+	height: max(200px, 88%);
 	margin-top: 8px;
+	overflow-y: scroll;
 `

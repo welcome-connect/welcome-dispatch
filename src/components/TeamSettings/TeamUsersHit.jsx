@@ -42,7 +42,9 @@ const ListItem = styled.div`
 	${({ hasUser }) =>
 		hasUser &&
 		css`
-			color: ${({ theme }) => theme.colors.accent};
 			cursor: initial;
+			span {
+				color: ${({ theme }) => theme.colors.text_disabled};
+			}
 		`}
 `

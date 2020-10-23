@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 
 import { auth, createUserDocument, getUserDocument } from '../../services/firebase'
 import { types, initialState, authReducer } from './state'
+import { getTeam } from '../../services/firebase/teams'
 
 // Creates context
 export const AuthContext = createContext()
@@ -76,9 +77,14 @@ export const AuthProvider = ({ children }) => {
 		}
 
 		const userDoc = await getUserDocument(user.uid)
+		let userTeam
+		if (userDoc?.teams?.length > 0) {
+			userTeam = await getTeam(userDoc?.teams[0])
+		}
 		// Setting user to auth state
 		dispatch({ type: types.SET_USER, payload: user })
 		dispatch({ type: types.SET_USER_DOC, payload: userDoc })
+		dispatch({ type: types.SET_USER_TEAM, payload: userTeam })
 		router.push('/dispatch')
 	}
 

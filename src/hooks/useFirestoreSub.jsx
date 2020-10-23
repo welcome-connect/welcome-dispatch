@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react'
 import { db } from '../services/firebase'
+import { deepEqual } from '../utils'
+import { useMemoCompare } from './useMemoCompare'
 
 export const useFirestoreSub = (path, options = {}) => {
-	const [error, setError] = useState(undefined)
+	const [error, setError] = useState(null)
 	const [status, setStatus] = useState('idle')
 	const [data, setData] = useState([])
 
 	const { where } = options
+
+	const optionsCache = useMemoCompare(options, prevOptions => {
+		return prevOptions && options && deepEqual(options, prevOptions)
+	})
 
 	const hasMultipleConditions = conditions => Array.isArray(conditions[0])
 
@@ -38,7 +44,7 @@ export const useFirestoreSub = (path, options = {}) => {
 		)
 
 		return () => unsubscribe()
-	}, [db])
+	}, [optionsCache])
 
 	return [data, status, error]
 }
