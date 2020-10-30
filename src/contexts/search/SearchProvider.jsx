@@ -1,7 +1,8 @@
-import { createContext, useContext, useEffect, useReducer } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer } from 'react'
 import { initialState, searchReducer, types } from './state'
 
 export const SearchContext = createContext()
+SearchContext.displayName = 'SearchContext'
 
 export const useSearch = () => useContext(SearchContext)
 
@@ -10,9 +11,7 @@ const search = (data, filters, query, hitsPerPage) => {
 	const columns = filters.length === 0 ? attributes : filters
 
 	const results = data?.filter(object =>
-		columns.some(
-			column => object[column].toString().toLowerCase().indexOf(query.toLowerCase()) > -1,
-		),
+		columns.some(column => object[column].toString().toLowerCase().indexOf(query.toLowerCase()) > -1),
 	)
 
 	return results.slice(0, hitsPerPage)
@@ -26,29 +25,30 @@ export const SearchProvider = ({ children, data = [] }) => {
 		setData(searchedData)
 	}, [data, state.query, state.filters, state.hitsPerPage])
 
-	const setQuery = query => dispatch({ type: types.CHANGE_QUERY, payload: query })
-	const setData = data => dispatch({ type: types.SET_DATA, payload: data })
-	const addToFilters = filters => dispatch({ type: types.ADD_TO_FILTERS, payload: filters })
-	const removeFromFilters = filters =>
-		dispatch({ type: types.REMOVE_FROM_FILTERS, payload: filters })
-	const setDisplay = bool => dispatch({ type: types.SET_DISPLAY, payload: bool })
-	const setHitsPerPage = num => dispatch({ type: types.SET_HITS_PER_PAGE, payload: num })
-	const setSelectedHit = hit => dispatch({ type: types.SET_SELECTED_HIT, payload: hit })
-	const setDisplayQuery = query => dispatch({ type: types.SET_DISPLAY_QUERY, payload: query })
+	const setQuery = useCallback(query => dispatch({ type: types.CHANGE_QUERY, payload: query }), [dispatch])
+	const setData = useCallback(data => dispatch({ type: types.SET_DATA, payload: data }), [dispatch])
+	const addToFilters = useCallback(filters => dispatch({ type: types.ADD_TO_FILTERS, payload: filters }), [dispatch])
+	const removeFromFilters = useCallback(filters => dispatch({ type: types.REMOVE_FROM_FILTERS, payload: filters }), [
+		dispatch,
+	])
+	const setDisplay = useCallback(bool => dispatch({ type: types.SET_DISPLAY, payload: bool }), [dispatch])
+	const setHitsPerPage = useCallback(num => dispatch({ type: types.SET_HITS_PER_PAGE, payload: num }), [dispatch])
+	const setSelectedHit = useCallback(hit => dispatch({ type: types.SET_SELECTED_HIT, payload: hit }), [dispatch])
+	const setDisplayQuery = useCallback(query => dispatch({ type: types.SET_DISPLAY_QUERY, payload: query }), [dispatch])
 
-	return (
-		<SearchContext.Provider
-			value={{
-				...state,
-				setQuery,
-				addToFilters,
-				removeFromFilters,
-				setDisplay,
-				setHitsPerPage,
-				setSelectedHit,
-				setDisplayQuery,
-			}}>
-			{children}
-		</SearchContext.Provider>
+	const value = useMemo(
+		() => ({
+			state,
+			setQuery,
+			addToFilters,
+			removeFromFilters,
+			setDisplay,
+			setHitsPerPage,
+			setSelectedHit,
+			setDisplayQuery,
+		}),
+		[state, addToFilters, removeFromFilters, setDisplay, setHitsPerPage, setSelectedHit, setDisplayQuery],
 	)
+
+	return <SearchContext.Provider value={value}>{children}</SearchContext.Provider>
 }

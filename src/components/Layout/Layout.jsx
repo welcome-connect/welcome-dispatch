@@ -20,7 +20,6 @@ export const Layout = ({ children, title, icon }) => {
 		toggleTeamModal,
 		toggleAgentModal,
 		toggleDispatcherModal,
-		// toggleNewShowingModal,
 		toggleNewLeadModal,
 		isSideNavExpanded,
 		isUserDropdownOpen,
@@ -39,7 +38,6 @@ export const Layout = ({ children, title, icon }) => {
 		if (isTeamModalOpen) toggleTeamModal()
 		if (isAgentModalOpen) toggleAgentModal()
 		if (isDispatcherModalOpen) toggleDispatcherModal()
-		// if (isNewShowingModalOpen) toggleNewShowingModal()
 		if (isNewLeadModalOpen) toggleNewLeadModal()
 	}
 

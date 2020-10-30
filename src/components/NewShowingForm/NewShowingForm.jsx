@@ -4,15 +4,7 @@ import { Autocomplete } from '@react-google-maps/api'
 
 import { useNavigation } from '../../contexts/navigation'
 
-import {
-	Button,
-	ErrorMessage,
-	FieldGroup,
-	Form,
-	Label,
-	SettingsInput,
-	Textarea,
-} from '../../styles/styled-components'
+import { Button, ErrorMessage, FieldGroup, Form, Label, SettingsInput, Textarea } from '../../styles/styled-components'
 import { capitalize, formatPhoneNumber, getAddress } from '../../utils'
 import { useDispatch } from '../../contexts/dispatch'
 import { SearchProvider, useSearch } from '../../contexts/search/SearchProvider'
@@ -48,8 +40,6 @@ export const NewShowingForm = () => {
 	})
 
 	const [leads] = useFirestoreSub('leads')
-
-	console.log({ editShowing })
 
 	useEffect(() => {
 		if (editShowing) {
@@ -182,24 +172,24 @@ export const NewShowingForm = () => {
 
 	const onSubmit = async data => {
 		const valid = validateForm(data)
+		const dataObj = {
+			data,
+			places: getAddress(placeToBeAdded),
+			placeToBeAdded,
+			agent: selectedAgent,
+			lead: selectedLead,
+		}
 
 		try {
 			if (valid && !editShowing) {
-				const newShowing = await createShowing({
-					data,
-					places: getAddress(placeToBeAdded),
-					placeToBeAdded,
-					agent: selectedAgent,
-					lead: selectedLead,
-				})
+				const newShowing = await createShowing(dataObj)
 				console.log({ newShowing })
 				toggleNewShowingModal()
 				setPlaceToBeAdded(null)
-			} else if (valid && editShowing) {
-				const updatedShowing = await updateShowing(editShowing.id, {
-					...editShowing,
-					agent: selectedAgent,
-				})
+			}
+
+			if (valid && editShowing) {
+				const updatedShowing = await updateShowing(editShowing.id, dataObj)
 				console.log({ updatedShowing })
 				toggleNewShowingModal()
 				setPlaceToBeAdded(null)
@@ -238,7 +228,7 @@ export const NewShowingForm = () => {
 										type="text"
 										name="lead_name"
 										value={formData.lead_name}
-										onChange={e => setSelectedLead(null)}
+										onChange={() => setSelectedLead(null)}
 										required
 									/>
 								</SingleFieldGroup>
@@ -286,23 +276,11 @@ export const NewShowingForm = () => {
 							<Col>
 								<SingleFieldGroup>
 									<Label htmlFor="price">Price</Label>
-									<SettingsInput
-										type="text"
-										name="price"
-										value={formData.price}
-										onChange={e => handleChange(e)}
-										required
-									/>
+									<SettingsInput type="text" name="price" value={formData.price} onChange={e => handleChange(e)} required />
 								</SingleFieldGroup>
 								<SingleFieldGroup>
 									<Label htmlFor="sqft">Sqft</Label>
-									<SettingsInput
-										type="text"
-										name="sqft"
-										value={formData.sqft}
-										onChange={e => handleChange(e)}
-										required
-									/>
+									<SettingsInput type="text" name="sqft" value={formData.sqft} onChange={e => handleChange(e)} required />
 								</SingleFieldGroup>
 							</Col>
 							<Col>
@@ -367,12 +345,7 @@ export const NewShowingForm = () => {
 								</SingleFieldGroup>
 								<SingleFieldGroup>
 									<Label htmlFor="tax_rate">Tax rate</Label>
-									<SettingsInput
-										type="text"
-										name="tax_rate"
-										value={formData.tax_rate}
-										onChange={e => handleChange(e)}
-									/>
+									<SettingsInput type="text" name="tax_rate" value={formData.tax_rate} onChange={e => handleChange(e)} />
 								</SingleFieldGroup>
 							</Col>
 							<Col>
@@ -387,23 +360,13 @@ export const NewShowingForm = () => {
 								</SingleFieldGroup>
 								<SingleFieldGroup>
 									<Label htmlFor="other_fees">Other fees</Label>
-									<SettingsInput
-										type="text"
-										name="other_fees"
-										value={formData.other_fees}
-										onChange={e => handleChange(e)}
-									/>
+									<SettingsInput type="text" name="other_fees" value={formData.other_fees} onChange={e => handleChange(e)} />
 								</SingleFieldGroup>
 							</Col>
 							<Col>
 								<SingleFieldGroup>
 									<Label htmlFor="flooded">Flooded</Label>
-									<SettingsInput
-										type="text"
-										name="flooded"
-										value={formData.flooded}
-										onChange={e => handleChange(e)}
-									/>
+									<SettingsInput type="text" name="flooded" value={formData.flooded} onChange={e => handleChange(e)} />
 								</SingleFieldGroup>
 							</Col>
 						</Section>
@@ -417,13 +380,7 @@ export const NewShowingForm = () => {
 
 							<SingleFieldGroup>
 								<Label htmlFor="date">Date</Label>
-								<SettingsInput
-									type="date"
-									name="date"
-									value={formData.date}
-									onChange={e => handleChange(e)}
-									required
-								/>
+								<SettingsInput type="date" name="date" value={formData.date} onChange={e => handleChange(e)} required />
 							</SingleFieldGroup>
 							<Col>
 								<SingleFieldGroup>
@@ -464,18 +421,9 @@ export const NewShowingForm = () => {
 							</SingleFieldGroup>
 							{!selectedAgent ? (
 								<SearchProvider data={agents}>
-									<Configure
-										filters={['displayName', 'email']}
-										display={false}
-										hitsPerPage={3}
-										displayQuery="displayName"
-									/>
+									<Configure filters={['displayName', 'email']} display={false} hitsPerPage={3} displayQuery="displayName" />
 									<SearchBox label="Agent" />
-									<Hits
-										hitComponent={Hit}
-										setSelected={setSelectedAgent}
-										selected={selectedAgent}
-									/>
+									<Hits hitComponent={Hit} setSelected={setSelectedAgent} selected={selectedAgent} />
 								</SearchProvider>
 							) : (
 								<SingleFieldGroup>
@@ -489,9 +437,7 @@ export const NewShowingForm = () => {
 									/>
 								</SingleFieldGroup>
 							)}
-							{submitError ? (
-								<ModifiedErrorMessage>{submitError.message}</ModifiedErrorMessage>
-							) : null}
+							{submitError ? <ModifiedErrorMessage>{submitError.message}</ModifiedErrorMessage> : null}
 						</Section>
 					</>
 				) : null}

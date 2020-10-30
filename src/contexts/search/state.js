@@ -21,7 +21,6 @@ export const initialState = {
 }
 
 export const searchReducer = (state, action) => {
-	console.log({ state, action })
 	const currFilters = state.filters
 
 	switch (action.type) {

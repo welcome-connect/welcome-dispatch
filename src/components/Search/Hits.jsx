@@ -1,9 +1,10 @@
-import { useEffect } from 'react'
 import styled from 'styled-components'
 import { useSearch } from '../../contexts/search/SearchProvider'
 
 export const Hits = ({ hitComponent: HitComponent, ...props }) => {
-	const { data, displayTrigger } = useSearch()
+	const {
+		state: { data, displayTrigger },
+	} = useSearch()
 
 	return (
 		<List>

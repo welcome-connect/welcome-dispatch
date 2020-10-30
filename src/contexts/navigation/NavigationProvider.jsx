@@ -1,39 +1,50 @@
-import { createContext, useReducer, useContext } from 'react'
+import { createContext, useReducer, useContext, useCallback, useMemo } from 'react'
 import { types, navigationReducer, initialState } from './state'
 
 export const NavigationContext = createContext()
+NavigationContext.displayName = 'NavigationContext'
 
 export const useNavigation = () => useContext(NavigationContext)
 
 export const NavigationProvider = ({ children }) => {
 	const [state, dispatch] = useReducer(navigationReducer, initialState)
 
-	const closeSideNav = () => dispatch({ type: types.CLOSE_SIDENAV })
-	const openSideNav = () => dispatch({ type: types.EXPAND_SIDENAV })
+	const closeSideNav = useCallback(() => dispatch({ type: types.CLOSE_SIDENAV }), [dispatch])
+	const openSideNav = useCallback(() => dispatch({ type: types.EXPAND_SIDENAV }), [dispatch])
 
-	const toggleUserDropdownMenu = () => dispatch({ type: types.TOGGLE_USERDROPDOWN_MENU })
-	const toggleSettingsModal = () => dispatch({ type: types.TOGGLE_SETTINGS_MODAL })
-	const toggleTeamModal = () => dispatch({ type: types.TOGGLE_TEAM_MODAL })
-	const toggleAgentModal = () => dispatch({ type: types.TOGGLE_AGENT_MODAL })
-	const toggleDispatcherModal = () => dispatch({ type: types.TOGGLE_DISPATCHER_MODAL })
-	const toggleNewShowingModal = () => dispatch({ type: types.TOGGLE_NEW_SHOWING_MODAL })
-	const toggleNewLeadModal = () => dispatch({ type: types.TOGGLE_NEW_LEAD_MODAL })
+	const toggleUserDropdownMenu = useCallback(() => dispatch({ type: types.TOGGLE_USERDROPDOWN_MENU }), [dispatch])
+	const toggleSettingsModal = useCallback(() => dispatch({ type: types.TOGGLE_SETTINGS_MODAL }), [dispatch])
+	const toggleTeamModal = useCallback(() => dispatch({ type: types.TOGGLE_TEAM_MODAL }), [dispatch])
+	const toggleAgentModal = useCallback(() => dispatch({ type: types.TOGGLE_AGENT_MODAL }), [dispatch])
+	const toggleDispatcherModal = useCallback(() => dispatch({ type: types.TOGGLE_DISPATCHER_MODAL }), [dispatch])
+	const toggleNewShowingModal = useCallback(() => dispatch({ type: types.TOGGLE_NEW_SHOWING_MODAL }), [dispatch])
+	const toggleNewLeadModal = useCallback(() => dispatch({ type: types.TOGGLE_NEW_LEAD_MODAL }), [dispatch])
 
-	return (
-		<NavigationContext.Provider
-			value={{
-				...state,
-				closeSideNav,
-				openSideNav,
-				toggleUserDropdownMenu,
-				toggleSettingsModal,
-				toggleTeamModal,
-				toggleAgentModal,
-				toggleDispatcherModal,
-				toggleNewShowingModal,
-				toggleNewLeadModal,
-			}}>
-			{children}
-		</NavigationContext.Provider>
-	)
+	const value = useMemo(() => {
+		return {
+			...state,
+			closeSideNav,
+			openSideNav,
+			toggleUserDropdownMenu,
+			toggleSettingsModal,
+			toggleTeamModal,
+			toggleAgentModal,
+			toggleDispatcherModal,
+			toggleNewShowingModal,
+			toggleNewLeadModal,
+		}
+	}, [
+		state,
+		closeSideNav,
+		openSideNav,
+		toggleUserDropdownMenu,
+		toggleSettingsModal,
+		toggleTeamModal,
+		toggleAgentModal,
+		toggleDispatcherModal,
+		toggleNewShowingModal,
+		toggleNewLeadModal,
+	])
+
+	return <NavigationContext.Provider value={value}>{children}</NavigationContext.Provider>
 }
