@@ -1,6 +1,7 @@
 import { format, getUnixTime } from 'date-fns'
 import { auth, db, firebase } from './index'
-import { checkAgentSchedule } from './schedules'
+import { handleOutingCreation } from './outings'
+import { checkSchedule, createSchedule, updateScheduleOutings } from './schedules'
 
 // CREATE SHOWING
 export const createShowing = async showing => {
@@ -11,7 +12,7 @@ export const createShowing = async showing => {
 	if (!showing.id) showingRef = db.collection('showings').doc()
 	else showingRef = db.collection('showings').doc(showing.id)
 
-	const showingSnapshot = showingRef.get()
+	const showingSnapshot = await showingRef.get()
 	const showingDate = new Date(`${data.date} ${data.start_time}`)
 
 	const partialShowing = {
@@ -19,21 +20,18 @@ export const createShowing = async showing => {
 		date: { seconds: getUnixTime(showingDate), string: format(showingDate, 'MM/dd/yyyy') },
 		startTime: data.start_time,
 		endTime: data.end_time,
+		leadId: lead.id,
 	}
 
-	if (agent) {
-		const isAgentAvailable = await checkAgentSchedule(agent.id, partialShowing)
-		console.log({ isAgentAvailable })
-		if (!isAgentAvailable) throw new Error('Agent is unavailable at this time')
-	}
+	const { isAvailable, schedule } = await checkSchedule(agent?.id, partialShowing)
+	console.log({ isAvailable, schedule })
+	if (!isAvailable) throw new Error('Agent is unavailable at this time')
 
 	if (!showingSnapshot.exists) {
 		const createdAt = firebase.firestore.FieldValue.serverTimestamp()
 		const showingModel = {
 			id: showingRef.id,
-			agent: agent
-				? { id: agent.id, displayName: agent.displayName, phoneNumber: agent.phoneNumber }
-				: 'unassigned',
+			agent: agent ? { id: agent.id, displayName: agent.displayName, phoneNumber: agent.phoneNumber } : 'unassigned',
 			lead: {
 				id: lead.id,
 				displayName: lead.displayName,
@@ -64,11 +62,24 @@ export const createShowing = async showing => {
 			date: { seconds: getUnixTime(showingDate), string: format(showingDate, 'MM/dd/yyyy') },
 			startTime: data.start_time,
 			endTime: data.end_time,
+			status: 'pending',
 		}
 
 		try {
 			await showingRef.set(showingModel)
-			return getShowing(showingRef.id)
+			const submitedShowing = await getShowing(showingRef.id)
+			const outing = await handleOutingCreation(submitedShowing)
+			await updateShowing(showingRef.id, { ...submitedShowing, outingId: outing.id })
+
+			if (!schedule && agent) {
+				const newSchedule = await createSchedule(agent.id, outing)
+				return { showing: submitedShowing, outing, schedule: newSchedule }
+			}
+
+			if (schedule && agent) {
+				const updatedSchedule = await updateScheduleOutings(schedule.id, outing)
+				return { showing: submitedShowing, outing, schedule: updatedSchedule }
+			}
 		} catch (error) {
 			console.error('Error creating showing: ', error.message)
 		}
@@ -90,27 +101,27 @@ export const getShowing = async id => {
 }
 
 // EDIT SHOWING
-export const updateShowing = async (id, data) => {
+export const updateShowing = async (id, data, checkAvail = false) => {
 	const showingDate = new Date(data.date.string)
 	const partialShowing = {
 		id,
 		date: { seconds: getUnixTime(showingDate), string: format(showingDate, 'MM/dd/yyyy') },
 		startTime: data.startTime,
 		endTime: data.endTime,
+		leadId: data.lead.id,
 	}
 
-	if (data.agent) {
-		const isAgentAvailable = await checkAgentSchedule(data.agent.id, partialShowing)
-		console.log({ isAgentAvailable })
-		if (!isAgentAvailable) throw new Error('Agent is unavailable at this time')
+	if (data.agent && checkAvail) {
+		const { isAvailable } = await checkSchedule(data.agent.id, partialShowing)
+		if (!isAvailable) throw new Error('Agent is unavailable at this time')
 	}
 
-	console.log('DATA TO UPDATE', data)
 	try {
 		await db
 			.collection('showings')
 			.doc(id)
 			.update({ ...data })
+		return getShowing(id)
 	} catch (error) {
 		console.error('Error updating showing: ', error.message)
 	}

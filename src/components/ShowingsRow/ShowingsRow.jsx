@@ -3,27 +3,40 @@ import styled from 'styled-components'
 import { useDispatch } from '../../contexts/dispatch'
 import { useFirestoreSub } from '../../hooks'
 import { getColumnSpan } from '../../utils'
+import { ShowingsWindow } from '../ShowingsWindow'
 
 export const ShowingsRow = ({ agent }) => {
-	const { observedDate } = useDispatch()
-	const [showings] = useFirestoreSub('showings', {
+	const { observedDate, selectOuting, selectedOuting } = useDispatch()
+	const [outings] = useFirestoreSub('outings', {
 		where: [
 			['agent.id', '==', agent.id],
 			['date.string', '==', format(observedDate, 'MM/dd/yyyy')],
 		],
 	})
 
-	showings.sort(
-		(a, b) => Number(a.startTime.split(':').join('')) - Number(b.startTime.split(':').join('')),
-	)
+	outings.sort((a, b) => Number(a.startFirstShowing.split(':').join('')) - Number(b.startFirstShowing.split(':').join('')))
 
+	const toggleShowingWindow = outing => {
+		if (selectedOuting?.id && outing.id === selectedOuting.id) {
+			selectOuting(null)
+		} else {
+			selectOuting(outing)
+		}
+	}
 	return (
 		<Container>
-			{showings.map(showing => (
-				<ShowingSlot key={showing.id} startTime={showing.startTime} endTime={showing.endTime}>
-					<span>
-						{showing.startTime} - {showing.endTime}
-					</span>
+			{outings.map(outing => (
+				<ShowingSlot key={outing.id} startTime={outing.startFirstShowing} endTime={outing.endLastShowing}>
+					<ShowingSlotInner onClick={() => toggleShowingWindow(outing)}>
+						<span>{`${outing.showings.length} Showings`}</span>
+					</ShowingSlotInner>
+					{selectedOuting?.id === outing?.id ? (
+						<ShowingsWindow
+							showings={selectedOuting.showings}
+							toggleShowingWindow={toggleShowingWindow}
+							outing={outing}
+						/>
+					) : null}
 				</ShowingSlot>
 			))}
 		</Container>
@@ -35,13 +48,11 @@ const ShowingSlot = styled.div`
 
 	background: ${({ theme }) => theme.colors.border_darker};
 	height: 48px;
-	padding: 8px 12px;
+
 	border-radius: 4px;
 
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	/* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.09); */
+	position: relative;
+	cursor: pointer;
 
 	span {
 		display: block;
@@ -59,5 +70,15 @@ const Container = styled.div`
 	align-items: center;
 	width: fit-content;
 
-	border-bottom: 1px solid rgba(203,213,224,0.4);
+	border-bottom: 1px solid rgba(203, 213, 224, 0.4);
+`
+
+const ShowingSlotInner = styled.div`
+	width: 100%;
+	height: 100%;
+
+	padding: 8px 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 `

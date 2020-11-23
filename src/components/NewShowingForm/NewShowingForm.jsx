@@ -276,11 +276,23 @@ export const NewShowingForm = () => {
 							<Col>
 								<SingleFieldGroup>
 									<Label htmlFor="price">Price</Label>
-									<SettingsInput type="text" name="price" value={formData.price} onChange={e => handleChange(e)} required />
+									<SettingsInput
+										type="text"
+										name="price"
+										value={formData.price}
+										onChange={e => handleChange(e)}
+										required
+									/>
 								</SingleFieldGroup>
 								<SingleFieldGroup>
 									<Label htmlFor="sqft">Sqft</Label>
-									<SettingsInput type="text" name="sqft" value={formData.sqft} onChange={e => handleChange(e)} required />
+									<SettingsInput
+										type="text"
+										name="sqft"
+										value={formData.sqft}
+										onChange={e => handleChange(e)}
+										required
+									/>
 								</SingleFieldGroup>
 							</Col>
 							<Col>
@@ -345,7 +357,12 @@ export const NewShowingForm = () => {
 								</SingleFieldGroup>
 								<SingleFieldGroup>
 									<Label htmlFor="tax_rate">Tax rate</Label>
-									<SettingsInput type="text" name="tax_rate" value={formData.tax_rate} onChange={e => handleChange(e)} />
+									<SettingsInput
+										type="text"
+										name="tax_rate"
+										value={formData.tax_rate}
+										onChange={e => handleChange(e)}
+									/>
 								</SingleFieldGroup>
 							</Col>
 							<Col>
@@ -360,13 +377,23 @@ export const NewShowingForm = () => {
 								</SingleFieldGroup>
 								<SingleFieldGroup>
 									<Label htmlFor="other_fees">Other fees</Label>
-									<SettingsInput type="text" name="other_fees" value={formData.other_fees} onChange={e => handleChange(e)} />
+									<SettingsInput
+										type="text"
+										name="other_fees"
+										value={formData.other_fees}
+										onChange={e => handleChange(e)}
+									/>
 								</SingleFieldGroup>
 							</Col>
 							<Col>
 								<SingleFieldGroup>
 									<Label htmlFor="flooded">Flooded</Label>
-									<SettingsInput type="text" name="flooded" value={formData.flooded} onChange={e => handleChange(e)} />
+									<SettingsInput
+										type="text"
+										name="flooded"
+										value={formData.flooded}
+										onChange={e => handleChange(e)}
+									/>
 								</SingleFieldGroup>
 							</Col>
 						</Section>
@@ -380,7 +407,13 @@ export const NewShowingForm = () => {
 
 							<SingleFieldGroup>
 								<Label htmlFor="date">Date</Label>
-								<SettingsInput type="date" name="date" value={formData.date} onChange={e => handleChange(e)} required />
+								<SettingsInput
+									type="date"
+									name="date"
+									value={formData.date}
+									onChange={e => handleChange(e)}
+									required
+								/>
 							</SingleFieldGroup>
 							<Col>
 								<SingleFieldGroup>
@@ -421,7 +454,12 @@ export const NewShowingForm = () => {
 							</SingleFieldGroup>
 							{!selectedAgent ? (
 								<SearchProvider data={agents}>
-									<Configure filters={['displayName', 'email']} display={false} hitsPerPage={3} displayQuery="displayName" />
+									<Configure
+										filters={['displayName', 'email']}
+										display={false}
+										hitsPerPage={3}
+										displayQuery="displayName"
+									/>
 									<SearchBox label="Agent" />
 									<Hits hitComponent={Hit} setSelected={setSelectedAgent} selected={selectedAgent} />
 								</SearchProvider>

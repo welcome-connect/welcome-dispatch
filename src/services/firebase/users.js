@@ -45,7 +45,6 @@ export const getUserDocument = async uid => {
 
 // UPDATE USER
 export const updateUserDocument = async (uid, data) => {
-	console.log({ uid, data })
 	try {
 		await db.collection('users').doc(uid).update(data)
 	} catch (error) {

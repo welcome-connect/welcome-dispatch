@@ -26,9 +26,7 @@ export const useUpdateUser = () => {
 		}
 
 		try {
-			console.log('UPDATING USER')
 			updatedUser = await updateUserDocument(user.id, changes)
-			console.log({ updatedUser })
 			setLoading(false)
 			setSuccess(true)
 			return updatedUser

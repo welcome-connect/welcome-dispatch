@@ -6,8 +6,6 @@ export const createLead = async lead => {
 
 	const leadExists = await getLeadByPhoneNumber(lead.phoneNumber)
 
-	console.log({ leadExists })
-
 	if (!leadExists) {
 		const leadRef = db.collection('leads').doc()
 		const leadSnapshot = await leadRef.get()

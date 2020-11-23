@@ -3,7 +3,6 @@ import { getUserDocument } from './users'
 
 // CREATE TEAM
 export const createTeam = async team => {
-	console.log({ team })
 	if (!team) throw new Error('Team information required')
 
 	let teamRef
@@ -11,10 +10,8 @@ export const createTeam = async team => {
 	else teamRef = db.collection('teams').doc()
 
 	const teamSnapshot = await teamRef.get()
-	console.log({ teamSnapshot: teamSnapshot.data(), teamRef })
 
 	if (!teamSnapshot.exists) {
-		console.log('TEAM DOESNT EXISTS', teamSnapshot.exists)
 		const createdAt = firebase.firestore.FieldValue.serverTimestamp()
 		const teamModel = { id: teamRef.id, createdAt, agent_count: 0, dispatcher_count: 0, ...team }
 
@@ -62,7 +59,6 @@ export const addUserToTeam = async (teamId, userId) => {
 	if (!teamId || !userId) return new Error('Team id and agent id are required')
 
 	const userRef = db.collection('users').doc(userId)
-	console.log({ userRef })
 
 	try {
 		await userRef.update({ teams: firebase.firestore.FieldValue.arrayUnion(teamId) })

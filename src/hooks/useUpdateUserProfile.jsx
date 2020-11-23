@@ -11,7 +11,6 @@ export const useUpdateUserProfile = () => {
 	const { setUserDoc, userAuth, userDoc } = useAuth()
 
 	const updateUserProfile = async ({ displayName, email, phoneNumber }) => {
-		console.log({ displayName, email, phoneNumber })
 		setLoading(true)
 		setSuccess(false)
 		setHasNoChanges(false)

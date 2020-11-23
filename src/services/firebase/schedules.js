@@ -1,15 +1,24 @@
 import { db, firebase } from '.'
+import { stringTimeComparison } from '../../utils'
+import { getOuting } from './outings'
 
-export const createSchedule = async (agentId, showing) => {
-	if (!showing) throw new Error('Showing required')
-	const { date, startTime, endTime, id: showingId } = showing
+export const createSchedule = async (agentId, outing) => {
+	if (!outing) throw new Error('Showing required')
+
+	const partialOuting = {
+		id: outing.id,
+		endLastShowing: outing.endLastShowing,
+		startFirstShowing: outing.startFirstShowing,
+		agentId: outing.agent?.id || 'unassigned',
+		leadId: outing.lead.id,
+	}
 
 	const scheduleRef = db.collection('schedules').doc()
 	const scheduleSnap = await scheduleRef.get()
 	const scheduleModel = {
 		id: scheduleRef.id,
-		date,
-		showings: firebase.firestore.FieldValue.arrayUnion(showing),
+		date: outing.date,
+		outings: firebase.firestore.FieldValue.arrayUnion(partialOuting),
 		agentId,
 	}
 
@@ -25,44 +34,49 @@ export const createSchedule = async (agentId, showing) => {
 	}
 }
 
-export const checkAgentSchedule = async (agentId, showing) => {
+export const checkSchedule = async (agentId = null, showing) => {
 	const { date, startTime, endTime, id: showingId } = showing
-	let isAvailable
+	let isAvailable = true
+	if (!agentId) return { isAvailable, schedule: null }
 
-	const scheduleRef = db
-		.collection('schedules')
-		.where('agentId', '==', agentId)
-		.where('date.string', '==', date.string)
+	const schedulesRef = db.collection('schedules').where('agentId', '==', agentId).where('date.string', '==', date.string)
+	const schedulesSnapshot = await schedulesRef.get()
+	const isEmpty = schedulesSnapshot.empty
+	const schedule = schedulesSnapshot.docs[0]?.data() || null
 
-	const scheduleSnapshot = await scheduleRef.get()
-	const isEmpty = scheduleSnapshot.empty
+	if (!isEmpty) {
+		const outings = schedule.outings
 
-	if (isEmpty) {
-		await createSchedule(agentId, { showingId, date, startTime, endTime })
-		isAvailable = true
-	} else {
-		const currShowings = scheduleSnapshot.docs[0].data().showings
-		currShowings.forEach(showing => {
-			console.log({ showing, startTime, endTime })
-			if (showingId !== showing.id) {
-				if (startTime >= showing.startTime && startTime <= showing.endTime) {
-					console.log('Showing is in between an existing showing...')
+		for (let i = 0; i < outings.length; i++) {
+			const { id, leadId } = outings[i]
+			const outing = await getOuting(id)
+
+			if (outing.showings.indexOf(showingId) > -1 || leadId !== showing.leadId) {
+				if (
+					stringTimeComparison(startTime, outing.startFirstShowing) >= 0 &&
+					stringTimeComparison(startTime, outing.endLastShowing) <= 0
+				) {
 					isAvailable = false
-				} else if (endTime >= showing.startTime && endTime <= showing.endTime) {
-					console.log('endTime >= showing.startTime && endTime <= showing.endTime')
+				}
+
+				if (
+					stringTimeComparison(endTime, outing.startFirstShowing) >= 0 &&
+					stringTimeComparison(endTime, outing.endLastShowing) <= 0
+				) {
 					isAvailable = false
-				} else if (startTime <= showing.startTime && endTime >= showing.endTime) {
-					console.log('startTime <= showing.startTime && endTime >= showing.endTime')
+				}
+
+				if (
+					stringTimeComparison(startTime, outing.startFirstShowing) <= 0 &&
+					stringTimeComparison(endTime, outing.endLastShowing) >= 0
+				) {
 					isAvailable = false
-				} else {
-					console.log('Agent is available')
-					isAvailable = true
 				}
 			}
-		})
+		}
 	}
 
-	return isAvailable
+	return { isAvailable, schedule }
 }
 
 export const getSchedule = async id => {
@@ -73,5 +87,37 @@ export const getSchedule = async id => {
 		return { id, ...scheduleDocument.data() }
 	} catch (error) {
 		console.error('Error fetching schedule: ', error.message)
+	}
+}
+
+export const updateScheduleOutings = async (id, outing) => {
+	if (!id) throw new Error('Schedule id required')
+
+	const partialOuting = {
+		id: outing.id,
+		endLastShowing: outing.endLastShowing,
+		startFirstShowing: outing.startFirstShowing,
+		agentId: outing.agent?.id || 'unassigned',
+		leadId: outing.lead.id,
+	}
+
+	const scheduleSnapshot = await db.collection('schedules').doc(id).get()
+	const scheduleDoc = scheduleSnapshot.data()
+	const [hasOuting] = scheduleDoc.outings.filter(elem => elem.id === outing.id)
+
+	const scheduleModel = {
+		id,
+		date: outing.date,
+		outings: firebase.firestore.FieldValue.arrayUnion(partialOuting),
+		agentId: outing.agent.id,
+	}
+
+	try {
+		if (!hasOuting) {
+			await db.collection('schedules').doc(id).update(scheduleModel)
+		}
+		return getSchedule(id)
+	} catch (error) {
+		console.error('Error updating team: ', error.message)
 	}
 }

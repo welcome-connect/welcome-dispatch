@@ -7,19 +7,36 @@ import { useNavigation } from '../../contexts/navigation'
 import { useFirestoreSub } from '../../hooks'
 
 import { Button } from '../../styles/styled-components'
+import { getColumnSpan } from '../../utils'
 import { ShowingsRow } from '../ShowingsRow'
 import { LeftCircleArrow, RightCircleArrow } from '../_icons'
 
+const times = [
+	'09:00',
+	'09:30',
+	'10:00',
+	'10:30',
+	'11:00',
+	'11:30',
+	'12:00',
+	'12:30',
+	'13:00',
+	'13:30',
+	'14:00',
+	'14:30',
+	'15:00',
+	'15:30',
+	'16:00',
+	'16:30',
+	'17:00',
+	'17:30',
+	'18:00',
+	'18:30',
+]
+
 export const ScheduleView = () => {
 	const { toggleNewLeadModal } = useNavigation()
-	const {
-		selectedTeam,
-		setSelectTeam,
-		teamAgents,
-		observedDate,
-		addObservedDays,
-		subObservedDays,
-	} = useDispatch()
+	const { selectedTeam, setSelectTeam, teamAgents, observedDate, addObservedDays, subObservedDays } = useDispatch()
 	const { userDoc } = useAuth()
 
 	const [teams] = useFirestoreSub('teams', {
@@ -53,6 +70,9 @@ export const ScheduleView = () => {
 			</TopRow>
 			<Grid>
 				<Agents>
+					<div className="agent-container">
+						<div className="agent-row"></div>
+					</div>
 					{teamAgents.map(agent => {
 						return (
 							<div className="agent-container" key={agent.id}>
@@ -63,6 +83,17 @@ export const ScheduleView = () => {
 					})}
 				</Agents>
 				<ShowingsGrid>
+					<TimeLine>
+						{times.map(time => {
+							return (
+								<TimeContainer startTime={time} key={time}>
+									<TimeSlot>
+										<div className="time">{time}</div>
+									</TimeSlot>
+								</TimeContainer>
+							)
+						})}
+					</TimeLine>
 					{teamAgents.map(agent => (
 						<ShowingsRow agent={agent} key={agent.id} />
 					))}
@@ -165,8 +196,41 @@ const Agents = styled.div`
 `
 const ShowingsGrid = styled.div`
 	width: 100%;
-	overflow-x: scroll;
+	overflow-x: visible;
 	overflow-y: hidden;
 	padding-bottom: 100px;
 	padding-top: 8px;
+`
+const TimeLine = styled.div`
+	display: grid;
+	grid-template-columns: repeat(120, 24px);
+	height: 56px;
+	align-items: center;
+	width: fit-content;
+
+	border-bottom: 1px solid rgba(203, 213, 224, 0.4);
+`
+
+const TimeContainer = styled.div`
+	position: relative;
+	height: 100%;
+	grid-column: ${({ startTime }) => getColumnSpan(startTime)};
+`
+
+const TimeSlot = styled.div`
+	position: absolute;
+	font-size: 0.9rem;
+	border-left: 1px solid ${({ theme }) => theme.colors.text_light};
+	color: ${({ theme }) => theme.colors.primary};
+	font-weight: 500;
+	padding-left: 4px;
+	height: 24px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	/* left: -100%; */
+	top: 0;
+	/* transform: translateY(-50%);  */
+
+	/* text-align: center; */
 `
