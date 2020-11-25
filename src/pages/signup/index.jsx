@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import Link from 'next/link'
 
-import { Logo } from '../../components/_icons'
+import { Logo } from '../../components/icons'
 import { SignUpForm } from '../../components/SignUpForm'
 
 const SignUpPage = () => (

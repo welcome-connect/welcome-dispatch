@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import Link from 'next/link'
 
 import { SignInForm } from '../components/SignInForm'
-import { Logo } from '../components/_icons'
+import { Logo } from '../components/icons'
 
 const Home = () => {
 	return (
