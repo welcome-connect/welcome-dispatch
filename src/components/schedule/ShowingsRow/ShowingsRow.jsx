@@ -12,13 +12,14 @@ export const ShowingsRow = ({ agent }) => {
 	const { observedDate, selectOuting, selectedOuting } = useDispatch()
 	const [outings] = useFirestoreSub('outings', {
 		where: [
-			['agent.id', '==', agent.id],
+			['agentId', '==', agent.id],
 			['date.string', '==', format(observedDate, 'MM/dd/yyyy')],
 		],
 	})
 
 	outings.sort((a, b) => Number(a.startFirstShowing.split(':').join('')) - Number(b.startFirstShowing.split(':').join('')))
 
+	// console.log({ outings })
 	const toggleShowingWindow = outing => {
 		if (selectedOuting?.id && outing.id === selectedOuting.id) {
 			selectOuting(null)

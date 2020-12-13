@@ -33,6 +33,7 @@ export const useFirestoreSub = (path, options = {}) => {
 		const unsubscribe = ref.onSnapshot(
 			snapshot => {
 				const data = []
+				// console.log(path, { ref, where, snapshot: snapshot.docs })
 				snapshot.forEach(doc => data.push(doc.data()))
 				setStatus('success')
 				setData(data)

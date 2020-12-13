@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 import Link from 'next/link'
 
-import { SignInForm } from '../components/SignInForm'
-import { Logo } from '../components/icons'
+import { SignInForm } from '@components/auth'
+import { Logo } from '@components/icons'
 
 const Home = () => {
 	return (

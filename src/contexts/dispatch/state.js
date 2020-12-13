@@ -5,6 +5,8 @@ export const types = {
 	SET_SELECTED_TEAM: 'SET_SELECTED_TEAM',
 	SET_TEAM_AGENTS: 'SET_TEAM_AGENTS',
 	SET_EDIT_SHOWING: 'SET_EDIT_SHOWING',
+	SET_EDIT_SHOWING_LEAD: 'SET_EDIT_SHOWING_LEAD',
+	SET_EDIT_SHOWING_AGENT: 'SET_EDIT_SHOWING_AGENT',
 	ADD_TO_OBSERVED_DATE: 'ADD_TO_OBSERVED_DATE',
 	SUB_TO_OBSERVED_DATE: 'SUB_TO_OBSERVED_DATE',
 	SELECT_SHOWING: 'SELECT_SHOWING',
@@ -16,6 +18,8 @@ export const initialState = {
 	selectedTeam: '',
 	teamAgents: [],
 	editShowing: null,
+	editShowingLead: null,
+	editShowingAgent: null,
 	observedDate: Date.now(),
 	selectedOuting: null,
 	selectedShowing: null,
@@ -34,6 +38,12 @@ export const dispatchReducer = (state, action) => {
 
 		case types.SET_EDIT_SHOWING:
 			return { ...state, editShowing: action.payload }
+
+		case types.SET_EDIT_SHOWING_LEAD:
+			return { ...state, editShowingLead: action.payload }
+
+		case types.SET_EDIT_SHOWING_AGENT:
+			return { ...state, editShowingAgent: action.payload }
 
 		case types.ADD_TO_OBSERVED_DATE:
 			return { ...state, observedDate: addDays(state.observedDate, action.payload) }

@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 import Link from 'next/link'
 
-import { Logo } from '../../components/icons'
-import { SignUpForm } from '../../components/SignUpForm'
+import { Logo } from '@components/icons'
+import { SignUpForm } from '@components/auth'
 
 const SignUpPage = () => (
 	<PageLayout>

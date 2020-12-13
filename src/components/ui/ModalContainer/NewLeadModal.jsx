@@ -15,7 +15,7 @@ const Container = styled.div`
 	height: fit-content;
 	width: 400px;
 	border-radius: 8px;
-	padding: 16px 0;
+	padding: 24px 8px;
 
 	background-color: ${({ theme }) => theme.colors.bg.primary};
 `

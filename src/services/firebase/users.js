@@ -1,4 +1,5 @@
 import { auth, db, functions, firebase } from './index'
+import { getTeam } from './teams'
 
 // CREATE OR FIND USER
 export const createUserDocument = async (newUser, data) => {
@@ -90,4 +91,13 @@ export const changePhoneNumber = async (user, newPhoneNumber) => {
 
 	const updated_user = await getUserDocument(user.uid)
 	return updated_user
+}
+
+// GET USER TEAMS DOCUMENTS
+export const getUserTeams = async id => {
+	const user = await getUserDocument(id)
+	const requests = user.teams.map(teamId => getTeam(teamId))
+
+	const teams = await Promise.all(requests)
+	return teams
 }

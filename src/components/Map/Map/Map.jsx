@@ -9,6 +9,7 @@ import { useDispatch } from '@contexts/dispatch'
 import { useNavigation } from '@contexts/navigation'
 import { MarkerSet } from './MarkerSet'
 import { useFirestoreSub } from '@hooks/index'
+import { InfoWindowContent } from './InfoWindowContent'
 
 const libraries = ['places']
 const mapContainerStyle = {
@@ -25,8 +26,8 @@ const options = {
 export const Map = () => {
 	const mapRef = useRef()
 
-	const { placeToBeAdded, teamAgents, setEditShowing, editShowing, observedDate, selectedTeam } = useDispatch()
-	const { toggleNewShowingModal } = useNavigation()
+	const { placeToBeAdded, teamAgents, editShowing, observedDate, selectedTeam, selectShowing } = useDispatch()
+	const { toggleShowingModal, toggleNewShowingModal } = useNavigation()
 
 	const [hoveredShowing, setHoveredShowing] = useState(null)
 
@@ -46,9 +47,9 @@ export const Map = () => {
 		}
 	}, [])
 
-	const hanleEditShowing = showing => {
-		setEditShowing(showing)
-		toggleNewShowingModal()
+	const handleMarkerClick = showing => {
+		selectShowing(showing)
+		toggleShowingModal()
 	}
 
 	useEffect(() => {
@@ -101,7 +102,7 @@ export const Map = () => {
 					<MarkerSet
 						key={agent.id}
 						agent={agent}
-						hanleEditShowing={hanleEditShowing}
+						handleMarkerClick={handleMarkerClick}
 						setHoveredShowing={setHoveredShowing}
 					/>
 				))}
@@ -114,7 +115,7 @@ export const Map = () => {
 							lng: showing.places.coords.lng,
 						}}
 						icon="./icons/unassignedPin.svg"
-						onClick={() => hanleEditShowing(showing)}
+						onClick={() => handleMarkerClick(showing)}
 						onMouseOver={() => setHoveredShowing(showing)}
 						onMouseOut={() => setHoveredShowing(null)}
 					/>
@@ -127,16 +128,7 @@ export const Map = () => {
 							lng: hoveredShowing.places.coords.lng,
 						}}
 						options={{ pixelOffset: { height: -40, width: 0 } }}>
-						<InfoWindowContent>
-							<h3>{hoveredShowing.propertyDetails.address.split(',').slice(0, 3).concat()}</h3>
-							<p>
-								{hoveredShowing.agent !== 'unassigned'
-									? `Assigned to ${hoveredShowing.agent.displayName}`
-									: 'Unassigned'}
-							</p>
-							<p>{`Starts at ${hoveredShowing.startTime} until ${hoveredShowing.endTime}`}</p>
-							<p>{`Lead: ${hoveredShowing.lead.displayName}`}</p>
-						</InfoWindowContent>
+						<InfoWindowContent showing={hoveredShowing} />
 					</InfoWindow>
 				) : null}
 			</GoogleMap>
@@ -146,10 +138,4 @@ export const Map = () => {
 
 const Container = styled.div`
 	border-left: 1px solid ${({ theme }) => theme.colors.border_darker};
-`
-
-const InfoWindowContent = styled.div`
-	p {
-		font-size: 0.9rem;
-	}
 `

@@ -15,7 +15,7 @@ const Container = styled.div`
 	height: min(700px, 90%);
 	width: 700px;
 	border-radius: 8px;
-	padding: 16px 0;
+	padding: 24px 8px;
 
 	background-color: ${({ theme }) => theme.colors.bg.primary};
 `

@@ -1,15 +1,22 @@
 import styled from 'styled-components'
 
 import { useFirestoreSub } from '@hooks/index'
+import { useDispatch } from '@contexts/dispatch'
+import { useNavigation } from '@contexts/navigation'
+
 import { capitalize } from '@utils/index'
 
 export const ShowingCard = ({ showingId, toggleShowingWindow }) => {
+	const { selectShowing } = useDispatch()
+	const { toggleShowingModal } = useNavigation()
 	const [[showing]] = useFirestoreSub('showings', {
 		where: ['id', '==', showingId],
 	})
 
 	const handleClick = showing => {
 		console.log(showing)
+		selectShowing(showing)
+		toggleShowingModal()
 		toggleShowingWindow(showing.outingId)
 	}
 

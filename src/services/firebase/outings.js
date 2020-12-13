@@ -1,68 +1,63 @@
 import { addMinsToStringTime, stringTimeComparison } from '../../utils'
-import { auth, db, firebase } from './index'
+import { db, firebase } from './index'
 
 // HANDLE OUTING CREATION
 export const handleOutingCreation = async showing => {
 	if (!showing) throw new Error('Showing details are required')
 
-	const { agent, lead, startTime, endTime, date, status } = showing
-	const outingShowing = { startTime, endTime, id: showing.id, address: showing.propertyDetails.address, status }
+	const { agentId, leadId, startTime, endTime, date } = showing
 	const newOutingModel = {
-		agent,
-		lead,
+		agentId,
+		leadId,
 		date,
 		startFirstShowing: startTime,
 		endLastShowing: endTime,
-		showings: [outingShowing],
+		showings: [showing.id],
+		status: 'pending',
 	}
 
 	const outingsRef = db
 		.collection('outings')
-		.where('lead.id', '==', lead.id)
-		.where('agent.id', '==', agent.id)
+		.where('leadId', '==', leadId)
+		.where('agentId', '==', agentId)
 		.where('date.string', '==', date.string)
 
 	const outingsSnapshot = await outingsRef.get()
-	const isEmpty = outingsSnapshot.empty
-	const outings = outingsSnapshot.docs
+	const outings = outingsSnapshot.docs.map(doc => doc.data())
 
 	try {
-		if (isEmpty) {
+		let updatedOuting
+		if (outings.length > 0) {
+			for (let i = 0; i < outings.length; i++) {
+				const currOuting = outings[i]
+				const currOutingRef = db.collection('outings').doc(currOuting.id)
+				const isNextTo =
+					currOuting.endLastShowing >= addMinsToStringTime(startTime, -10) &&
+					currOuting.startFirstShowing <= startTime
+				const isLatestShowing =
+					stringTimeComparison(currOuting.endLastShowing, endTime) < 0 &&
+					stringTimeComparison(currOuting.endLastShowing, startTime) >= -10
+
+				if (isNextTo) {
+					updatedOuting = currOuting
+					await currOutingRef.update({
+						showings: firebase.firestore.FieldValue.arrayUnion(showing.id),
+					})
+				}
+
+				if (isLatestShowing) {
+					updatedOuting = currOuting
+					await currOutingRef.update({ endLastShowing: endTime })
+				}
+			}
+		}
+
+		if (!updatedOuting) {
 			const newOuting = await createOuting(newOutingModel)
 			return newOuting
 		}
 
-		if (outings.length > 0) {
-			let currOuting
-			let wasUpdated = false
-			outings.forEach(async outingDoc => {
-				currOuting = outingDoc.data()
-				if (
-					currOuting.endLastShowing >= addMinsToStringTime(startTime, -10) &&
-					currOuting.startFirstShowing <= startTime
-				) {
-					await outingDoc.ref.update({
-						showings: firebase.firestore.FieldValue.arrayUnion(outingShowing),
-					})
-					wasUpdated = true
-				}
-
-				if (
-					stringTimeComparison(currOuting.endLastShowing, endTime) < 0 &&
-					stringTimeComparison(currOuting.endLastShowing, endTime) >= -10
-				) {
-					await outingDoc.ref.update({ endLastShowing: endTime })
-					wasUpdated = true
-				}
-			})
-
-			if (!wasUpdated) {
-				const newOuting = await createOuting(newOutingModel)
-				return newOuting
-			}
-
-			return getOuting(currOuting.id)
-		}
+		return getOuting(updatedOuting.id)
 	} catch (error) {
 		console.error('Error updating outing: ', error.message)
 	}

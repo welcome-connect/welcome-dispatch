@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useReducer, useCallback, useMemo } from 'react'
-import { useFirestoreSub } from '../../hooks'
-import { useAuth } from '../auth'
+import { useFirestoreSub } from '@hooks/index'
+import { useAuth } from '@contexts/auth'
 import { dispatchReducer, initialState, types } from './state'
 
 export const DispatchContext = createContext()
@@ -18,6 +18,12 @@ export const DispatchProvider = ({ children }) => {
 	const setSelectTeam = useCallback(team => dispatch({ type: types.SET_SELECTED_TEAM, payload: team }), [dispatch])
 	const setTeamAgents = useCallback(agents => dispatch({ type: types.SET_TEAM_AGENTS, payload: agents }), [dispatch])
 	const setEditShowing = useCallback(showing => dispatch({ type: types.SET_EDIT_SHOWING, payload: showing }), [dispatch])
+	const setEditShowingLead = useCallback(lead => dispatch({ type: types.SET_EDIT_SHOWING_LEAD, payload: lead }), [
+		dispatch,
+	])
+	const setEditShowingAgent = useCallback(agent => dispatch({ type: types.SET_EDIT_SHOWING_AGENT, payload: agent }), [
+		dispatch,
+	])
 	const addObservedDays = useCallback(num => dispatch({ type: types.ADD_TO_OBSERVED_DATE, payload: num }), [dispatch])
 	const subObservedDays = useCallback(num => dispatch({ type: types.SUB_TO_OBSERVED_DATE, payload: num }), [dispatch])
 	const selectOuting = useCallback(outing => dispatch({ type: types.SELECT_OUTING, payload: outing }), [dispatch])
@@ -49,6 +55,8 @@ export const DispatchProvider = ({ children }) => {
 			subObservedDays,
 			selectOuting,
 			selectShowing,
+			setEditShowingLead,
+			setEditShowingAgent,
 		}
 	}, [
 		state,
@@ -60,6 +68,8 @@ export const DispatchProvider = ({ children }) => {
 		subObservedDays,
 		selectOuting,
 		selectShowing,
+		setEditShowingLead,
+		setEditShowingAgent,
 	])
 
 	return <DispatchContext.Provider value={value}>{children}</DispatchContext.Provider>

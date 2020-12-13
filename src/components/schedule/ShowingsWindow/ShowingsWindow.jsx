@@ -7,8 +7,8 @@ export const ShowingsWindow = ({ showings, toggleShowingWindow, outing: { startF
 
 	return (
 		<Container atEdge={atEdge}>
-			{showings.map(showing => (
-				<ShowingCard key={showing.id} showingId={showing.id} toggleShowingWindow={toggleShowingWindow} />
+			{showings.map(showingId => (
+				<ShowingCard key={showingId} showingId={showingId} toggleShowingWindow={toggleShowingWindow} />
 			))}
 		</Container>
 	)
@@ -36,4 +36,5 @@ const Container = styled.div`
 	grid-template-rows: auto;
 	grid-gap: 12px;
 	cursor: default;
+	z-index: 5;
 `

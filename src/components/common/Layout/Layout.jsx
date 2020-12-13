@@ -6,8 +6,9 @@ import { DispatchProvider } from '@contexts/dispatch'
 
 import { Settings, AgentModal, DispatcherModal, TeamModal } from '@components/settings'
 import { TopNavigation, SideNavigation } from '../'
-import { ModalContainer, NewLeadModal, NewShowingModal } from '@components/ui'
+import { ModalContainer, NewLeadModal, NewShowingModal, ShowingModal } from '@components/ui'
 import { NewShowingForm, NewLeadForm } from '@components/schedule'
+import { ShowingContent } from '@components/schedule'
 
 export const Layout = ({ children, title, icon }) => {
 	const {
@@ -17,6 +18,7 @@ export const Layout = ({ children, title, icon }) => {
 		toggleAgentModal,
 		toggleDispatcherModal,
 		toggleNewLeadModal,
+		toggleShowingModal,
 		isSideNavExpanded,
 		isUserDropdownOpen,
 		isSettingsOpen,
@@ -25,6 +27,7 @@ export const Layout = ({ children, title, icon }) => {
 		isDispatcherModalOpen,
 		isNewShowingModalOpen,
 		isNewLeadModalOpen,
+		isShowingModalOpen,
 	} = useNavigation()
 
 	const handleBgClick = e => {
@@ -35,12 +38,17 @@ export const Layout = ({ children, title, icon }) => {
 		if (isAgentModalOpen) toggleAgentModal()
 		if (isDispatcherModalOpen) toggleDispatcherModal()
 		if (isNewLeadModalOpen) toggleNewLeadModal()
+		if (isShowingModalOpen) toggleShowingModal()
 	}
 
 	return (
 		<Container className={isSideNavExpanded ? 'menu-open' : null}>
 			<SettingsProvider>
-				{isUserDropdownOpen || isSettingsOpen || isNewShowingModalOpen || isNewLeadModalOpen ? (
+				{isUserDropdownOpen ||
+				isSettingsOpen ||
+				isNewShowingModalOpen ||
+				isNewLeadModalOpen ||
+				isShowingModalOpen ? (
 					<ModalBackground onClick={handleBgClick} isUserDropdownOpen={isUserDropdownOpen} />
 				) : null}
 				{isSettingsOpen ? (
@@ -79,6 +87,11 @@ export const Layout = ({ children, title, icon }) => {
 					<NewShowingModal>
 						<NewShowingForm />
 					</NewShowingModal>
+				) : null}
+				{isShowingModalOpen ? (
+					<ShowingModal>
+						<ShowingContent />
+					</ShowingModal>
 				) : null}
 				<PageContainer>{children}</PageContainer>
 			</DispatchProvider>

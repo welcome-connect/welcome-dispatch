@@ -28,7 +28,7 @@ export const TopNavigation = ({ title, icon }) => {
 	return (
 		<NavigationContainer className="top-nav" onClick={handleUserDropdown}>
 			<div className="grid-left">
-				{icon}
+				{icon ? icon : null}
 				<span>{title}</span>
 			</div>
 			<div className="grid-center"></div>

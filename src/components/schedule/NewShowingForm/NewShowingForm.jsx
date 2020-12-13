@@ -13,10 +13,21 @@ import { createShowing, updateShowing } from '@services/firebase/showings'
 
 import { Button, ErrorMessage, FieldGroup, Form, Label, SettingsInput, Textarea } from '@styles/styled-components'
 import { Configure, Hits, SearchBox } from '@components/common'
+import { getLead } from '@services/firebase/leads'
+import { getUserDocument } from '@services/firebase'
 
 export const NewShowingForm = () => {
 	const { toggleNewShowingModal } = useNavigation()
-	const { placeToBeAdded, setPlaceToBeAdded, editShowing, setEditShowing } = useDispatch()
+	const {
+		placeToBeAdded,
+		setPlaceToBeAdded,
+		editShowing,
+		setEditShowing,
+		editShowingLead,
+		editShowingAgent,
+		setEditShowingLead,
+		setEditShowingAgent,
+	} = useDispatch()
 
 	const [autocomplete, setAutocomplete] = useState(null)
 	const [selectedAgent, setSelectedAgent] = useState(null)
@@ -44,8 +55,21 @@ export const NewShowingForm = () => {
 
 	useEffect(() => {
 		if (editShowing) {
-			if (editShowing.agent !== 'unassigned') setSelectedAgent(editShowing.agent)
-			setSelectedLead(editShowing.lead)
+			const asyncFetch = async () => {
+				const l = await getLead(editShowing.leadId)
+				const a = await getUserDocument(editShowing.agentId)
+				setEditShowingLead(l)
+				setEditShowingAgent(a)
+			}
+
+			asyncFetch()
+		}
+	}, [editShowing])
+
+	useEffect(() => {
+		if (editShowing && editShowingLead && editShowingAgent) {
+			if (editShowingAgent !== 'unassigned') setSelectedAgent(editShowingAgent)
+			setSelectedLead(editShowingLead)
 			setPlaceToBeAdded({
 				...editShowing.places,
 				geometry: {
@@ -57,8 +81,8 @@ export const NewShowingForm = () => {
 				address_components: [],
 			})
 			setFormData({
-				lead_name: editShowing.lead.displayName,
-				phone_number: formatPhoneNumber(editShowing.lead.phoneNumber, '($2) $3-$4'),
+				lead_name: editShowingLead.displayName,
+				phone_number: formatPhoneNumber(editShowingLead.phoneNumber, '($2) $3-$4'),
 				formatted_address: editShowing.propertyDetails.address,
 				price: editShowing.propertyDetails.price,
 				sqft: editShowing.propertyDetails.sqft,
@@ -76,7 +100,7 @@ export const NewShowingForm = () => {
 				end_time: editShowing.endTime,
 			})
 		}
-	}, [editShowing])
+	}, [editShowing, editShowingLead, editShowingAgent])
 
 	useEffect(() => {
 		if (!placeToBeAdded) {
@@ -183,7 +207,7 @@ export const NewShowingForm = () => {
 
 		try {
 			if (valid && !editShowing) {
-				const newShowing = await createShowing(dataObj)
+				const newShowing = await createShowing({ ...dataObj, status: 'pending' })
 				console.log({ newShowing })
 				toggleNewShowingModal()
 				setPlaceToBeAdded(null)
@@ -327,7 +351,7 @@ export const NewShowingForm = () => {
 							<h2>Additional Property Details</h2>
 							<Col>
 								<SingleFieldGroup>
-									<Label htmlFor="construction_age">Age of construction</Label>
+									<Label htmlFor="construction_age">Construction year</Label>
 									<SettingsInput
 										type="text"
 										name="construction_age"
@@ -471,7 +495,7 @@ export const NewShowingForm = () => {
 										type="text"
 										name="agent_name"
 										value={selectedAgent.displayName}
-										onChange={e => setSelectedAgent(null)}
+										onChange={() => setSelectedAgent(null)}
 										required
 									/>
 								</SingleFieldGroup>
@@ -491,7 +515,7 @@ export const NewShowingForm = () => {
 							</Button>
 						) : null}
 						<Button isPrimary type="submit" onClick={handleStage}>
-							{stage < 3 ? 'Next' : 'Add'}
+							{stage < 3 ? 'Next' : stage === 3 && !editShowing ? 'Add' : 'Save'}
 						</Button>
 					</div>
 				</ButtonContainer>

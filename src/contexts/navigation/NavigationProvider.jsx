@@ -19,6 +19,7 @@ export const NavigationProvider = ({ children }) => {
 	const toggleDispatcherModal = useCallback(() => dispatch({ type: types.TOGGLE_DISPATCHER_MODAL }), [dispatch])
 	const toggleNewShowingModal = useCallback(() => dispatch({ type: types.TOGGLE_NEW_SHOWING_MODAL }), [dispatch])
 	const toggleNewLeadModal = useCallback(() => dispatch({ type: types.TOGGLE_NEW_LEAD_MODAL }), [dispatch])
+	const toggleShowingModal = useCallback(() => dispatch({ type: types.TOGGLE_SHOWING_MODAL }), [dispatch])
 
 	const value = useMemo(() => {
 		return {
@@ -32,6 +33,7 @@ export const NavigationProvider = ({ children }) => {
 			toggleDispatcherModal,
 			toggleNewShowingModal,
 			toggleNewLeadModal,
+			toggleShowingModal,
 		}
 	}, [
 		state,
@@ -44,6 +46,7 @@ export const NavigationProvider = ({ children }) => {
 		toggleDispatcherModal,
 		toggleNewShowingModal,
 		toggleNewLeadModal,
+		toggleShowingModal,
 	])
 
 	return <NavigationContext.Provider value={value}>{children}</NavigationContext.Provider>
