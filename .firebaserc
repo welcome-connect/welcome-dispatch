@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "welcome-e4807"
+    "default": "welcome-e4807",
+    "staging": "welcome-dispatch-staging",
+    "production": "welcome-dispatch-production"
   }
 }

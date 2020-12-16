@@ -1,8 +1,8 @@
 import styled from 'styled-components'
-import { Map } from '../../components/Map'
-import { Layout } from '../../components/common'
-import { ScheduleView } from '../../components/schedule'
-import { CalendarIcon } from '../../components/icons'
+import { Map } from '@components/map'
+import { Layout } from '@components/common'
+import { ScheduleView } from '@components/schedule'
+import { CalendarIcon } from '@components/icons'
 
 const DispatchPage = () => {
 	console.log('****** RERENDERING !!!')
