@@ -6,15 +6,6 @@ export const handleOutingCreation = async showing => {
 	if (!showing) throw new Error('Showing details are required')
 
 	const { agentId, leadId, startTime, endTime, date } = showing
-	const newOutingModel = {
-		agentId,
-		leadId,
-		date,
-		startFirstShowing: startTime,
-		endLastShowing: endTime,
-		showings: [showing.id],
-		status: 'pending',
-	}
 
 	const outingsRef = db
 		.collection('outings')
@@ -47,12 +38,22 @@ export const handleOutingCreation = async showing => {
 
 				if (isLatestShowing) {
 					updatedOuting = currOuting
-					await currOutingRef.update({ endLastShowing: endTime })
+					await currOutingRef.update({ endLastShowing: endTime, lastShowing: showing.id })
 				}
 			}
 		}
 
 		if (!updatedOuting) {
+			const newOutingModel = {
+				agentId,
+				leadId,
+				date,
+				startFirstShowing: startTime,
+				endLastShowing: endTime,
+				showings: [showing.id],
+				lastShowing: showing.id,
+				status: 'pending',
+			}
 			const newOuting = await createOuting(newOutingModel)
 			return newOuting
 		}

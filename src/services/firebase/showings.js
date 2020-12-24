@@ -8,10 +8,7 @@ export const createShowing = async showing => {
 	if (!showing) throw new Error('Showing information required')
 	const { agent } = showing
 
-	let showingRef
-	if (!showing.id) showingRef = db.collection('showings').doc()
-	else showingRef = db.collection('showings').doc(showing.id)
-
+	const showingRef = db.collection('showings').doc()
 	const createdAt = firebase.firestore.FieldValue.serverTimestamp()
 	const showingModel = getShowingModel({ ...showing, createdAt, id: showingRef.id })
 

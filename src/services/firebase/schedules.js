@@ -1,6 +1,7 @@
 import { db, firebase } from '.'
 import { stringTimeComparison } from '../../utils'
 import { getOuting } from './outings'
+import { getShowing } from './showings'
 
 export const createSchedule = async (agentId, outing) => {
 	if (!outing) throw new Error('Showing required')
@@ -43,32 +44,41 @@ export const checkSchedule = async (agentId = null, showing) => {
 			const id = outings[i]
 			const outing = await getOuting(id)
 
-			if (outing.showings.indexOf(showingId) > -1 || outing.leadId !== showing.leadId) {
-				if (
-					stringTimeComparison(startTime, outing.startFirstShowing) >= 0 &&
-					stringTimeComparison(startTime, outing.endLastShowing) <= 0
-				) {
-					isAvailable = false
-				}
+			if (
+				isOutOfBound({ startTime, endTime }, { startTime: outing.startFirstShowing, endTime: outing.endLastShowing })
+			) {
+				return { isAvailable, schedule }
+			}
 
-				if (
-					stringTimeComparison(endTime, outing.startFirstShowing) >= 0 &&
-					stringTimeComparison(endTime, outing.endLastShowing) <= 0
-				) {
-					isAvailable = false
-				}
+			if (outing.showings.indexOf(showingId) > -1) {
+				for (let j = 0; j < outing.showings.length; j++) {
+					const currShowing = await getShowing(outing.showings[j])
+					if (currShowing.id === showingId) continue
 
-				if (
-					stringTimeComparison(startTime, outing.startFirstShowing) <= 0 &&
-					stringTimeComparison(endTime, outing.endLastShowing) >= 0
-				) {
-					isAvailable = false
+					if (
+						isOutOfBound(
+							{ startTime, endTime },
+							{ startTime: currShowing.startTime, endTime: currShowing.endTime },
+						)
+					) {
+						return { isAvailable, schedule }
+					}
 				}
 			}
 		}
+	} else {
+		return { isAvailable, schedule }
 	}
 
+	isAvailable = false
 	return { isAvailable, schedule }
+}
+
+function isOutOfBound(newShowing, currShowing) {
+	return (
+		stringTimeComparison(newShowing.startTime, currShowing.endTime) >= 0 ||
+		stringTimeComparison(newShowing.endTime, currShowing.startTime) <= 0
+	)
 }
 
 export const getSchedule = async id => {

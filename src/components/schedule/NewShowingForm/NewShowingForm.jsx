@@ -174,17 +174,23 @@ export const NewShowingForm = () => {
 
 		const difference = required.filter(x => !data[x] && data[x]?.legnth !== 0)
 
-		const errors = difference.map(key => {
-			return {
-				[key]: {
-					message: `${key
-						.replace('_', ' ')
-						.split(' ')
-						.map((word, i) => (i === 0 ? capitalize(word) : word))
-						.join(' ')} is required`,
-				},
+		const errors = {}
+
+		difference.forEach(key => {
+			errors[key] = {
+				message: `${key
+					.replace('_', ' ')
+					.split(' ')
+					.map((word, i) => (i === 0 ? capitalize(word) : word))
+					.join(' ')} is required`,
 			}
 		})
+
+		if (data.start_time === data.end_time) {
+			console.log('hellooo')
+			setFormErrors({ start_time: { message: 'Start time must not be the same as end time' } })
+			return false
+		}
 
 		if (errors.length > 0) {
 			setFormErrors(errors)
@@ -501,6 +507,9 @@ export const NewShowingForm = () => {
 								</SingleFieldGroup>
 							)}
 							{submitError ? <ModifiedErrorMessage>{submitError.message}</ModifiedErrorMessage> : null}
+							{formErrors.start_time ? (
+								<ModifiedErrorMessage>{formErrors.start_time.message}</ModifiedErrorMessage>
+							) : null}
 						</Section>
 					</>
 				) : null}
