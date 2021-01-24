@@ -1,20 +1,19 @@
-import styled, { css } from 'styled-components'
-import { useCallback, useEffect, useState } from 'react'
+import styled from 'styled-components'
+import { useEffect, useState } from 'react'
 import { format } from 'date-fns'
-import { Autocomplete } from '@react-google-maps/api'
 
 import { useNavigation } from '@contexts/navigation'
 import { useDispatch } from '@contexts/dispatch'
-import { useFirestoreSub } from '@hooks/index'
-import { SearchProvider, useSearch } from '@contexts/search'
 
-import { capitalize, formatPhoneNumber, getAddress } from '@utils/index'
+import { formatPhoneNumber, getAddress, validateShowingForm } from '@utils/index'
 import { createShowing, updateShowing } from '@services/firebase/showings'
 
-import { Button, ErrorMessage, FieldGroup, Form, Label, SettingsInput, Textarea } from '@styles/styled-components'
-import { Configure, Hits, SearchBox } from '@components/common'
+import { Button, Form } from '@styles/styled-components'
 import { getLead } from '@services/firebase/leads'
 import { getUserDocument } from '@services/firebase'
+import { StageOne } from './StageOne'
+import { StageTwo } from './StageTwo'
+import { StageThree } from './StageThree'
 
 export const NewShowingForm = () => {
 	const { toggleNewShowingModal } = useNavigation()
@@ -29,29 +28,12 @@ export const NewShowingForm = () => {
 		setEditShowingAgent,
 	} = useDispatch()
 
-	const [autocomplete, setAutocomplete] = useState(null)
 	const [selectedAgent, setSelectedAgent] = useState(null)
 	const [selectedLead, setSelectedLead] = useState(null)
 	const [formData, setFormData] = useState({})
 	const [formErrors, setFormErrors] = useState({})
 	const [submitError, setSubmitError] = useState(null)
 	const [stage, setStage] = useState(1)
-
-	const onPlacesLoad = useCallback(autocomplete => {
-		setAutocomplete(autocomplete)
-	})
-
-	const onPlaceChanged = () => {
-		const place = autocomplete.getPlace()
-
-		setPlaceToBeAdded(place)
-	}
-
-	const [agents] = useFirestoreSub('users', {
-		where: ['role', '==', 'agent'],
-	})
-
-	const [leads] = useFirestoreSub('leads')
 
 	useEffect(() => {
 		if (editShowing) {
@@ -158,51 +140,8 @@ export const NewShowingForm = () => {
 		toggleNewShowingModal()
 	}
 
-	const validateForm = data => {
-		const required = [
-			'formatted_address',
-			'price',
-			'sqft',
-			'phone_number',
-			'lead_name',
-			'bedrooms',
-			'bathrooms',
-			'date',
-			'start_time',
-			'end_time',
-		]
-
-		const difference = required.filter(x => !data[x] && data[x]?.legnth !== 0)
-
-		const errors = {}
-
-		difference.forEach(key => {
-			errors[key] = {
-				message: `${key
-					.replace('_', ' ')
-					.split(' ')
-					.map((word, i) => (i === 0 ? capitalize(word) : word))
-					.join(' ')} is required`,
-			}
-		})
-
-		if (data.start_time === data.end_time) {
-			console.log('hellooo')
-			setFormErrors({ start_time: { message: 'Start time must not be the same as end time' } })
-			return false
-		}
-
-		if (errors.length > 0) {
-			setFormErrors(errors)
-			return false
-		} else {
-			setFormErrors({})
-			return true
-		}
-	}
-
 	const onSubmit = async data => {
-		const valid = validateForm(data)
+		const valid = validateShowingForm(data, setFormErrors)
 		const dataObj = {
 			data,
 			places: getAddress(placeToBeAdded),
@@ -238,281 +177,28 @@ export const NewShowingForm = () => {
 
 			<ModifiedForm>
 				{stage === 1 ? (
-					<>
-						<Section>
-							<h2>Lead Details</h2>
-							{!selectedLead ? (
-								<SearchProvider data={leads}>
-									<Configure
-										filters={['displayName', 'phoneNumber']}
-										display={false}
-										hitsPerPage={3}
-										displayQuery="displayName"
-									/>
-									<SearchBox label="Name" />
-									<Hits hitComponent={Hit} selected={selectedLead} setSelected={setSelectedLead} />
-								</SearchProvider>
-							) : (
-								<SingleFieldGroup>
-									<Label htmlFor="lead_name">Name</Label>
-									<SettingsInput
-										type="text"
-										name="lead_name"
-										value={formData.lead_name}
-										onChange={() => setSelectedLead(null)}
-										required
-									/>
-								</SingleFieldGroup>
-							)}
-							<SingleFieldGroup>
-								<Label htmlFor="phone_number">Phone number</Label>
-								<SettingsInput
-									type="text"
-									name="phone_number"
-									value={formData.phone_number}
-									onChange={e => handleChange(e)}
-									required
-								/>
-							</SingleFieldGroup>
-						</Section>
-
-						<Section>
-							<h2>Property Details</h2>
-							{!placeToBeAdded ? (
-								<Autocomplete onPlaceChanged={onPlaceChanged} onLoad={onPlacesLoad}>
-									<SingleFieldGroup>
-										<Label htmlFor="formatted_address">Address</Label>
-										<SettingsInput
-											type="text"
-											placeholder="🔍  Search for an address"
-											name="formatted_address"
-											id="formatted_address"
-											value={formData.formatted_address}
-											onChange={e => handleChange(e)}
-										/>
-									</SingleFieldGroup>
-								</Autocomplete>
-							) : (
-								<SingleFieldGroup>
-									<Label htmlFor="formatted_address">Address</Label>
-									<SettingsInput
-										type="text"
-										name="formatted_address"
-										value={formData.formatted_address}
-										onChange={e => handleChange(e)}
-										required
-									/>
-								</SingleFieldGroup>
-							)}
-							<Col>
-								<SingleFieldGroup>
-									<Label htmlFor="price">Price</Label>
-									<SettingsInput
-										type="text"
-										name="price"
-										value={formData.price}
-										onChange={e => handleChange(e)}
-										required
-									/>
-								</SingleFieldGroup>
-								<SingleFieldGroup>
-									<Label htmlFor="sqft">Sqft</Label>
-									<SettingsInput
-										type="text"
-										name="sqft"
-										value={formData.sqft}
-										onChange={e => handleChange(e)}
-										required
-									/>
-								</SingleFieldGroup>
-							</Col>
-							<Col>
-								<SingleFieldGroup>
-									<Label htmlFor="bedrooms">Bedrooms</Label>
-									<SettingsInput
-										type="number"
-										name="bedrooms"
-										value={formData.bedrooms}
-										onChange={e => handleChange(e)}
-										required
-									/>
-								</SingleFieldGroup>
-								<SingleFieldGroup>
-									<Label htmlFor="bathrooms">Bathrooms</Label>
-									<SettingsInput
-										type="number"
-										name="bathrooms"
-										value={formData.bathrooms}
-										onChange={e => handleChange(e)}
-										required
-									/>
-								</SingleFieldGroup>
-							</Col>
-						</Section>
-					</>
+					<StageOne
+						selectedLead={selectedLead}
+						setSelectedLead={setSelectedLead}
+						formData={formData}
+						handleChange={handleChange}
+					/>
 				) : null}
-				{stage === 2 ? (
-					<>
-						<Section>
-							<h2>Additional Property Details</h2>
-							<Col>
-								<SingleFieldGroup>
-									<Label htmlFor="construction_age">Construction year</Label>
-									<SettingsInput
-										type="text"
-										name="construction_age"
-										value={formData.construction_age}
-										onChange={e => handleChange(e)}
-									/>
-								</SingleFieldGroup>
-								<SingleFieldGroup>
-									<Label htmlFor="days_on_market">Days on market</Label>
-									<SettingsInput
-										type="text"
-										name="days_on_market"
-										value={formData.days_on_market}
-										onChange={e => handleChange(e)}
-									/>
-								</SingleFieldGroup>
-							</Col>
 
-							<Col>
-								<SingleFieldGroup>
-									<Label htmlFor="financing_considered">Financing considered</Label>
-									<SettingsInput
-										type="text"
-										name="financing_considered"
-										value={formData.financing_considered}
-										onChange={e => handleChange(e)}
-									/>
-								</SingleFieldGroup>
-								<SingleFieldGroup>
-									<Label htmlFor="tax_rate">Tax rate</Label>
-									<SettingsInput
-										type="text"
-										name="tax_rate"
-										value={formData.tax_rate}
-										onChange={e => handleChange(e)}
-									/>
-								</SingleFieldGroup>
-							</Col>
-							<Col>
-								<SingleFieldGroup>
-									<Label htmlFor="maintenance_fee">Maintenance fee</Label>
-									<SettingsInput
-										type="text"
-										name="maintenance_fee"
-										value={formData.maintenance_fee}
-										onChange={e => handleChange(e)}
-									/>
-								</SingleFieldGroup>
-								<SingleFieldGroup>
-									<Label htmlFor="other_fees">Other fees</Label>
-									<SettingsInput
-										type="text"
-										name="other_fees"
-										value={formData.other_fees}
-										onChange={e => handleChange(e)}
-									/>
-								</SingleFieldGroup>
-							</Col>
-							<Col>
-								<SingleFieldGroup>
-									<Label htmlFor="flooded">Flooded</Label>
-									<SettingsInput
-										type="text"
-										name="flooded"
-										value={formData.flooded}
-										onChange={e => handleChange(e)}
-									/>
-								</SingleFieldGroup>
-							</Col>
-						</Section>
-					</>
-				) : null}
+				{stage === 2 ? <StageTwo formData={formData} handleChange={handleChange} /> : null}
 
 				{stage === 3 ? (
-					<>
-						<Section>
-							<h2>Assignment</h2>
-
-							<SingleFieldGroup>
-								<Label htmlFor="date">Date</Label>
-								<SettingsInput
-									type="date"
-									name="date"
-									value={formData.date}
-									onChange={e => handleChange(e)}
-									required
-								/>
-							</SingleFieldGroup>
-							<Col>
-								<SingleFieldGroup>
-									<Label htmlFor="start_time">Start time</Label>
-									<SettingsInput
-										type="time"
-										name="start_time"
-										step="300"
-										min="09:00"
-										max="19:30"
-										value={formData.start_time}
-										onChange={e => handleChange(e)}
-										required
-									/>
-								</SingleFieldGroup>
-								<SingleFieldGroup>
-									<Label htmlFor="end_time">End time</Label>
-									<SettingsInput
-										type="time"
-										name="end_time"
-										step="300"
-										min="09:00"
-										max="19:30"
-										value={formData.end_time}
-										onChange={e => handleChange(e)}
-										required
-									/>
-								</SingleFieldGroup>
-							</Col>
-							<SingleFieldGroup>
-								<Label htmlFor="additional_notes">Additional notes</Label>
-								<Textarea
-									type="text"
-									name="additional_notes"
-									value={formData.additional_notes}
-									onChange={e => handleChange(e)}
-								/>
-							</SingleFieldGroup>
-							{!selectedAgent ? (
-								<SearchProvider data={agents}>
-									<Configure
-										filters={['displayName', 'email']}
-										display={false}
-										hitsPerPage={3}
-										displayQuery="displayName"
-									/>
-									<SearchBox label="Agent" />
-									<Hits hitComponent={Hit} setSelected={setSelectedAgent} selected={selectedAgent} />
-								</SearchProvider>
-							) : (
-								<SingleFieldGroup>
-									<Label htmlFor="agent_name">Agent</Label>
-									<SettingsInput
-										type="text"
-										name="agent_name"
-										value={selectedAgent.displayName}
-										onChange={() => setSelectedAgent(null)}
-										required
-									/>
-								</SingleFieldGroup>
-							)}
-							{submitError ? <ModifiedErrorMessage>{submitError.message}</ModifiedErrorMessage> : null}
-							{formErrors.start_time ? (
-								<ModifiedErrorMessage>{formErrors.start_time.message}</ModifiedErrorMessage>
-							) : null}
-						</Section>
-					</>
+					<StageThree
+						formData={formData}
+						handleChange={handleChange}
+						setSelectedAgent={setSelectedAgent}
+						selectedAgent={selectedAgent}
+						submitError={submitError}
+						formErrors={formErrors}
+						setFormData={setFormData}
+					/>
 				) : null}
+
 				<ButtonContainer>
 					<Button isPrimary type="button" onClick={onCancel}>
 						Cancel
@@ -532,53 +218,6 @@ export const NewShowingForm = () => {
 		</Container>
 	)
 }
-
-const Hit = ({ hit, setSelected, selected }) => {
-	const isCardSelected = selected?.id === hit.id
-	const { setSelectedHit } = useSearch()
-
-	const handleClick = hit => {
-		setSelected(hit)
-		setSelectedHit(hit)
-	}
-
-	return (
-		<UserCard isCardSelected={isCardSelected} onClick={() => handleClick(hit)}>
-			<Name>{hit.displayName}</Name>
-			{hit.phoneNumber ? <Name>{formatPhoneNumber(hit.phoneNumber, '($2) $3-$4')}</Name> : null}
-		</UserCard>
-	)
-}
-
-const ModifiedErrorMessage = styled(ErrorMessage)`
-	position: static;
-	margin-top: 1rem;
-	font-size: 0.9rem;
-`
-
-const UserCard = styled.div`
-	background: white;
-	border-radius: 4px;
-	padding: 8px;
-	margin-bottom: 8px;
-	display: flex;
-	justify-content: space-between;
-	font-size: 14px;
-
-	cursor: pointer;
-
-	&:hover {
-		background: ${({ theme }) => theme.colors.bg.hover};
-	}
-
-	${({ isCardSelected }) =>
-		isCardSelected &&
-		css`
-			background: ${({ theme }) => theme.colors.bg.hover};
-		`}
-`
-
-const Name = styled.span``
 
 const Container = styled.div`
 	height: 100%;
@@ -608,26 +247,4 @@ const ModifiedForm = styled(Form)`
 	width: 100%;
 	margin-top: 0.5rem;
 	overflow: auto;
-`
-
-const SingleFieldGroup = styled(FieldGroup)`
-	margin-bottom: 1rem;
-`
-
-const Section = styled.div`
-	display: flex;
-	flex-direction: column;
-	margin-bottom: 2rem;
-
-	h2 {
-		margin-bottom: 12px;
-		font-size: 16px;
-		font-weight: 300;
-	}
-`
-
-const Col = styled.div`
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	grid-gap: 32px;
 `
