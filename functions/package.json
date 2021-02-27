@@ -1,24 +1,28 @@
 {
-  "name": "functions",
-  "description": "Cloud Functions for Firebase",
-  "main": "src/index.js",
-  "scripts": {
-    "serve": "firebase emulators:start --only functions",
-    "shell": "firebase functions:shell",
-    "start": "npm run shell",
-    "deploy:staging": "firebase deploy -P staging --only functions",
-    "deploy:prod": "firebase deploy -P production --only functions",
-    "logs": "firebase functions:log"
-  },
-  "engines": {
-    "node": "10"
-  },
-  "dependencies": {
-    "firebase-admin": "^9.4.2",
-    "firebase-functions": "^3.13.0"
-  },
-  "devDependencies": {
-    "firebase-functions-test": "^0.2.0"
-  },
-  "private": true
+	"name": "functions",
+	"description": "Cloud Functions for Firebase",
+	"main": "src/index.js",
+	"scripts": {
+		"serve": "firebase emulators:start --only functions",
+		"shell": "firebase functions:shell",
+		"start": "npm run shell",
+		"deploy:staging": "firebase deploy -P staging --only functions",
+		"deploy:prod": "firebase deploy -P production --only functions",
+		"logs": "firebase functions:log",
+		"use:prod": "firebase use welcome-dispatch-production",
+		"use:dev": "firebase use welcome-dispatch-staging"
+	},
+	"engines": {
+		"node": "10"
+	},
+	"dependencies": {
+		"date-fns": "^2.17.0",
+		"firebase-admin": "^9.4.2",
+		"firebase-functions": "^3.13.0",
+		"twilio": "^3.56.0"
+	},
+	"devDependencies": {
+		"firebase-functions-test": "^0.2.0"
+	},
+	"private": true
 }

@@ -9,7 +9,7 @@ export const types = {
 	SET_USER_DOC: 'SET_USER_DOC',
 	SET_USER_TEAM: 'SET_USER_TEAM',
 
-	IS_NOT_LOGGED_IN: 'IS_NOT_LOGGED_IN',
+	IS_NOT_LOGGED_IN: 'IS_NOT_LOGGED_IN'
 }
 
 export const initialState = {
@@ -18,7 +18,7 @@ export const initialState = {
 	userTeam: null,
 	isLoggedIn: false,
 	isLoading: false,
-	error: null,
+	error: null
 }
 
 export const authReducer = (state, action) => {
@@ -33,7 +33,7 @@ export const authReducer = (state, action) => {
 			return { ...state, isLoading: false, isLoggedIn: true }
 
 		case types.SIGNOUT_SUCCESS:
-			return { ...state, isLoading: false, isLoggedIn: false, userAuth: null }
+			return { ...state, isLoading: false, isLoggedIn: false, userAuth: null, userDoc: null, userTeam: null }
 
 		case types.SET_USER:
 			return { ...state, userAuth: action.payload, isLoggedIn: true }

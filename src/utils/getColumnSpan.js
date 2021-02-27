@@ -1,7 +1,20 @@
-export const getColumnSpan = (startTime, endTime = null) => {
+import { format, fromUnixTime } from 'date-fns'
+
+export const getColumnSpan = (startTime, endTime = null, options) => {
 	const baseHour = 9
 	const sectionMin = 5
-	const [leftStart, rightStart] = startTime.split(':').map(str => Number(str))
+
+	let startTimeStr
+	let endTimeStr
+	if (!options?.alreadyStr) {
+		startTimeStr = format(fromUnixTime(startTime), 'HH:mm')
+		endTimeStr = format(fromUnixTime(endTime), 'HH:mm')
+	} else {
+		startTimeStr = startTime
+		endTime = endTime
+	}
+
+	const [leftStart, rightStart] = startTimeStr.split(':').map(str => Number(str))
 
 	if (!endTime) {
 		const leftSpan = (leftStart - baseHour) * 12 + rightStart / sectionMin
@@ -10,7 +23,7 @@ export const getColumnSpan = (startTime, endTime = null) => {
 		return columnSpan
 	}
 
-	const [leftEnd, rightEnd] = endTime.split(':').map(str => Number(str))
+	const [leftEnd, rightEnd] = endTimeStr.split(':').map(str => Number(str))
 
 	const leftSpan = (leftStart - baseHour) * 12 + rightStart / sectionMin
 	const rightSpan = (leftEnd - baseHour) * 12 + rightEnd / sectionMin

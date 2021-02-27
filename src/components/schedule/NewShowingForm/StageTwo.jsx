@@ -8,20 +8,15 @@ export function StageTwo({ formData, handleChange }) {
 				<h2>Additional Property Details</h2>
 				<Col>
 					<SingleFieldGroup>
-						<Label htmlFor="construction_age">Construction year</Label>
-						<SettingsInput
-							type="text"
-							name="construction_age"
-							value={formData.construction_age}
-							onChange={e => handleChange(e)}
-						/>
+						<Label htmlFor="builtIn">Construction year</Label>
+						<SettingsInput type="text" name="builtIn" value={formData.builtIn} onChange={e => handleChange(e)} />
 					</SingleFieldGroup>
 					<SingleFieldGroup>
-						<Label htmlFor="days_on_market">Days on market</Label>
+						<Label htmlFor="toMarketDate">Date to market</Label>
 						<SettingsInput
-							type="text"
-							name="days_on_market"
-							value={formData.days_on_market}
+							type="date"
+							name="toMarketDate"
+							value={formData.toMarketDate}
 							onChange={e => handleChange(e)}
 						/>
 					</SingleFieldGroup>
@@ -29,40 +24,35 @@ export function StageTwo({ formData, handleChange }) {
 
 				<Col>
 					<SingleFieldGroup>
-						<Label htmlFor="financing_considered">Financing considered</Label>
+						<Label htmlFor="financingConsidered">Financing considered</Label>
 						<SettingsInput
 							type="text"
-							name="financing_considered"
-							value={formData.financing_considered}
+							name="financingConsidered"
+							value={formData.financingConsidered}
 							onChange={e => handleChange(e)}
 						/>
 					</SingleFieldGroup>
 					<SingleFieldGroup>
-						<Label htmlFor="tax_rate">Tax rate</Label>
-						<SettingsInput
-							type="text"
-							name="tax_rate"
-							value={formData.tax_rate}
-							onChange={e => handleChange(e)}
-						/>
+						<Label htmlFor="taxRate">Tax rate</Label>
+						<SettingsInput type="text" name="taxRate" value={formData.taxRate} onChange={e => handleChange(e)} />
 					</SingleFieldGroup>
 				</Col>
 				<Col>
 					<SingleFieldGroup>
-						<Label htmlFor="maintenance_fee">Maintenance fee</Label>
+						<Label htmlFor="maintenanceFee">Maintenance fee</Label>
 						<SettingsInput
 							type="text"
-							name="maintenance_fee"
-							value={formData.maintenance_fee}
+							name="maintenanceFee"
+							value={formData.maintenanceFee}
 							onChange={e => handleChange(e)}
 						/>
 					</SingleFieldGroup>
 					<SingleFieldGroup>
-						<Label htmlFor="other_fees">Other fees</Label>
+						<Label htmlFor="otherFees">Other fees</Label>
 						<SettingsInput
 							type="text"
-							name="other_fees"
-							value={formData.other_fees}
+							name="otherFees"
+							value={formData.otherFees}
 							onChange={e => handleChange(e)}
 						/>
 					</SingleFieldGroup>

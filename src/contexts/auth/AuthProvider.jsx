@@ -46,13 +46,14 @@ export const AuthProvider = ({ children }) => {
 	// Signs user up
 	const signup = async data => {
 		dispatch({ type: types.FETCH_REQ })
-		const { email, password, name } = data
+		const { email, password, name, phoneNumber } = data
 
 		try {
 			const newUser = await auth.createUserWithEmailAndPassword(email, password)
 
 			await createUserDocument(newUser.user, {
 				displayName: name,
+				phoneNumber
 			})
 
 			dispatch({ type: types.SIGN_IN_SUCCESS })
@@ -96,9 +97,5 @@ export const AuthProvider = ({ children }) => {
 		return () => unsubscribeFromAuth()
 	}, [router.pathname])
 
-	return (
-		<AuthContext.Provider value={{ ...state, signin, signup, signout, setUserDoc }}>
-			{children}
-		</AuthContext.Provider>
-	)
+	return <AuthContext.Provider value={{ ...state, signin, signup, signout, setUserDoc }}>{children}</AuthContext.Provider>
 }

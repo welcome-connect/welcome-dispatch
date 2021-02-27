@@ -33,6 +33,8 @@ const times = [
 	'17:30',
 	'18:00',
 	'18:30',
+	'19:00',
+	'19:30',
 ]
 
 export const ScheduleView = () => {
@@ -59,7 +61,7 @@ export const ScheduleView = () => {
 						</option>
 					))}
 				</Select>
-				<h4>{`${format(observedDate, 'EEEE, LLLL do - yyyy')}`}</h4>
+				<p>{`${format(observedDate, 'EEEE, LLLL do - yyyy')}`}</p>
 				<div className="icons">
 					<div className="left" onClick={() => subObservedDays(1)}>
 						<LeftCircleArrow />
@@ -153,7 +155,7 @@ const TopRow = styled.div`
 		}
 	}
 
-	h4 {
+	p {
 		place-self: center;
 	}
 `
@@ -204,7 +206,7 @@ const ShowingsGrid = styled.div`
 `
 const TimeLine = styled.div`
 	display: grid;
-	grid-template-columns: repeat(120, 24px);
+	grid-template-columns: repeat(130, 24px);
 	height: 56px;
 	align-items: center;
 	width: fit-content;
@@ -215,7 +217,7 @@ const TimeLine = styled.div`
 const TimeContainer = styled.div`
 	position: relative;
 	height: 100%;
-	grid-column: ${({ startTime }) => getColumnSpan(startTime)};
+	grid-column: ${({ startTime }) => getColumnSpan(startTime, null, { alreadyStr: true })};
 `
 
 const TimeSlot = styled.div`

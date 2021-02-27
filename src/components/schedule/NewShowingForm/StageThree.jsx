@@ -23,38 +23,38 @@ export function StageThree({ formData, handleChange, setSelectedAgent, selectedA
 				</SingleFieldGroup>
 				<Col>
 					<SingleFieldGroup>
-						<Label htmlFor="start_time">Start time</Label>
+						<Label htmlFor="preStartTime">Start time</Label>
 						<SettingsInput
 							type="time"
-							name="start_time"
+							name="preStartTime"
 							step="300"
 							min="09:00"
 							max="19:30"
-							value={formData.start_time}
+							value={formData.preStartTime}
 							onChange={e => handleChange(e)}
 							required
 						/>
 					</SingleFieldGroup>
 					<SingleFieldGroup>
-						<Label htmlFor="end_time">End time</Label>
+						<Label htmlFor="preEndTime">End time</Label>
 						<SettingsInput
 							type="time"
-							name="end_time"
+							name="preEndTime"
 							step="300"
 							min="09:00"
 							max="19:30"
-							value={formData.end_time}
+							value={formData.preEndTime}
 							onChange={e => handleChange(e)}
 							required
 						/>
 					</SingleFieldGroup>
 				</Col>
 				<SingleFieldGroup>
-					<Label htmlFor="additional_notes">Additional notes</Label>
+					<Label htmlFor="additionalNotes">Additional notes</Label>
 					<Textarea
 						type="text"
-						name="additional_notes"
-						value={formData.additional_notes}
+						name="additionalNotes"
+						value={formData.additionalNotes}
 						onChange={e => handleChange(e)}
 					/>
 				</SingleFieldGroup>
@@ -71,10 +71,10 @@ export function StageThree({ formData, handleChange, setSelectedAgent, selectedA
 					</SearchProvider>
 				) : (
 					<SingleFieldGroup>
-						<Label htmlFor="agent_name">Agent</Label>
+						<Label htmlFor="agentName">Agent</Label>
 						<SettingsInput
 							type="text"
-							name="agent_name"
+							name="agentName"
 							value={selectedAgent.displayName}
 							onChange={() => setSelectedAgent(null)}
 							required

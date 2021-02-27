@@ -17,9 +17,8 @@ export const ShowingsRow = ({ agent }) => {
 		],
 	})
 
-	outings.sort((a, b) => Number(a.startFirstShowing.split(':').join('')) - Number(b.startFirstShowing.split(':').join('')))
+	outings.sort((a, b) => a.preStartTime - b.preStartTime)
 
-	// console.log({ outings })
 	const toggleShowingWindow = outing => {
 		if (selectedOuting?.id && outing.id === selectedOuting.id) {
 			selectOuting(null)
@@ -27,10 +26,11 @@ export const ShowingsRow = ({ agent }) => {
 			selectOuting(outing)
 		}
 	}
+
 	return (
 		<Container>
 			{outings.map(outing => (
-				<ShowingSlot key={outing.id} startTime={outing.startFirstShowing} endTime={outing.endLastShowing}>
+				<ShowingSlot key={outing.id} startTime={outing.preStartTime} endTime={outing.preEndTime}>
 					<ShowingSlotInner onClick={() => toggleShowingWindow(outing)}>
 						<span>{`${outing.showings.length} Showings`}</span>
 					</ShowingSlotInner>
@@ -69,7 +69,7 @@ const ShowingSlot = styled.div`
 
 const Container = styled.div`
 	display: grid;
-	grid-template-columns: repeat(120, 24px);
+	grid-template-columns: repeat(130, 24px);
 	height: 56px;
 	align-items: center;
 	width: fit-content;

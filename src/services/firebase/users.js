@@ -19,7 +19,7 @@ export const createUserDocument = async (newUser, data) => {
 				createdAt,
 				teams: [],
 				role: '',
-				...data,
+				...data
 			})
 
 			await newUser.updateProfile({ ...data })

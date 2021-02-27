@@ -7,7 +7,7 @@ import { UserAvatarIcon } from '@components/icons'
 import { UserDropdown } from '@components/ui'
 
 export const TopNavigation = ({ title, icon }) => {
-	const { userAuth } = useAuth()
+	const { userDoc } = useAuth()
 
 	const { isUserDropdownOpen, toggleUserDropdownMenu } = useNavigation()
 
@@ -34,7 +34,7 @@ export const TopNavigation = ({ title, icon }) => {
 			<div className="grid-center"></div>
 			<div className="grid-right">
 				<div className="avatar" onClick={handleAvatarOnClick}>
-					<p className="username">{userAuth?.displayName}</p>
+					<p className="username">{userDoc?.displayName}</p>
 					<UserAvatarIcon />
 					<UserDropdown />
 				</div>

@@ -39,22 +39,22 @@ export function StageOne({ selectedLead, setSelectedLead, formData, handleChange
 					</SearchProvider>
 				) : (
 					<SingleFieldGroup>
-						<Label htmlFor="lead_name">Name</Label>
+						<Label htmlFor="leadName">Name</Label>
 						<SettingsInput
 							type="text"
-							name="lead_name"
-							value={formData.lead_name}
+							name="leadName"
+							value={formData.leadName}
 							onChange={() => setSelectedLead(null)}
 							required
 						/>
 					</SingleFieldGroup>
 				)}
 				<SingleFieldGroup>
-					<Label htmlFor="phone_number">Phone number</Label>
+					<Label htmlFor="phoneNumber">Phone number</Label>
 					<SettingsInput
 						type="text"
-						name="phone_number"
-						value={formData.phone_number}
+						name="phoneNumber"
+						value={formData.phoneNumber}
 						onChange={e => handleChange(e)}
 						required
 					/>
@@ -66,24 +66,24 @@ export function StageOne({ selectedLead, setSelectedLead, formData, handleChange
 				{!placeToBeAdded ? (
 					<Autocomplete onPlaceChanged={onPlaceChanged} onLoad={onPlacesLoad}>
 						<SingleFieldGroup>
-							<Label htmlFor="formatted_address">Address</Label>
+							<Label htmlFor="address">Address</Label>
 							<SettingsInput
 								type="text"
 								placeholder="🔍  Search for an address"
-								name="formatted_address"
-								id="formatted_address"
-								value={formData.formatted_address}
+								name="address"
+								id="address"
+								value={formData.address}
 								onChange={e => handleChange(e)}
 							/>
 						</SingleFieldGroup>
 					</Autocomplete>
 				) : (
 					<SingleFieldGroup>
-						<Label htmlFor="formatted_address">Address</Label>
+						<Label htmlFor="address">Address</Label>
 						<SettingsInput
 							type="text"
-							name="formatted_address"
-							value={formData.formatted_address}
+							name="address"
+							value={formData.address}
 							onChange={e => handleChange(e)}
 							required
 						/>

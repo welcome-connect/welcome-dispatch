@@ -2,16 +2,16 @@ import { capitalize } from './capitalize'
 
 export const validateShowingForm = (data, setFormErrors) => {
 	const required = [
-		'formatted_address',
+		'address',
 		'price',
 		'sqft',
-		'phone_number',
-		'lead_name',
+		'phoneNumber',
+		'leadName',
 		'bedrooms',
 		'bathrooms',
 		'date',
-		'start_time',
-		'end_time',
+		'preStartTime',
+		'preEndTime',
 	]
 
 	const difference = required.filter(x => !data[x] && data[x]?.legnth !== 0)
@@ -28,11 +28,11 @@ export const validateShowingForm = (data, setFormErrors) => {
 		}
 	})
 
-	if (errors) {
+	if (Object.keys(errors).length) {
 		setFormErrors(errors)
 		return false
-	} else if (data.start_time === data.end_time) {
-		setFormErrors({ ...errors, start_time: { message: 'Start time must not be the same as end time' } })
+	} else if (data.preStartTime === data.preEndTime) {
+		setFormErrors({ ...errors, preStartTime: { message: 'Start time must not be the same as end time' } })
 		return false
 	} else {
 		setFormErrors({})

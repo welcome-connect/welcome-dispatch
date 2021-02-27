@@ -17,8 +17,10 @@ export const DispatcherModal = () => {
 	const { toggleDispatcherModal } = useNavigation()
 
 	const [users] = useFirestoreSub('users', {
-		where: ['role', '==', ''],
+		where: ['role', '==', '']
 	})
+
+	console.log({ users })
 
 	if (isEditing) {
 		return <EditUserForm />

@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { useEffect, useState } from 'react'
-import { format } from 'date-fns'
+import { format, fromUnixTime } from 'date-fns'
 
 import { useNavigation } from '@contexts/navigation'
 import { useDispatch } from '@contexts/dispatch'
@@ -63,34 +63,35 @@ export const NewShowingForm = () => {
 				address_components: [],
 			})
 			setFormData({
-				lead_name: editShowingLead.displayName,
-				phone_number: formatPhoneNumber(editShowingLead.phoneNumber, '($2) $3-$4'),
-				formatted_address: editShowing.propertyDetails.address,
-				price: editShowing.propertyDetails.price,
-				sqft: editShowing.propertyDetails.sqft,
-				bedrooms: editShowing.propertyDetails.bedrooms,
-				bathrooms: editShowing.propertyDetails.bathrooms,
-				construction_age: editShowing.propertyDetails.constructionAge || '',
-				days_on_market: editShowing.propertyDetails.daysOnMarket || '',
-				financing_considered: editShowing.propertyDetails.financingConsidered || '',
-				tax_rate: editShowing.propertyDetails.taxRate || '',
-				maintenance_fee: editShowing.propertyDetails.maintenanceFee || '',
-				other_fees: editShowing.propertyDetails.otherFees || '',
-				flooded: editShowing.propertyDetails.flooded || '',
+				leadName: editShowingLead.displayName,
+				phoneNumber: formatPhoneNumber(editShowingLead.phoneNumber, '($2) $3-$4'),
+				address: editShowing.address,
+				price: editShowing.price,
+				sqft: editShowing.sqft,
+				bedrooms: editShowing.bedrooms,
+				bathrooms: editShowing.bathrooms,
+				builtIn: editShowing.builtIn || '',
+				toMarketDate: editShowing.toMarketDate || '',
+				financingConsidered: editShowing.financingConsidered || '',
+				taxRate: editShowing.taxRate || '',
+				maintenanceFee: editShowing.maintenanceFee || '',
+				otherFees: editShowing.otherFees || '',
+				flooded: editShowing.flooded || '',
 				date: format(new Date(editShowing.date.string), 'yyyy-MM-dd'),
-				start_time: editShowing.startTime,
-				end_time: editShowing.endTime,
+				preStartTime: format(fromUnixTime(editShowing.preStartTime), 'hh:mm'),
+				preEndTime: format(fromUnixTime(editShowing.preEndTime), 'hh:mm'),
+				additionalNotes: editShowing.additionalNotes || '',
 			})
 		}
 	}, [editShowing, editShowingLead, editShowingAgent])
 
 	useEffect(() => {
 		if (!placeToBeAdded) {
-			document.querySelector('#formatted_address')?.focus()
+			document.querySelector('#address')?.focus()
 		} else {
 			setFormData({
 				...formData,
-				formatted_address: getAddress(placeToBeAdded).formatted_address,
+				address: getAddress(placeToBeAdded).formatted_address,
 			})
 		}
 	}, [placeToBeAdded])
@@ -101,8 +102,8 @@ export const NewShowingForm = () => {
 		} else {
 			setFormData({
 				...formData,
-				phone_number: formatPhoneNumber(selectedLead.phoneNumber, '($2) $3-$4'),
-				lead_name: selectedLead.displayName,
+				phoneNumber: formatPhoneNumber(selectedLead.phoneNumber, '($2) $3-$4'),
+				leadName: selectedLead.displayName,
 			})
 		}
 	}, [selectedLead])
@@ -113,16 +114,16 @@ export const NewShowingForm = () => {
 		} else {
 			setFormData({
 				...formData,
-				agent_name: selectedAgent.displayName,
+				agentName: selectedAgent.displayName,
 			})
 		}
 	}, [selectedAgent])
 
 	useEffect(() => {
-		if (formData.formatted_address === '') {
+		if (formData.address === '') {
 			setPlaceToBeAdded(null)
 		}
-	}, [formData.formatted_address])
+	}, [formData.address])
 
 	const handleChange = e => {
 		setFormData({ ...formData, [e.target.name]: e.target.value })

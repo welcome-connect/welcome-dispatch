@@ -1,28 +1,42 @@
+const { getUnixTime } = require('date-fns')
 const functions = require('firebase-functions')
 const { db, admin } = require('../admin')
 
-exports.updateOnShowingChange = functions.firestore.document('showings/{showingId}').onUpdate((change, context) => {
+exports.updateOutingStatus = functions.firestore.document('outings/{outingId}').onUpdate(async change => {
 	const newData = change.after.data()
-    const currentData = change.before.data()
-    
-    
+	const currentData = change.before.data()
 
-	const removedFromTeam = newData.teams.length < currentData.teams.length
-	const addedToTeam = newData.teams.length > currentData.teams.length
+	console.log({ newData, currentData })
 
-	const [teamId] = findSymmetricDiff(newData.teams, currentData.teams)
-	const teamRef = db.collection('teams').doc(teamId)
-	const attribute = `${newData.role}_count`
+	const isShowingFinalChange =
+		newData.cancelledShowings.length !== currentData.cancelledShowings.length ||
+		newData.completedShowings.length !== currentData.completedShowings.length
 
-	if (addedToTeam) teamRef.update({ [attribute]: admin.firestore.FieldValue.increment(1) })
-	if (removedFromTeam) teamRef.update({ [attribute]: admin.firestore.FieldValue.increment(-1) })
+	const hasBeenCancelled = newData.status !== currentData.status && newData.status === 'cancelled'
+	const time = getUnixTime(Date.now())
 
-	console.log({
-		message: 'THERE HAS BEEN A CHANGE TO THE TEAMS',
-		newData,
-		currentData,
-		teamId,
-	})
+	if (hasBeenCancelled) {
+		const showingSnapshots = (await db.collection('showings').where('outingId', '==', newData.id).get()).docs
 
-	return
+		return Promise.all(
+			showingSnapshots.map(async showingSnapshot => {
+				await showingSnapshot.ref.update({
+					status: 'cancelled',
+					cancelledTime: time
+				})
+			})
+		)
+	}
+
+	if (isShowingFinalChange) {
+		if (newData.cancelledShowings.length + newData.completedShowings.length === newData.showings.length) {
+			return change.after.ref.set(
+				{
+					status: 'readyToComplete',
+					readyToCompleteTime: time
+				},
+				{ merge: true }
+			)
+		}
+	}
 })

@@ -6,7 +6,7 @@ export const TeamUsersHit = ({ hit }) => {
 	const { setSelectedAgents, setSelectedDispatchers, isSelected, selectedAgents, selectedDispatchers } = useSettings()
 
 	const isInTeam =
-		hit.teams.includes(isSelected?.id) || [...selectedAgents, ...selectedDispatchers].find(user => user.id === hit.id)
+		hit?.teams?.includes(isSelected?.id) || [...selectedAgents, ...selectedDispatchers].find(user => user.id === hit.id)
 
 	const handleClick = hit => {
 		if (hit.role === 'agent' && !isInTeam) setSelectedAgents(hit)

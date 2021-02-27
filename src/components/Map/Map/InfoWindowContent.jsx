@@ -1,6 +1,6 @@
-import { useFirestoreSub } from '@hooks/useFirestoreSub'
 import { getUserDocument } from '@services/firebase'
 import { getLead } from '@services/firebase/leads'
+import { format, fromUnixTime } from 'date-fns'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
@@ -9,21 +9,34 @@ export const InfoWindowContent = ({ showing }) => {
 	const [lead, setLead] = useState(null)
 
 	useEffect(() => {
+		let isActive = true
 		const asyncFetch = async () => {
 			const l = await getLead(showing.leadId)
 			const a = await getUserDocument(showing.agentId)
-			setLead(l)
-			setAgent(a)
+
+			if (isActive) {
+				setLead(l)
+				setAgent(a)
+			}
 		}
 
 		asyncFetch()
+
+		return () => {
+			isActive = false
+		}
 	}, [])
+
+	const from = format(fromUnixTime(showing.preStartTime), 'hh:mm a')
+	const to = format(fromUnixTime(showing.preEndTime), 'hh:mm a')
 
 	return agent && lead ? (
 		<Container>
-			<h3>{showing.propertyDetails.address.split(',').slice(0, 3).concat()}</h3>
-			<p>{agent !== 'unassigned' ? `Assigned to ${agent.displayName}` : 'Unassigned'}</p>
-			<p>{`Starts at ${showing.startTime} until ${showing.endTime}`}</p>
+			<h3>{showing.address.split(',').slice(0, 3).concat()}</h3>
+			<p>{agent.displayName ? `Assigned to ${agent.displayName}` : 'Unassigned'}</p>
+			<p>
+				{from} - {to}
+			</p>
 			<p>{`Lead: ${lead.displayName}`}</p>
 		</Container>
 	) : null

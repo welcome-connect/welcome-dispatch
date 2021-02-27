@@ -1,5 +1,6 @@
+import { matchLength } from '@utils/index'
+import { fromUnixTime, isAfter, isBefore, isEqual } from 'date-fns'
 import { db, firebase } from '.'
-import { stringTimeComparison } from '../../utils'
 import { getOuting } from './outings'
 import { getShowing } from './showings'
 
@@ -12,7 +13,7 @@ export const createSchedule = async (agentId, outing) => {
 		id: scheduleRef.id,
 		date: outing.date,
 		outings: firebase.firestore.FieldValue.arrayUnion(outing.id),
-		agentId,
+		agentId
 	}
 
 	if (!scheduleSnap.exists) {
@@ -27,8 +28,9 @@ export const createSchedule = async (agentId, outing) => {
 	}
 }
 
-export const checkSchedule = async (agentId = null, showing) => {
-	const { date, startTime, endTime, id: showingId } = showing
+export const checkAgentSchedule = async (agentId = null, showing) => {
+	const { date } = showing
+	console.log('checkAgentSchedule: Ln 33', { showing })
 	let isAvailable = true
 	if (!agentId) return { isAvailable, schedule: null }
 
@@ -37,48 +39,57 @@ export const checkSchedule = async (agentId = null, showing) => {
 	const isEmpty = schedulesSnapshot.empty
 	const schedule = schedulesSnapshot.docs[0]?.data() || null
 
+	let adjecentOuting
 	if (!isEmpty) {
 		const outings = schedule.outings
 
 		for (let i = 0; i < outings.length; i++) {
 			const id = outings[i]
-			const outing = await getOuting(id)
+			const currOuting = await getOuting(id)
 
-			if (
-				isOutOfBound({ startTime, endTime }, { startTime: outing.startFirstShowing, endTime: outing.endLastShowing })
-			) {
-				return { isAvailable, schedule }
+			if (!isOutOfBound(showing, currOuting)) {
+				console.log('checkAgentSchedule: Ln 56 - OUTING CONFLICT WITH REQUESTED TIMES', currOuting)
+				isAvailable = false
 			}
 
-			if (outing.showings.indexOf(showingId) > -1) {
-				for (let j = 0; j < outing.showings.length; j++) {
-					const currShowing = await getShowing(outing.showings[j])
-					if (currShowing.id === showingId) continue
-
-					if (
-						isOutOfBound(
-							{ startTime, endTime },
-							{ startTime: currShowing.startTime, endTime: currShowing.endTime },
-						)
-					) {
-						return { isAvailable, schedule }
-					}
+			if (isAdjecentToExistingOuting(showing, currOuting)) {
+				if (isSameLead(showing, currOuting)) {
+					adjecentOuting = currOuting
 				}
 			}
 		}
 	} else {
+		console.log('checkAgentSchedule: Ln 112 - HAS NO SCHEDULE')
 		return { isAvailable, schedule }
 	}
 
-	isAvailable = false
-	return { isAvailable, schedule }
+	return { isAvailable, schedule, adjecentOuting }
 }
 
-function isOutOfBound(newShowing, currShowing) {
+function isOutOfBound(newShowing, showing) {
+	if (newShowing.id === showing.id) return true
+
+	console.log('isOutOfBound: Ln 132', {
+		requestedPreStartTime: fromUnixTime(newShowing.preStartTime),
+		requestedPreEndTime: fromUnixTime(newShowing.preEndTime),
+		againstPreStartTime: fromUnixTime(showing.preStartTime),
+		againstPreEndTime: fromUnixTime(showing.preEndTime)
+	})
+
 	return (
-		stringTimeComparison(newShowing.startTime, currShowing.endTime) >= 0 ||
-		stringTimeComparison(newShowing.endTime, currShowing.startTime) <= 0
+		isAfter(newShowing.preStartTime, showing.preEndTime) ||
+		isBefore(newShowing.preEndTime, showing.preStartTime) ||
+		isEqual(newShowing.preEndTime, showing.preStartTime) ||
+		isEqual(newShowing.preStartTime, showing.preEndTime)
 	)
+}
+
+function isAdjecentToExistingOuting(showing, outing) {
+	return isEqual(showing.preStartTime, outing.preEndTime) || isEqual(showing.preEndTime, outing.preStartTime)
+}
+
+function isSameLead(showing, outing) {
+	return showing.leadId === outing.leadId
 }
 
 export const getSchedule = async id => {

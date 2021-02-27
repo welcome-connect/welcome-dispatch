@@ -5,17 +5,20 @@ import styled from 'styled-components'
 
 import { useAuth } from '@contexts/auth'
 import { FieldGroup, Label, Input, ErrorMessage, Button, Form } from '@styles/styled-components'
+import { formatPhoneNumber } from '@utils/index'
 
 export const SignUpForm = () => {
 	const { register, handleSubmit, errors, watch } = useForm()
-	const password = useRef({})
-	password.current = watch('password', '')
 	const { signup } = useAuth()
 
 	const router = useRouter()
 
 	const onSubmit = async data => {
-		await signup(data)
+		const userModel = {
+			...data,
+			phoneNumber: formatPhoneNumber(data.phoneNumber)
+		}
+		await signup(userModel)
 		router.push('/dispatch')
 	}
 
@@ -29,13 +32,14 @@ export const SignUpForm = () => {
 						type="text"
 						name="name"
 						ref={register({
-							required: 'Your name is required',
+							required: 'Your name is required'
 						})}
 						placeholder="enter your name"
 						hasError={errors.name}
 					/>
 					{errors.name && <ErrorMessage htmlFor="name">{errors.name.message}</ErrorMessage>}
 				</FieldGroup>
+
 				<FieldGroup className="label-input-container">
 					<Label htmlFor="email">Email</Label>
 					<Input
@@ -45,14 +49,29 @@ export const SignUpForm = () => {
 							required: 'Your email is required',
 							pattern: {
 								value: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-								message: 'Incorrect email format',
-							},
+								message: 'Incorrect email format'
+							}
 						})}
 						placeholder="enter your email"
 						hasError={errors.email}
 					/>
 					{errors.email && <ErrorMessage htmlFor="email">{errors.email.message}</ErrorMessage>}
 				</FieldGroup>
+
+				<FieldGroup className="label-input-container">
+					<Label htmlFor="phoneNumber">Phone number</Label>
+					<Input
+						type="text"
+						name="phoneNumber"
+						ref={register({
+							required: 'Phone number is required'
+						})}
+						placeholder="enter your phone number"
+						hasError={errors.phoneNumber}
+					/>
+					{errors.phoneNumber && <ErrorMessage htmlFor="phoneNumber">{errors.phoneNumber.message}</ErrorMessage>}
+				</FieldGroup>
+
 				<FieldGroup className="label-input-container">
 					<Label htmlFor="password">Password</Label>
 					<Input
@@ -62,34 +81,15 @@ export const SignUpForm = () => {
 							required: 'A password is required',
 							minLength: {
 								value: 6,
-								message: 'Need a minimum of 6 characters',
-							},
+								message: 'Need a minimum of 6 characters'
+							}
 						})}
 						placeholder="enter your password"
 						hasError={errors.password}
 					/>
 					{errors.password && <ErrorMessage htmlFor="password">{errors.password.message}</ErrorMessage>}
 				</FieldGroup>
-				<FieldGroup className="label-input-container">
-					<Label htmlFor="passwordConfirm">Confirm Password</Label>
-					<Input
-						type="password"
-						name="passwordConfirm"
-						ref={register({
-							required: 'Password confirmation is required',
-							minLength: {
-								value: 6,
-								message: 'Need a minimum of 6 characters',
-							},
-							validate: value => value === password.current || 'The passwords do not match',
-						})}
-						placeholder="confirm your password"
-						hasError={errors.passwordConfirm}
-					/>
-					{errors.passwordConfirm && (
-						<ErrorMessage htmlFor="password">{errors.passwordConfirm.message}</ErrorMessage>
-					)}
-				</FieldGroup>
+
 				<Button isPrimary type="submit" style={{ width: '100%' }}>
 					Sign Up
 				</Button>

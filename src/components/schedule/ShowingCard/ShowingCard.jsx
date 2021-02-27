@@ -1,17 +1,15 @@
 import styled from 'styled-components'
 
-import { useFirestoreSub } from '@hooks/index'
 import { useDispatch } from '@contexts/dispatch'
 import { useNavigation } from '@contexts/navigation'
 
 import { capitalize } from '@utils/index'
+import { format, fromUnixTime } from 'date-fns'
+import { Status } from '@components/common'
 
-export const ShowingCard = ({ showingId, toggleShowingWindow }) => {
+export const ShowingCard = ({ showing, toggleShowingWindow }) => {
 	const { selectShowing } = useDispatch()
 	const { toggleShowingModal } = useNavigation()
-	const [[showing]] = useFirestoreSub('showings', {
-		where: ['id', '==', showingId],
-	})
 
 	const handleClick = showing => {
 		console.log(showing)
@@ -23,12 +21,13 @@ export const ShowingCard = ({ showingId, toggleShowingWindow }) => {
 	if (showing) {
 		return (
 			<Showing onClick={() => handleClick(showing)}>
-				<Address>{showing.propertyDetails.address}</Address>
+				<Address>{showing.address}</Address>
 				<BotLine>
 					<Time>
-						{showing.startTime} - {showing.endTime}
+						{format(fromUnixTime(showing?.preStartTime), 'hh:mm')} -{' '}
+						{format(fromUnixTime(showing?.preEndTime), 'hh:mm')}
 					</Time>
-					<Status>{capitalize(showing.status)}</Status>
+					<Status status={showing.status} size="14px"/>
 				</BotLine>
 			</Showing>
 		)
@@ -66,4 +65,3 @@ const BotLine = styled.div`
 	width: 100%;
 `
 const Time = styled.div``
-const Status = styled.div``

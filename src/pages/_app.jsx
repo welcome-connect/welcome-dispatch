@@ -11,7 +11,9 @@ function MyApp({ Component, pageProps }) {
 		<>
 			<Head>
 				<meta name="viewport" content="initial-scale=1, viewport-fit=cover" />
+				<title>Welcome Dispatch</title>
 			</Head>
+
 			<ThemeProvider theme={theme}>
 				<AuthProvider>
 					<NavigationProvider>

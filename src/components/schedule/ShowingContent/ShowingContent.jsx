@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { useEffect, useState } from 'react'
-import { format } from 'date-fns'
+import { format, fromUnixTime, formatDistance } from 'date-fns'
 
 import { useDispatch } from '@contexts/dispatch'
 import { useNavigation } from '@contexts/navigation'
@@ -14,6 +14,7 @@ import { Button, FieldGroup } from '@styles/styled-components'
 export const ShowingContent = () => {
 	const [lead, setLead] = useState(null)
 	const [agent, setAgent] = useState(null)
+	const [isLoading, setIsLoading] = useState(true)
 
 	const { selectedShowing, selectShowing, setEditShowing } = useDispatch()
 	const { toggleNewShowingModal, toggleShowingModal } = useNavigation()
@@ -24,6 +25,7 @@ export const ShowingContent = () => {
 			const a = await getUserDocument(selectedShowing.agentId)
 			setLead(l)
 			setAgent(a)
+			setIsLoading(false)
 		}
 
 		asyncFetch()
@@ -36,92 +38,106 @@ export const ShowingContent = () => {
 		selectShowing(null)
 	}
 
+	const from = format(fromUnixTime(selectedShowing.preStartTime), 'hh:mm a')
+	const to = format(fromUnixTime(selectedShowing.preEndTime), 'hh:mm a')
+
 	return (
 		<Container>
-			<h1>{selectedShowing.propertyDetails.address.split(',').slice(0, 3).concat()}</h1>
+			{!isLoading ? (
+				<>
+					<h1>{selectedShowing.address.split(',').slice(0, 3).concat()}</h1>
 
-			<DoubleCol>
-				<Section>
-					<h2>Lead Details</h2>
-					{lead ? (
-						<SingleCol>
-							<p>{lead.displayName}</p>
-							<p>{formatPhoneNumber(lead.phoneNumber, '($2) $3-$4')}</p>
-						</SingleCol>
-					) : null}
-				</Section>
-				<Section>
-					<h2>Agent Details</h2>
-					{agent ? (
-						<SingleCol>
-							<p>{agent.displayName}</p>
-							<p>{formatPhoneNumber(agent.phoneNumber, '($2) $3-$4')}</p>
-						</SingleCol>
-					) : null}
-				</Section>
-			</DoubleCol>
-			<SingleCol>
-				<Section>
-					<h2>Assignment</h2>
-					<SingleCol>
-						<p>Date: {format(new Date(selectedShowing.date.string), 'yyyy/MM/dd')}</p>
-					</SingleCol>
 					<DoubleCol>
-						<p>Start time: {selectedShowing.startTime}</p>
-						<p>End time: {selectedShowing.endTime}</p>
-					</DoubleCol>
-				</Section>
-			</SingleCol>
-			<SingleCol>
-				<Section>
-					<h2>Property Details</h2>
-					<DoubleCol>
-						<p>Price: {selectedShowing.propertyDetails.price}</p>
-						<p>Sqft: {selectedShowing.propertyDetails.sqft}</p>
-					</DoubleCol>
-					<DoubleCol>
-						<p>Bedrooms: {selectedShowing.propertyDetails.bedrooms}</p>
-						<p>Bathrooms: {selectedShowing.propertyDetails.bathrooms}</p>
-					</DoubleCol>
-					<DoubleCol>
-						<p>Neighborhood: {selectedShowing.propertyDetails.neighborhood}</p>
-						<p>County: {selectedShowing.propertyDetails.county}</p>
-					</DoubleCol>
-				</Section>
-			</SingleCol>
-			<SingleCol>
-				<Section>
-					<h2>Additional Property Details</h2>
-					<DoubleCol>
-						<p>Construction year: {selectedShowing.propertyDetails.constructionAge}</p>
-						<p>Days on market: {selectedShowing.propertyDetails.daysOnMarket}</p>
-					</DoubleCol>
-					<DoubleCol>
-						<p>Financing considered: {selectedShowing.propertyDetails.financingConsidered}</p>
-						<p>Tax rate: {selectedShowing.propertyDetails.taxRate}</p>
-					</DoubleCol>
-					<DoubleCol>
-						<p>Maintenance fee: {selectedShowing.propertyDetails.maintenanceFee}</p>
-						<p>Other fees: {selectedShowing.propertyDetails.otherFees}</p>
+						<Section>
+							<h2>Lead Details</h2>
+							{lead ? (
+								<SingleCol>
+									<p>{lead.displayName}</p>
+									<p>{formatPhoneNumber(lead.phoneNumber, '($2) $3-$4')}</p>
+								</SingleCol>
+							) : null}
+						</Section>
+						<Section>
+							<h2>Agent Details</h2>
+							{agent ? (
+								<SingleCol>
+									<p>{agent.displayName}</p>
+									<p>{formatPhoneNumber(agent.phoneNumber, '($2) $3-$4')}</p>
+								</SingleCol>
+							) : null}
+						</Section>
 					</DoubleCol>
 					<SingleCol>
-						<p>Flooded: {selectedShowing.propertyDetails.flooded}</p>
+						<Section>
+							<h2>Assignment</h2>
+							<SingleCol>
+								<p>Date: {format(new Date(selectedShowing.date.string), 'yyyy/MM/dd')}</p>
+							</SingleCol>
+							<DoubleCol>
+								<p>Start time: {from}</p>
+								<p>End time: {to}</p>
+							</DoubleCol>
+						</Section>
 					</SingleCol>
-				</Section>
-			</SingleCol>
-			<SingleCol>
-				<Section>
-					<h2>Additional Notes</h2>
-					<DoubleCol>
-						<p>{selectedShowing.propertyDetails.add_notes}</p>
-					</DoubleCol>
-				</Section>
-			</SingleCol>
-			<ButtonContainer>
-				<Button isPrimary type="button" onClick={() => handleEdit(selectedShowing)}>
-					Edit
-				</Button>
-			</ButtonContainer>
+					<SingleCol>
+						<Section>
+							<h2>Property Details</h2>
+							<DoubleCol>
+								<p>Price: {selectedShowing.price}</p>
+								<p>Sqft: {selectedShowing.sqft}</p>
+							</DoubleCol>
+							<DoubleCol>
+								<p>Bedrooms: {selectedShowing.bedrooms}</p>
+								<p>Bathrooms: {selectedShowing.bathrooms}</p>
+							</DoubleCol>
+							<DoubleCol>
+								<p>Neighborhood: {selectedShowing.neighborhood}</p>
+								<p>County: {selectedShowing.county}</p>
+							</DoubleCol>
+						</Section>
+					</SingleCol>
+					<SingleCol>
+						<Section>
+							<h2>Additional Property Details</h2>
+							<DoubleCol>
+								<p>Construction year: {selectedShowing.builtIn}</p>
+								<p>
+									Date on market:{' '}
+									{selectedShowing.toMarketDate
+										? formatDistance(fromUnixTime(selectedShowing.toMarketDate.seconds), Date.now())
+										: ''}
+								</p>
+							</DoubleCol>
+							<DoubleCol>
+								<p>Financing considered: {selectedShowing.financingConsidered}</p>
+								<p>Tax rate: {selectedShowing.taxRate}</p>
+							</DoubleCol>
+							<DoubleCol>
+								<p>Maintenance fee: {selectedShowing.maintenanceFee}</p>
+								<p>Other fees: {selectedShowing.otherFees}</p>
+							</DoubleCol>
+							<SingleCol>
+								<p>Flooded: {selectedShowing.flooded}</p>
+							</SingleCol>
+						</Section>
+					</SingleCol>
+					<SingleCol>
+						<Section>
+							<h2>Additional Notes</h2>
+							<DoubleCol>
+								<p>{selectedShowing.add_notes}</p>
+							</DoubleCol>
+						</Section>
+					</SingleCol>
+					<ButtonContainer>
+						<Button isPrimary type="button" onClick={() => handleEdit(selectedShowing)}>
+							Edit
+						</Button>
+					</ButtonContainer>
+				</>
+			) : (
+				<span>Loading...</span>
+			)}
 		</Container>
 	)
 }

@@ -1,64 +1,25 @@
-import { addMinsToStringTime, stringTimeComparison } from '../../utils'
+import { isEqual } from 'date-fns'
 import { db, firebase } from './index'
 
 // HANDLE OUTING CREATION
-export const handleOutingCreation = async showing => {
+export const addShowingToOuting = async (showing, outing) => {
 	if (!showing) throw new Error('Showing details are required')
+	if (!outing) throw new Error('Outing details are required')
 
-	const { agentId, leadId, startTime, endTime, date } = showing
-
-	const outingsRef = db
-		.collection('outings')
-		.where('leadId', '==', leadId)
-		.where('agentId', '==', agentId)
-		.where('date.string', '==', date.string)
-
-	const outingsSnapshot = await outingsRef.get()
-	const outings = outingsSnapshot.docs.map(doc => doc.data())
+	const outingRef = db.collection('outings').doc(outing.id)
 
 	try {
-		let updatedOuting
-		if (outings.length > 0) {
-			for (let i = 0; i < outings.length; i++) {
-				const currOuting = outings[i]
-				const currOutingRef = db.collection('outings').doc(currOuting.id)
-				const isNextTo =
-					currOuting.endLastShowing >= addMinsToStringTime(startTime, -10) &&
-					currOuting.startFirstShowing <= startTime
-				const isLatestShowing =
-					stringTimeComparison(currOuting.endLastShowing, endTime) < 0 &&
-					stringTimeComparison(currOuting.endLastShowing, startTime) >= -10
+		const isLatestShowing = isEqual(showing.preStartTime, outing.preEndTime)
+		const isEarliestShowing = isEqual(showing.preEndTime, outing.preStartTime)
 
-				if (isNextTo) {
-					updatedOuting = currOuting
-					await currOutingRef.update({
-						showings: firebase.firestore.FieldValue.arrayUnion(showing.id),
-					})
-				}
+		await outingRef.update({
+			showings: firebase.firestore.FieldValue.arrayUnion(showing.id),
+		})
 
-				if (isLatestShowing) {
-					updatedOuting = currOuting
-					await currOutingRef.update({ endLastShowing: endTime, lastShowing: showing.id })
-				}
-			}
-		}
+		if (isLatestShowing) await outingRef.update({ preEndTime: showing.preEndTime })
+		if (isEarliestShowing) await outingRef.update({ preStartTime: showing.preStartTime })
 
-		if (!updatedOuting) {
-			const newOutingModel = {
-				agentId,
-				leadId,
-				date,
-				startFirstShowing: startTime,
-				endLastShowing: endTime,
-				showings: [showing.id],
-				lastShowing: showing.id,
-				status: 'pending',
-			}
-			const newOuting = await createOuting(newOutingModel)
-			return newOuting
-		}
-
-		return getOuting(updatedOuting.id)
+		return getOuting(outing.id)
 	} catch (error) {
 		console.error('Error updating outing: ', error.message)
 	}
@@ -70,6 +31,8 @@ export const createOuting = async outingModel => {
 
 	const outingRef = db.collection('outings').doc()
 	const outingSnap = await outingRef.get()
+
+	console.log('createOuting: Ln 35 - OUTING MODEL: ', outingModel)
 
 	if (!outingSnap.exists) {
 		try {

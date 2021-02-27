@@ -1,14 +1,28 @@
 import styled, { css } from 'styled-components'
 import { stringTimeComparison } from '@utils/index'
 import { ShowingCard } from '../ShowingCard/ShowingCard'
+import { format, fromUnixTime } from 'date-fns'
+import { useEffect, useState } from 'react'
+import { getShowing } from '@services/firebase/showings'
 
-export const ShowingsWindow = ({ showings, toggleShowingWindow, outing: { startFirstShowing } }) => {
-	const atEdge = stringTimeComparison(startFirstShowing, '09:30') < 0
+export const ShowingsWindow = ({ showings, toggleShowingWindow, outing: { preStartTime } }) => {
+	const [showingDocs, setShowingDocs] = useState([])
+	const atEdge = stringTimeComparison(format(fromUnixTime(preStartTime), 'HH:mm'), '09:30') < 0
+
+	useEffect(function fetchShowingsDocs() {
+		async function asyncFetch() {
+			const requests = showings.map(showingId => getShowing(showingId))
+			const docs = await Promise.all(requests)
+			setShowingDocs(docs.sort((a, b) => a.preStartTime - b.preStartTime))
+		}
+
+		asyncFetch()
+	}, [showings])
 
 	return (
 		<Container atEdge={atEdge}>
-			{showings.map(showingId => (
-				<ShowingCard key={showingId} showingId={showingId} toggleShowingWindow={toggleShowingWindow} />
+			{showingDocs.map(showing => (
+				<ShowingCard key={showing.id} showing={showing} toggleShowingWindow={toggleShowingWindow} />
 			))}
 		</Container>
 	)

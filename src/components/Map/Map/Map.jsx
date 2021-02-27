@@ -10,17 +10,18 @@ import { useNavigation } from '@contexts/navigation'
 import { MarkerSet } from './MarkerSet'
 import { useFirestoreSub } from '@hooks/index'
 import { InfoWindowContent } from './InfoWindowContent'
+import { AgentMarkers } from './AgentMarkers'
 
 const libraries = ['places']
 const mapContainerStyle = {
 	width: '100%',
-	height: '100%',
+	height: '100%'
 }
 const center = { lat: 29.749907, lng: -95.358421 }
 const options = {
 	styles: mapStyles,
 	disableDefaultUI: true,
-	zoomControl: true,
+	zoomControl: true
 }
 
 export const Map = () => {
@@ -33,7 +34,7 @@ export const Map = () => {
 
 	const { isLoaded, loadError } = useLoadScript({
 		googleMapsApiKey: process.env.FIREBASE_API_KEY,
-		libraries,
+		libraries
 	})
 
 	const onMapLoad = useCallback(map => {
@@ -56,7 +57,7 @@ export const Map = () => {
 		if (placeToBeAdded) {
 			panTo({
 				lat: placeToBeAdded.geometry.location.lat(),
-				lng: placeToBeAdded.geometry.location.lng(),
+				lng: placeToBeAdded.geometry.location.lng()
 			})
 		}
 	}, [placeToBeAdded])
@@ -66,18 +67,18 @@ export const Map = () => {
 			panTo(
 				{
 					lat: selectedTeam.coords.latitude,
-					lng: selectedTeam.coords.longitude,
+					lng: selectedTeam.coords.longitude
 				},
-				10,
+				10
 			)
 		}
 	}, [selectedTeam])
 
 	const [unAssignedShowings] = useFirestoreSub('showings', {
 		where: [
-			['agent', '==', 'unassigned'],
-			['date.string', '==', format(observedDate, 'MM/dd/yyyy')],
-		],
+			['agentId', '==', 'unassigned'],
+			['date.string', '==', format(observedDate, 'MM/dd/yyyy')]
+		]
 	})
 
 	if (loadError) return 'Error loading maps'
@@ -91,7 +92,7 @@ export const Map = () => {
 					<Marker
 						position={{
 							lat: placeToBeAdded.geometry.location.lat(),
-							lng: placeToBeAdded.geometry.location.lng(),
+							lng: placeToBeAdded.geometry.location.lng()
 						}}
 						onClick={toggleNewShowingModal}
 						icon="./icons/addPin.svg"
@@ -107,12 +108,16 @@ export const Map = () => {
 					/>
 				))}
 
+				{teamAgents.map(agent => (
+					<AgentMarkers key={agent.id} agent={agent} />
+				))}
+
 				{unAssignedShowings.map(showing => (
 					<Marker
 						key={showing.id}
 						position={{
 							lat: showing.places.coords.lat,
-							lng: showing.places.coords.lng,
+							lng: showing.places.coords.lng
 						}}
 						icon="./icons/unassignedPin.svg"
 						onClick={() => handleMarkerClick(showing)}
@@ -120,17 +125,6 @@ export const Map = () => {
 						onMouseOut={() => setHoveredShowing(null)}
 					/>
 				))}
-
-				{hoveredShowing ? (
-					<InfoWindow
-						position={{
-							lat: hoveredShowing.places.coords.lat,
-							lng: hoveredShowing.places.coords.lng,
-						}}
-						options={{ pixelOffset: { height: -40, width: 0 } }}>
-						<InfoWindowContent showing={hoveredShowing} />
-					</InfoWindow>
-				) : null}
 			</GoogleMap>
 		</Container>
 	)
@@ -138,4 +132,21 @@ export const Map = () => {
 
 const Container = styled.div`
 	border-left: 1px solid ${({ theme }) => theme.colors.border_darker};
+
+	iframe + div {
+		display: none;
+	}
+
+	.gm-style {
+		outline: none !important;
+	}
+
+	.gm-style-iw {
+		border-radius: 16px;
+		box-shadow: 0px 20px 25px rgba(0, 0, 0, 0.1), 0px 10px 10px rgba(0, 0, 0, 0.04);
+
+		button {
+			display: none !important;
+		}
+	}
 `
