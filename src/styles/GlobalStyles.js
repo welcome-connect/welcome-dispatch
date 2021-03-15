@@ -14,6 +14,10 @@ export const GlobalStyles = createGlobalStyle`
 		h1, h2, h3, p, span, a {
 			color: ${({ theme }) => theme.colors.text};
 		}
+
+		ul {
+			list-style: none;
+		}
 	}
 
 	/* GOOGLE AUTOCOMPLETE */

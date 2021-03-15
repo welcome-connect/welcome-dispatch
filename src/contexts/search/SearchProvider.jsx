@@ -11,7 +11,7 @@ const search = (data, filters, query, hitsPerPage) => {
 	const columns = filters.length === 0 ? attributes : filters
 
 	const results = data?.filter(object =>
-		columns.some(column => object[column].toString().toLowerCase().indexOf(query.toLowerCase()) > -1),
+		columns.some(column => object[column]?.toString().toLowerCase().indexOf(query.toLowerCase()) > -1),
 	)
 
 	return results.slice(0, hitsPerPage)

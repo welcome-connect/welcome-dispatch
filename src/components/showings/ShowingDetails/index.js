@@ -1,0 +1,1 @@
+export { ShowingDetails } from './ShowingDetails'

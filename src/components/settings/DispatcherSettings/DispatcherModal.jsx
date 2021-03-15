@@ -42,7 +42,9 @@ export const DispatcherModal = () => {
 			<SearchProvider data={users}>
 				<Configure filters={['displayName', 'email']} display={false} />
 				<SearchBox label="Search users" />
-				<Hits hitComponent={UserHit} />
+				<ul>
+					<Hits hitComponent={UserHit} />
+				</ul>
 			</SearchProvider>
 			<ModifiedButton isPrimary className="cancel" onClick={onCancel}>
 				Cancel

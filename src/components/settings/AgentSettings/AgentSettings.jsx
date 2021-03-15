@@ -15,7 +15,7 @@ export const AgentSettings = memo(() => {
 	const { setSelected, isSelected, setIsEditing } = useSettings()
 
 	const [agents] = useFirestoreSub('users', {
-		where: ['role', '==', 'agent'],
+		where: ['role', '==', 'agent']
 	})
 
 	useEffect(() => {
@@ -40,7 +40,9 @@ export const AgentSettings = memo(() => {
 			<SearchProvider data={agents}>
 				<Configure filters={['displayName', 'email']} />
 				<SearchBox label="Search users" />
-				<Hits hitComponent={UserHit} />
+				<ul>
+					<Hits hitComponent={UserHit} />
+				</ul>
 			</SearchProvider>
 
 			<IconRow>

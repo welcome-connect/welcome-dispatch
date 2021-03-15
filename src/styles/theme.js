@@ -5,7 +5,7 @@ export const theme = {
 		primary_hover: '#4D5770',
 		accent: '#00D084',
 		text: '#242935',
-		text_light: '#8496AE',
+		text_light: '#6A7A8B',
 		text_white: '#FFFFFF',
 		text_disabled: '#7783A1',
 		bg: {
@@ -14,7 +14,7 @@ export const theme = {
 			white: '#FFFFFF',
 			hover: '#E2E9F1',
 		},
-		border_light: '#E2E8F0',
+		border_light: '#E1E3E7',
 		border_darker: '#CBD5E0',
 		border_medium: '#CDD1D7',
 		error_text: '#F56565',

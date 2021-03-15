@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }) => {
 		try {
 			await auth.signInWithEmailAndPassword(email, password)
 			dispatch({ type: types.SIGN_IN_SUCCESS })
+			router.push('/dispatch')
 		} catch (error) {
 			console.error('Error signing in: ', error.message)
 			dispatch({ type: types.FETCH_FAILED, payload: error.message })
@@ -86,7 +87,6 @@ export const AuthProvider = ({ children }) => {
 		dispatch({ type: types.SET_USER, payload: user })
 		dispatch({ type: types.SET_USER_DOC, payload: userDoc })
 		dispatch({ type: types.SET_USER_TEAM, payload: userTeam })
-		router.push('/dispatch')
 	}
 
 	useEffect(() => {

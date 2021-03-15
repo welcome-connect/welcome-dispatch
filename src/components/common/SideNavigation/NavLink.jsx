@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 const NavLink = ({ href, children }) => {
 	const router = useRouter()
 
-	const isActive = router.pathname === href ? true : false
+	const isActive = router.pathname.includes(href)
 
 	return (
 		<ListItem isActive={isActive}>

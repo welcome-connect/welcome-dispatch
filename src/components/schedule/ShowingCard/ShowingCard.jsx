@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import { useDispatch } from '@contexts/dispatch'
 import { useNavigation } from '@contexts/navigation'
 
-import { capitalize } from '@utils/index'
 import { format, fromUnixTime } from 'date-fns'
 import { Status } from '@components/common'
 

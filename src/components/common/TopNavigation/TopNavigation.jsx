@@ -35,7 +35,9 @@ export const TopNavigation = ({ title, icon }) => {
 			<div className="grid-right">
 				<div className="avatar" onClick={handleAvatarOnClick}>
 					<p className="username">{userDoc?.displayName}</p>
-					<UserAvatarIcon />
+					<AvatarWrapper>
+						<UserAvatarIcon fill="white"/>
+					</AvatarWrapper>
 					<UserDropdown />
 				</div>
 			</div>
@@ -112,11 +114,6 @@ const NavigationContainer = styled.header`
 			font-weight: 500;
 		}
 
-		.user-avatar-icon {
-			width: 35px;
-			height: auto;
-		}
-
 		.username {
 			margin-right: 1rem;
 		}
@@ -140,5 +137,19 @@ const NavigationContainer = styled.header`
 		.grid-center {
 			padding: 0 0.75rem;
 		}
+	}
+`
+
+const AvatarWrapper = styled.div`
+	background-color: ${({ theme }) => theme.colors.primary};
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 8px;
+
+	svg {
+		height: 24px;
+		width: auto;
 	}
 `

@@ -19,8 +19,6 @@ const DispatchPage = () => {
 		[userDoc]
 	)
 
-	console.log({ loading, userDoc, isDispatcher })
-
 	return (
 		<Layout title="Dispatch" icon={<CalendarIcon />}>
 			<Grid isAgent={loading || !isDispatcher}>

@@ -1,7 +1,7 @@
 import { Flex } from '@styles/styled-components'
 import styled, { css } from 'styled-components'
 
-export function Status({ status, size = '16px' }) {
+export function Status({ status, size = '16px', ...props }) {
 	const bgColor =
 		status === 'pending'
 			? '#CBD5E0'
@@ -15,7 +15,7 @@ export function Status({ status, size = '16px' }) {
 
 	return (
 		<MFlex>
-			<Circle status={bgColor} size={size} />
+			<Circle status={bgColor} size={size} {...props} />
 		</MFlex>
 	)
 }

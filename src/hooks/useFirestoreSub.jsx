@@ -41,7 +41,7 @@ export const useFirestoreSub = (path, options = {}) => {
 			error => {
 				setError(error)
 				setStatus('error')
-			},
+			}
 		)
 
 		return () => unsubscribe()

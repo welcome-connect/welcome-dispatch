@@ -1,16 +1,16 @@
 import styled, { css } from 'styled-components'
 
 export const Button = styled.button`
-  padding: .5rem 1rem;
-  margin-top: 0.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  width: fit-content;
-  box-sizing: border-box;
-  transition: all 150ms ease-in-out;
+	padding: 0.5rem 1rem;
+	margin-top: 0.5rem;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 1rem;
+	width: fit-content;
+	box-sizing: border-box;
+	transition: all 150ms ease-in-out;
 
-  ${({ isPrimary }) =>
+	${({ isPrimary }) =>
 		isPrimary &&
 		css`
 			color: ${({ theme: { colors } }) => colors.text_white};
@@ -25,8 +25,8 @@ export const Button = styled.button`
 				transition: all 150ms ease-in-out;
 			}
 		`}
-	
-  ${({ isSecondary }) =>
+
+	${({ isSecondary }) =>
 		isSecondary &&
 		css`
 			color: ${({ theme: { colors } }) => colors.primary};
@@ -46,15 +46,16 @@ export const Button = styled.button`
     ${({ isTertiary }) =>
 		isTertiary &&
 		css`
-			background-color: ${({ theme: { colors } }) => colors.purple.accent_light};
-			color: ${({ theme: { colors } }) => colors.purple.text};
-			border: none;
+			background-color: transparent;
+			color: ${({ theme: { colors } }) => colors.text_light};
+			border: 2px solid ${({ theme: { colors } }) => colors.border_darker};
 
 			&.active,
 			&:hover,
 			&:active,
 			&:focus {
-				background-color: ${({ theme: { colors } }) => colors.purple.bg};
+				border: 2px solid ${({ theme: { colors } }) => colors.red.accent};
+				color: ${({ theme: { colors } }) => colors.red.text};
 				transition: all 150ms ease-in-out;
 			}
 		`}

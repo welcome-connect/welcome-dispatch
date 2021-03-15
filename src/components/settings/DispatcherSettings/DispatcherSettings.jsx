@@ -15,7 +15,7 @@ export const DispatcherSettings = memo(() => {
 	const { setSelected, isSelected, setIsEditing } = useSettings()
 
 	const [dispatchers] = useFirestoreSub('users', {
-		where: ['role', '==', 'dispatcher'],
+		where: ['role', '==', 'dispatcher']
 	})
 
 	useEffect(() => {
@@ -40,7 +40,9 @@ export const DispatcherSettings = memo(() => {
 			<SearchProvider data={dispatchers}>
 				<Configure filters={['displayName', 'email']} />
 				<SearchBox label="Search users" />
-				<Hits hitComponent={UserHit} />
+				<ul>
+					<Hits hitComponent={UserHit} />
+				</ul>
 			</SearchProvider>
 
 			<IconRow>

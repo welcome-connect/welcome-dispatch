@@ -3,11 +3,11 @@ import { useSearch } from '@contexts/search'
 
 export const Hits = ({ hitComponent: HitComponent, ...props }) => {
 	const {
-		state: { data, displayTrigger },
+		state: { data, displayTrigger }
 	} = useSearch()
 
 	return (
-		<List>
+		<>
 			{displayTrigger
 				? data.map(hit => (
 						<ListItem key={hit.id}>
@@ -15,12 +15,8 @@ export const Hits = ({ hitComponent: HitComponent, ...props }) => {
 						</ListItem>
 				  ))
 				: null}
-		</List>
+		</>
 	)
 }
-
-const List = styled.ul`
-	list-style: none;
-`
 
 const ListItem = styled.li``

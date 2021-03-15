@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { LeftArrowIcon, RightArrowIcon, DispatchIcon, LogoMark, Logo } from '@components/icons'
+import { LeftArrowIcon, RightArrowIcon, DispatchIcon, LogoMark, Logo, ShowingsIcon } from '@components/icons'
 import NavLink from './NavLink'
 import { useNavigation } from '@contexts/navigation'
 
@@ -22,6 +22,10 @@ export const SideNavigation = () => {
 				<NavLink href="/dispatch">
 					<DispatchIcon />
 					<Label className="label">Dispatch</Label>
+				</NavLink>
+				<NavLink href="/showings">
+					<ShowingsIcon />
+					<Label className="label">Showings</Label>
 				</NavLink>
 			</ul>
 		</NavigationContainer>

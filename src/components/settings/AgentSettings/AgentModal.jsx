@@ -17,7 +17,7 @@ export const AgentModal = () => {
 	const { toggleAgentModal } = useNavigation()
 
 	const [users] = useFirestoreSub('users', {
-		where: ['role', '==', ''],
+		where: ['role', '==', '']
 	})
 
 	if (isEditing) {
@@ -40,7 +40,9 @@ export const AgentModal = () => {
 			<SearchProvider data={users}>
 				<Configure filters={['displayName', 'email']} display={false} />
 				<SearchBox label="Search users" />
-				<Hits hitComponent={UserHit} />
+				<ul>
+					<Hits hitComponent={UserHit} />
+				</ul>
 			</SearchProvider>
 			<ModifiedButton isPrimary className="cancel" onClick={onCancel}>
 				Cancel

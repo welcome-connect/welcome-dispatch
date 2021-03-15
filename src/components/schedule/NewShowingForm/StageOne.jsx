@@ -35,7 +35,9 @@ export function StageOne({ selectedLead, setSelectedLead, formData, handleChange
 							displayQuery="displayName"
 						/>
 						<SearchBox label="Name" />
-						<Hits hitComponent={UserHit} selected={selectedLead} setSelected={setSelectedLead} />
+						<ul>
+							<Hits hitComponent={UserHit} selected={selectedLead} setSelected={setSelectedLead} />
+						</ul>
 					</SearchProvider>
 				) : (
 					<SingleFieldGroup>

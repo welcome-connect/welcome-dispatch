@@ -23,25 +23,25 @@ export const TeamModal = () => {
 		selectedAgents,
 		selectedDispatchers,
 		setSelectedAgents,
-		setSelectedDispatchers,
+		setSelectedDispatchers
 	} = useSettings()
 
 	const [agents] = useFirestoreSub('users', {
 		where: [
 			['teams', 'array-contains', isSelected?.id],
-			['role', '==', 'agent'],
-		],
+			['role', '==', 'agent']
+		]
 	})
 
 	const [dispatchers] = useFirestoreSub('users', {
 		where: [
 			['teams', 'array-contains', isSelected?.id],
-			['role', '==', 'dispatcher'],
-		],
+			['role', '==', 'dispatcher']
+		]
 	})
 
 	const [users] = useFirestoreSub('users', {
-		where: ['role', '!=', ''],
+		where: ['role', '!=', '']
 	})
 
 	const onSubmit = async ({ name }) => {
@@ -127,7 +127,9 @@ export const TeamModal = () => {
 			<SearchProvider data={users}>
 				<Configure filters={['displayName', 'email', 'role']} display={false} hitsPerPage={4} />
 				<SearchBox label="Search users" />
-				<Hits hitComponent={TeamUsersHit} />
+				<ul>
+					<Hits hitComponent={TeamUsersHit} />
+				</ul>
 			</SearchProvider>
 		</Container>
 	)

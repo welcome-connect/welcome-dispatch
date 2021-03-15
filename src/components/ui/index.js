@@ -2,3 +2,4 @@ export { ModalContainer, NewLeadModal, NewShowingModal, ShowingModal } from './M
 // export { TeamsDropdown } from './TeamsDropdown'
 export { UserDropdown } from './UserDropdown'
 export { UserHit } from './UserHit'
+export { UserAvatar } from './UserAvatar'
