@@ -31,9 +31,9 @@ export default function ShowingPage() {
 			const lead = (await db.collection('leads').doc(partialShowing.leadId).get()).data()
 			return {
 				...partialShowing,
-				agentEmail: agent.email,
-				agentPhoneNumber: agent.phoneNumber,
-				agentName: agent.displayName,
+				agentEmail: agent?.email || '',
+				agentPhoneNumber: agent?.phoneNumber || '',
+				agentName: agent?.displayName || '',
 				leadName: lead.displayName,
 				leadPhoneNumber: lead.phoneNumber
 			}

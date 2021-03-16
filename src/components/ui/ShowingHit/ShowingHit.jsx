@@ -10,7 +10,7 @@ export function ShowingHit({ hit }) {
 			<p>{format(fromUnixTime(hit.date.seconds), 'MM-dd-yyyy')}</p>
 			<p>{format(fromUnixTime(hit.preStartTime), 'hh:mm a')}</p>
 			<p>{format(fromUnixTime(hit.preEndTime), 'hh:mm a')}</p>
-			<p>{hit.agentName}</p>
+			<p>{hit.agentName || ''}</p>
 			<p>{hit.leadName}</p>
 			<p>{formatPhoneNumber(hit.leadPhoneNumber, '($2) $3-$4')}</p>
 			<p>{hit.price}</p>

@@ -37,10 +37,10 @@ export default function ShowingsPage() {
 				return {
 					...showing,
 					agent,
-					agentName: agent.displayName,
+					agentName: agent?.displayName || '',
 					lead,
-					leadName: lead.displayName,
-					leadPhoneNumber: lead.phoneNumber
+					leadName: lead.displayName || '',
+					leadPhoneNumber: lead.phoneNumber || ''
 				}
 			})
 		)

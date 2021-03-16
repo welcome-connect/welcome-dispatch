@@ -43,7 +43,15 @@ export function ShowingDetails({ showing }) {
 
 				<AvatarsContainer>
 					<UserAvatar user={{ name: showing.leadName, phoneNumber: showing.leadPhoneNumber, role: 'Lead' }} />
-					<UserAvatar user={{ name: showing.agentName, phoneNumber: showing.agentPhoneNumber, role: 'Agent' }} />
+					{showing.agentId !== 'unassigned' ? (
+						<UserAvatar
+							user={{
+								name: showing.agentName || '',
+								phoneNumber: showing.agentPhoneNumber || '',
+								role: 'Agent'
+							}}
+						/>
+					) : null}
 				</AvatarsContainer>
 
 				<PropertyDetails>
