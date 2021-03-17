@@ -50,7 +50,7 @@ export const Map = () => {
 
 	const handleMarkerClick = showing => {
 		selectShowing(showing)
-		toggleShowingModal()
+		window.open(`/showings/${showing.id}`)
 	}
 
 	useEffect(() => {
@@ -113,17 +113,29 @@ export const Map = () => {
 				))}
 
 				{unAssignedShowings.map(showing => (
-					<Marker
-						key={showing.id}
-						position={{
-							lat: showing.places.coords.lat,
-							lng: showing.places.coords.lng
-						}}
-						icon="./icons/unassignedPin.svg"
-						onClick={() => handleMarkerClick(showing)}
-						onMouseOver={() => setHoveredShowing(showing)}
-						onMouseOut={() => setHoveredShowing(null)}
-					/>
+					<div key={showing.id}>
+						<Marker
+							position={{
+								lat: showing.places.coords.lat,
+								lng: showing.places.coords.lng
+							}}
+							icon="./icons/unassignedPin.svg"
+							onClick={() => handleMarkerClick(showing)}
+							onMouseOver={() => setHoveredShowing(showing)}
+							onMouseOut={() => setHoveredShowing(null)}
+						/>
+
+						{hoveredShowing ? (
+							<InfoWindow
+								position={{
+									lat: showing.places.coords.lat,
+									lng: showing.places.coords.lng
+								}}
+								options={{ pixelOffset: { height: -40, width: 0 } }}>
+								<InfoWindowContent showing={showing} />
+							</InfoWindow>
+						) : null}
+					</div>
 				))}
 			</GoogleMap>
 		</Container>

@@ -7,7 +7,7 @@ import { SearchProvider } from '@contexts/search'
 
 import { updateUserDocument } from '@services/firebase'
 
-import { Button, Form } from '@styles/styled-components'
+import { Button } from '@styles/styled-components'
 import { Configure, Hits, SearchBox } from '@components/common'
 import { EditUserForm } from '../EditUserForm'
 import { UserHit } from '@components/ui'
@@ -19,8 +19,6 @@ export const DispatcherModal = () => {
 	const [users] = useFirestoreSub('users', {
 		where: ['role', '==', '']
 	})
-
-	console.log({ users })
 
 	if (isEditing) {
 		return <EditUserForm />
@@ -70,10 +68,4 @@ const ModifiedButton = styled(Button)`
 	&.cancel {
 		left: 32px;
 	}
-`
-
-const ModifiedForm = styled(Form)`
-	padding: 1rem 0;
-	background-color: transparent;
-	width: 100%;
 `

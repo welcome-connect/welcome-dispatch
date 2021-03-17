@@ -56,6 +56,7 @@ export const NewLeadForm = () => {
 
 const Container = styled.div`
 	height: 100%;
+	min-width: 400px;
 	width: 100%;
 	padding: 8px 32px;
 	position: relative;

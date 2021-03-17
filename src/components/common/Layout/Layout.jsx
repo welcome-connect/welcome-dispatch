@@ -1,100 +1,16 @@
-import styled, { css } from 'styled-components'
-
+import styled from 'styled-components'
 import { useNavigation } from '@contexts/navigation'
-import { SettingsProvider } from '@contexts/settings'
-import { DispatchProvider } from '@contexts/dispatch'
-
-import { Settings, AgentModal, DispatcherModal, TeamModal } from '@components/settings'
-import { TopNavigation, SideNavigation } from '../'
-import { ModalContainer, NewLeadModal, NewShowingModal, ShowingModal } from '@components/ui'
-import { NewShowingForm, NewLeadForm } from '@components/schedule'
-import { ShowingContent } from '@components/schedule'
+import { TopNavigation, SideNavigation } from '@components/common'
 
 export const Layout = ({ children, title, icon }) => {
-	const {
-		toggleUserDropdownMenu,
-		toggleSettingsModal,
-		toggleTeamModal,
-		toggleAgentModal,
-		toggleDispatcherModal,
-		toggleNewLeadModal,
-		toggleShowingModal,
-		isSideNavExpanded,
-		isUserDropdownOpen,
-		isSettingsOpen,
-		isTeamModalOpen,
-		isAgentModalOpen,
-		isDispatcherModalOpen,
-		isNewShowingModalOpen,
-		isNewLeadModalOpen,
-		isShowingModalOpen,
-	} = useNavigation()
-
-	const handleBgClick = e => {
-		e.stopPropagation()
-		if (isUserDropdownOpen) toggleUserDropdownMenu()
-		if (isSettingsOpen) toggleSettingsModal()
-		if (isTeamModalOpen) toggleTeamModal()
-		if (isAgentModalOpen) toggleAgentModal()
-		if (isDispatcherModalOpen) toggleDispatcherModal()
-		if (isNewLeadModalOpen) toggleNewLeadModal()
-		if (isShowingModalOpen) toggleShowingModal()
-	}
+	const { isSideNavExpanded } = useNavigation()
 
 	return (
 		<Container className={isSideNavExpanded ? 'menu-open' : null}>
-			<SettingsProvider>
-				{isUserDropdownOpen ||
-				isSettingsOpen ||
-				isNewShowingModalOpen ||
-				isNewLeadModalOpen ||
-				isShowingModalOpen ? (
-					<ModalBackground onClick={handleBgClick} isUserDropdownOpen={isUserDropdownOpen} />
-				) : null}
-				{isSettingsOpen ? (
-					<ModalContainer>
-						<Settings />
-					</ModalContainer>
-				) : null}
-				{isTeamModalOpen ? (
-					<ModalContainer>
-						<TeamModal />
-					</ModalContainer>
-				) : null}
-				{isAgentModalOpen ? (
-					<ModalContainer>
-						<AgentModal />
-					</ModalContainer>
-				) : null}
-				{isDispatcherModalOpen ? (
-					<ModalContainer>
-						<DispatcherModal />
-					</ModalContainer>
-				) : null}
-			</SettingsProvider>
-
-			{isNewLeadModalOpen ? (
-				<NewLeadModal>
-					<NewLeadForm />
-				</NewLeadModal>
-			) : null}
-
 			<TopNavigation title={title} icon={icon} />
 			<SideNavigation />
 
-			<DispatchProvider>
-				{isNewShowingModalOpen ? (
-					<NewShowingModal>
-						<NewShowingForm />
-					</NewShowingModal>
-				) : null}
-				{isShowingModalOpen ? (
-					<ShowingModal>
-						<ShowingContent />
-					</ShowingModal>
-				) : null}
-				<PageContainer>{children}</PageContainer>
-			</DispatchProvider>
+			<PageContainer>{children}</PageContainer>
 		</Container>
 	)
 }
@@ -135,22 +51,6 @@ const Container = styled.div`
 			grid-template-columns: auto;
 		}
 	}
-`
-
-const ModalBackground = styled.div`
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	z-index: 10;
-	background: rgba(0, 0, 0, 0.3);
-	transition: all 150ms ease-in-out;
-
-	${({ isUserDropdownOpen }) =>
-		isUserDropdownOpen &&
-		css`
-			z-index: 0;
-			background: transparent;
-		`}
 `
 
 const PageContainer = styled.main`

@@ -6,10 +6,10 @@ import { db } from '@services/firebase'
 import { SearchProvider } from '@contexts/search/SearchProvider'
 import { useFirestoreSub } from '@hooks/useFirestoreSub'
 
-import { Hits, Layout, Configure, SearchBox } from '@components/common'
 import { FieldGroup, Label, SettingsInput } from '@styles/styled-components'
+import { Hits, Layout, Configure, SearchBox } from '@components/common'
 import { ShowingsIcon } from '@components/icons'
-import { ShowingHit } from '@components/ui/ShowingHit/ShowingHit'
+import { ShowingHit } from '@components/ui'
 
 const tableColumns = ['address', 'date', 'start time', 'end time', 'agent', 'lead', 'lead phone number', 'price', 'status']
 

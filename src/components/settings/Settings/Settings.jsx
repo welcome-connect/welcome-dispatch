@@ -3,11 +3,16 @@ import styled, { css } from 'styled-components'
 
 import navItems from './nav_items'
 
-import { AccountSettings, TeamSettings, AgentSettings, DispatcherSettings } from '../'
+import { AccountSettings, TeamSettings, AgentSettings, DispatcherSettings, AgentModal, DispatcherModal } from '../'
+import { SettingsProvider } from '@contexts/settings/SettingsProvider'
+import { useNavigation } from '@contexts/navigation/NavigationProvider'
+import { TeamModal } from '../TeamSettings/TeamModal'
 
 export const Settings = () => {
 	const [selectedSetting, setSelectedSetting] = useState(<AccountSettings />)
 	const [isSelected, setIsSelected] = useState('account')
+
+	const { isTeamModalOpen, isAgentModalOpen, isDispatcherModalOpen } = useNavigation()
 
 	const selectSetting = setting => {
 		switch (setting) {
@@ -33,27 +38,39 @@ export const Settings = () => {
 	}
 
 	return (
-		<Container>
-			<SettingsNav>
-				{navItems.map(navItem => (
-					<NavItem
-						key={navItem.name}
-						onClick={() => selectSetting(navItem.name.toLowerCase())}
-						isSelected={isSelected === navItem.name.toLowerCase()}>
-						{navItem.svg}
-						{navItem.name}
-					</NavItem>
-				))}
-			</SettingsNav>
-			<SelectedView>{selectedSetting}</SelectedView>
-		</Container>
+		<SettingsProvider>
+			<Container>
+				{isTeamModalOpen ? (
+					<TeamModal />
+				) : isAgentModalOpen ? (
+					<AgentModal />
+				) : isDispatcherModalOpen ? (
+					<DispatcherModal />
+				) : (
+					<>
+						<SettingsNav>
+							{navItems.map(navItem => (
+								<NavItem
+									key={navItem.name}
+									onClick={() => selectSetting(navItem.name.toLowerCase())}
+									isSelected={isSelected === navItem.name.toLowerCase()}>
+									{navItem.svg}
+									{navItem.name}
+								</NavItem>
+							))}
+						</SettingsNav>
+						<SelectedView>{selectedSetting}</SelectedView>
+					</>
+				)}
+			</Container>
+		</SettingsProvider>
 	)
 }
 
 const Container = styled.div`
 	display: flex;
-	height: 100%;
-	width: 100%;
+	height: min(700px, 90vh);
+	width: 700px;
 `
 const SettingsNav = styled.nav`
 	display: flex;

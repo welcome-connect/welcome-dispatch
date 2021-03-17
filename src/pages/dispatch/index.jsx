@@ -1,15 +1,37 @@
 import styled, { css } from 'styled-components'
-import { Map } from '@components/map'
-import { Layout } from '@components/common'
-import { ScheduleView } from '@components/schedule'
-import { CalendarIcon } from '@components/icons'
-import { useAuth } from '@contexts/auth/AuthProvider'
 import { useEffect, useState } from 'react'
 
-const DispatchPage = () => {
+import { useAuth } from '@contexts/auth/AuthProvider'
+import { useNavigation } from '@contexts/navigation/NavigationProvider'
+import { DispatchProvider } from '@contexts/dispatch/DispatchProvider'
+
+import { Map } from '@components/map'
+import { Layout, Portal, Modal } from '@components/common'
+import { NewLeadForm, NewShowingForm, ScheduleView } from '@components/schedule'
+import { CalendarIcon } from '@components/icons'
+import { Settings } from '@components/settings'
+
+export default function DispatchPage() {
 	const [loading, setLoading] = useState(true)
 	const [isDispatcher, setIsDispatcher] = useState(false)
 	const { userDoc } = useAuth()
+
+	const {
+		isSettingsOpen,
+		isUserDropdownOpen,
+		isAgentModalOpen,
+		isDispatcherModalOpen,
+		isTeamModalOpen,
+		isNewLeadModalOpen,
+		isNewShowingModalOpen,
+		toggleSettingsModal,
+		toggleUserDropdownMenu,
+		toggleAgentModal,
+		toggleDispatcherModal,
+		toggleTeamModal,
+		toggleNewLeadModal,
+		toggleNewShowingModal
+	} = useNavigation()
 
 	useEffect(
 		function endLoading() {
@@ -19,28 +41,63 @@ const DispatchPage = () => {
 		[userDoc]
 	)
 
+	function handleSettingsOnClose() {
+		if (isUserDropdownOpen) toggleUserDropdownMenu()
+		if (isAgentModalOpen) toggleAgentModal()
+		if (isDispatcherModalOpen) toggleDispatcherModal()
+		if (isTeamModalOpen) toggleTeamModal()
+
+		toggleSettingsModal()
+	}
+
 	return (
-		<Layout title="Dispatch" icon={<CalendarIcon />}>
-			<Grid isAgent={loading || !isDispatcher}>
-				{loading ? (
-					<h1>Loading...</h1>
-				) : (
-					<>
-						{!isDispatcher ? (
-							<FlexColumn>
-								<h1>YOU SHALL NOT PASS</h1>
-								<h2>Dispatchers only</h2>
-							</FlexColumn>
-						) : (
-							<>
-								<ScheduleView />
-								<Map />
-							</>
-						)}
-					</>
-				)}
-			</Grid>
-		</Layout>
+		<DispatchProvider>
+			<Layout title="Dispatch" icon={<CalendarIcon />}>
+				<Grid isAgent={loading || !isDispatcher}>
+					{loading ? (
+						<h1>Loading...</h1>
+					) : (
+						<>
+							{!isDispatcher ? (
+								<FlexColumn>
+									<h1>YOU SHALL NOT PASS</h1>
+									<h2>Dispatchers only</h2>
+								</FlexColumn>
+							) : (
+								<>
+									<ScheduleView />
+									<Map />
+								</>
+							)}
+						</>
+					)}
+				</Grid>
+
+				{isSettingsOpen ? (
+					<Portal id="settings-modal">
+						<Modal onClose={handleSettingsOnClose}>
+							<Settings />
+						</Modal>
+					</Portal>
+				) : null}
+
+				{isNewLeadModalOpen ? (
+					<Portal id="new-lead-modal">
+						<Modal onClose={toggleNewLeadModal}>
+							<NewLeadForm />
+						</Modal>
+					</Portal>
+				) : null}
+
+				{isNewShowingModalOpen ? (
+					<Portal id="new-showing-modal">
+						<Modal onClose={toggleNewShowingModal}>
+							<NewShowingForm />
+						</Modal>
+					</Portal>
+				) : null}
+			</Layout>
+		</DispatchProvider>
 	)
 }
 
@@ -63,5 +120,3 @@ const FlexColumn = styled.div`
 	justify-content: center;
 	align-items: center;
 `
-
-export default DispatchPage

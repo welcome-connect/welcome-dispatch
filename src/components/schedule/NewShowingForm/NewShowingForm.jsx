@@ -25,7 +25,7 @@ export const NewShowingForm = () => {
 		editShowingLead,
 		editShowingAgent,
 		setEditShowingLead,
-		setEditShowingAgent,
+		setEditShowingAgent
 	} = useDispatch()
 
 	const [selectedAgent, setSelectedAgent] = useState(null)
@@ -57,10 +57,10 @@ export const NewShowingForm = () => {
 				geometry: {
 					location: {
 						lat: () => editShowing.places.coords.lat,
-						lng: () => editShowing.places.coords.lng,
-					},
+						lng: () => editShowing.places.coords.lng
+					}
 				},
-				address_components: [],
+				address_components: []
 			})
 			setFormData({
 				leadName: editShowingLead.displayName,
@@ -78,9 +78,9 @@ export const NewShowingForm = () => {
 				otherFees: editShowing.otherFees || '',
 				flooded: editShowing.flooded || '',
 				date: format(new Date(editShowing.date.string), 'yyyy-MM-dd'),
-				preStartTime: format(fromUnixTime(editShowing.preStartTime), 'hh:mm'),
-				preEndTime: format(fromUnixTime(editShowing.preEndTime), 'hh:mm'),
-				additionalNotes: editShowing.additionalNotes || '',
+				preStartTime: format(fromUnixTime(editShowing.preStartTime), 'HH:mm'),
+				preEndTime: format(fromUnixTime(editShowing.preEndTime), 'HH:mm'),
+				additionalNotes: editShowing.additionalNotes || ''
 			})
 		}
 	}, [editShowing, editShowingLead, editShowingAgent])
@@ -91,7 +91,7 @@ export const NewShowingForm = () => {
 		} else {
 			setFormData({
 				...formData,
-				address: getAddress(placeToBeAdded).formatted_address,
+				address: getAddress(placeToBeAdded).formatted_address
 			})
 		}
 	}, [placeToBeAdded])
@@ -103,7 +103,7 @@ export const NewShowingForm = () => {
 			setFormData({
 				...formData,
 				phoneNumber: formatPhoneNumber(selectedLead.phoneNumber, '($2) $3-$4'),
-				leadName: selectedLead.displayName,
+				leadName: selectedLead.displayName
 			})
 		}
 	}, [selectedLead])
@@ -114,7 +114,7 @@ export const NewShowingForm = () => {
 		} else {
 			setFormData({
 				...formData,
-				agentName: selectedAgent.displayName,
+				agentName: selectedAgent.displayName
 			})
 		}
 	}, [selectedAgent])
@@ -148,7 +148,7 @@ export const NewShowingForm = () => {
 			places: getAddress(placeToBeAdded),
 			placeToBeAdded,
 			agent: selectedAgent,
-			lead: selectedLead,
+			lead: selectedLead
 		}
 
 		try {
@@ -221,15 +221,15 @@ export const NewShowingForm = () => {
 }
 
 const Container = styled.div`
-	height: 100%;
-	width: 100%;
-	padding: 8px 32px;
+	height: min(700px, 90vh);
+	width: 700px;
+	padding: 0.5rem 1rem;
 	position: relative;
 `
 
 const ButtonContainer = styled.div`
 	bottom: 12px;
-	width: calc(100% - 64px);
+	width: calc(100% - 32px);
 	position: absolute;
 	display: flex;
 	justify-content: space-between;

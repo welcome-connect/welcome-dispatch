@@ -8,35 +8,34 @@ import { Status } from '@components/common'
 
 export const ShowingCard = ({ showing, toggleShowingWindow }) => {
 	const { selectShowing } = useDispatch()
-	const { toggleShowingModal } = useNavigation()
 
 	const handleClick = showing => {
 		console.log(showing)
 		selectShowing(showing)
-		toggleShowingModal()
 		toggleShowingWindow(showing.outingId)
 	}
 
 	if (showing) {
 		return (
-			<Showing onClick={() => handleClick(showing)}>
+			<Showing href={`/showings/${showing.id}`} onClick={() => handleClick(showing)} target="_black">
 				<Address>{showing.address}</Address>
 				<BotLine>
 					<Time>
 						{format(fromUnixTime(showing?.preStartTime), 'hh:mm')} -{' '}
 						{format(fromUnixTime(showing?.preEndTime), 'hh:mm')}
 					</Time>
-					<Status status={showing.status} size="14px"/>
+					<Status status={showing.status} size="14px" />
 				</BotLine>
 			</Showing>
 		)
 	} else return <Showing />
 }
 
-const Showing = styled.div`
+const Showing = styled.a`
 	padding: 8px 12px;
 	border-radius: 4px;
 	font-size: 0.9rem;
+	text-decoration: none;
 
 	background-color: ${({ theme }) => theme.colors.bg.white};
 
@@ -50,7 +49,7 @@ const Showing = styled.div`
 	cursor: pointer;
 `
 
-const Address = styled.div`
+const Address = styled.p`
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
@@ -63,4 +62,4 @@ const BotLine = styled.div`
 	justify-content: space-between;
 	width: 100%;
 `
-const Time = styled.div``
+const Time = styled.p``

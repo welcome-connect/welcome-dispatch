@@ -31,9 +31,8 @@ export const MarkerSet = ({ agent, handleMarkerClick }) => {
 		const icon = getMarkerIcon(showing.status)
 
 		return (
-			<>
+			<div key={showing.id}>
 				<Marker
-					key={showing.id}
 					position={{ lat, lng }}
 					icon={icon}
 					onClick={() => handleMarkerClick(showing)}
@@ -45,7 +44,7 @@ export const MarkerSet = ({ agent, handleMarkerClick }) => {
 						<InfoWindowContent showing={showing} />
 					</InfoWindow>
 				) : null}
-			</>
+			</div>
 		)
 	})
 }
