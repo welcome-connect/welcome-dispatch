@@ -1,7 +1,6 @@
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { format, fromUnixTime } from 'date-fns'
 
 import { db } from '@services/firebase'
 import { useFirestoreSub } from '@hooks/useFirestoreSub'
@@ -9,7 +8,6 @@ import { useFirestoreSub } from '@hooks/useFirestoreSub'
 import { Layout } from '@components/common'
 import { ShowingsIcon } from '@components/icons'
 import { OutingNotes, ShowingDetails, ShowingFinalNotes } from '@components/showings'
-import { Button, Flex } from '@styles/styled-components'
 
 export default function ShowingPage() {
 	const [showing, setShowing] = useState({})
@@ -21,9 +19,6 @@ export default function ShowingPage() {
 	const [[partialShowing]] = useFirestoreSub('showings', {
 		where: ['id', '==', showingId]
 	})
-
-	const from = () => format(fromUnixTime(showing.preStartTime), 'hh:mm a')
-	const to = () => format(fromUnixTime(showing.preEndTime), 'hh:mm a')
 
 	async function fetchCompleteShowing() {
 		const getCompleteShowing = async () => {
@@ -47,8 +42,6 @@ export default function ShowingPage() {
 		if (partialShowing) fetchCompleteShowing()
 	}, [partialShowing])
 
-	console.log(showing)
-
 	return (
 		<Layout title="Showings" icon={<ShowingsIcon fill="#383F51" />}>
 			<Container>
@@ -59,7 +52,6 @@ export default function ShowingPage() {
 						<ShowingDetails showing={showing} />
 						<ShowingFinalNotes showing={showing} />
 						<OutingNotes showing={showing} />
-
 					</>
 				)}
 			</Container>

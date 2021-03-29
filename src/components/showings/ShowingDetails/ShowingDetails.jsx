@@ -1,11 +1,13 @@
 import styled from 'styled-components'
+import { format, fromUnixTime, formatDistance } from 'date-fns'
+import { useState } from 'react'
+
 import { capitalize } from '@utils/capitalize'
 
-import { format, fromUnixTime, formatDistance } from 'date-fns'
-
-import { Status } from '@components/common'
+import { Modal, Portal, Status } from '@components/common'
 import { UserAvatar } from '@components/ui'
 import { Button, Flex } from '@styles/styled-components'
+import { EditShowingForm } from '@components/showings'
 
 function getFields(showing) {
 	return [
@@ -31,6 +33,12 @@ function getFields(showing) {
 }
 
 export function ShowingDetails({ showing }) {
+	const [isShowingEditModalOpen, setIsShowingEditModalOpen] = useState(false)
+
+	function toggleShowingEditModal() {
+		setIsShowingEditModalOpen(!isShowingEditModalOpen)
+	}
+
 	return (
 		<Container>
 			<div>
@@ -66,8 +74,18 @@ export function ShowingDetails({ showing }) {
 
 			<ButtonRow>
 				<Button isTertiary>Cancel</Button>
-				<Button isPrimary>Edit</Button>
+				<Button isPrimary onClick={toggleShowingEditModal}>
+					Edit
+				</Button>
 			</ButtonRow>
+
+			{isShowingEditModalOpen ? (
+				<Portal id="edit-showing-modal">
+					<Modal onClose={toggleShowingEditModal}>
+						<EditShowingForm showing={showing} />
+					</Modal>
+				</Portal>
+			) : null}
 		</Container>
 	)
 }
