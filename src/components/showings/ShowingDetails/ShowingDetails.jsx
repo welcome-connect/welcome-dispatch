@@ -7,7 +7,7 @@ import { capitalize } from '@utils/capitalize'
 import { Modal, Portal, Status } from '@components/common'
 import { UserAvatar } from '@components/ui'
 import { Button, Flex } from '@styles/styled-components'
-import { EditShowingForm } from '@components/showings'
+import { EditShowingForm, DeleteModalContent } from '@components/showings'
 
 function getFields(showing) {
 	return [
@@ -34,9 +34,14 @@ function getFields(showing) {
 
 export function ShowingDetails({ showing }) {
 	const [isShowingEditModalOpen, setIsShowingEditModalOpen] = useState(false)
+	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
 	function toggleShowingEditModal() {
 		setIsShowingEditModalOpen(!isShowingEditModalOpen)
+	}
+
+	function toggleDeleteModal() {
+		setIsDeleteModalOpen(!isDeleteModalOpen)
 	}
 
 	return (
@@ -73,7 +78,12 @@ export function ShowingDetails({ showing }) {
 			</div>
 
 			<ButtonRow>
-				<Button isTertiary>Cancel</Button>
+				<div>
+					<Button isTertiary>Cancel</Button>
+					<Button isTertiary onClick={() => setIsDeleteModalOpen(true)}>
+						Delete
+					</Button>
+				</div>
 				<Button isPrimary onClick={toggleShowingEditModal}>
 					Edit
 				</Button>
@@ -83,6 +93,14 @@ export function ShowingDetails({ showing }) {
 				<Portal id="edit-showing-modal">
 					<Modal onClose={toggleShowingEditModal}>
 						<EditShowingForm showing={showing} />
+					</Modal>
+				</Portal>
+			) : null}
+
+			{isDeleteModalOpen ? (
+				<Portal id="delete-modal">
+					<Modal onClose={toggleDeleteModal}>
+						<DeleteModalContent showingId={showing.id} />
 					</Modal>
 				</Portal>
 			) : null}
@@ -110,6 +128,12 @@ const ButtonRow = styled.div`
 	display: flex;
 	justify-content: space-between;
 	width: 100%;
+
+	div {
+		button:first-child {
+			margin-right: 1rem;
+		}
+	}
 `
 
 const Address = styled.h1`

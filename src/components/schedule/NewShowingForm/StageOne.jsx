@@ -129,6 +129,7 @@ export function StageOne({ selectedLead, setSelectedLead, formData, handleChange
 						<SettingsInput
 							type="number"
 							name="bathrooms"
+							step="0.5"
 							value={formData.bathrooms}
 							onChange={e => handleChange(e)}
 							required

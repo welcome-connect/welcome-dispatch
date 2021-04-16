@@ -40,7 +40,7 @@ export const createShowing = async showing => {
 					showings: [submitedShowing.id],
 					cancelledShowings: [],
 					completedShowings: [],
-					status: 'pending',
+					status: 'pending'
 				}
 				newOuting = await createOuting(newOutingModel)
 			} else {
@@ -82,7 +82,6 @@ export const getShowing = async id => {
 // UPDATE SHOWING
 export const updateShowing = async (id, data, checkAvail = false) => {
 	const { createdAt, status } = await getShowing(id)
-	const showingModel = createShowingModel({ ...data, id, createdAt, status })
 
 	if (data.agent && checkAvail) {
 		const { isAvailable } = await checkAgentSchedule(data.agent.id, showingModel)
@@ -108,4 +107,15 @@ export const updateShowingOutingId = async (id, outingId) => {
 	}
 
 	return getShowing(id)
+}
+
+export function deleteShowing(showingId) {
+	return db
+		.collection('showings')
+		.doc(showingId)
+		.delete()
+		.then(() => {
+			return { success: true }
+		})
+		.catch(error => console.error('Error removing showing document', error))
 }
