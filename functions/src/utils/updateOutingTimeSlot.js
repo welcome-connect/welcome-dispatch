@@ -1,3 +1,5 @@
+const { db } = require("../admin")
+
 async function getShowing(id) {
 	if (!id) return new Error('Id required')
 
