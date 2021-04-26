@@ -1,6 +1,6 @@
 const functions = require('firebase-functions')
 const { db, admin } = require('../admin')
-const findSymmetricDiff = require('../utils')
+const { findSymmetricDiff } = require('../utils')
 
 exports.updateTeamCount = functions.firestore.document('users/{userId}').onUpdate(change => {
 	const newData = change.after.data()
@@ -23,7 +23,7 @@ exports.updateTeamCount = functions.firestore.document('users/{userId}').onUpdat
 		message: 'THERE HAS BEEN A CHANGE TO THE TEAMS',
 		newData,
 		currentData,
-		teamId,
+		teamId
 	})
 
 	return

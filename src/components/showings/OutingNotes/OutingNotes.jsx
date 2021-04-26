@@ -15,6 +15,7 @@ export function OutingNotes({ showing }) {
 					return (
 						<ShowingNote
 							note={{ message: note.message, date: note.createdAt.seconds, createdBy: showing.agentName }}
+							key={note.id}
 						/>
 					)
 				})

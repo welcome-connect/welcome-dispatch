@@ -13,7 +13,7 @@ export const addShowingToOuting = async (showing, outing) => {
 		const isEarliestShowing = isEqual(showing.preEndTime, outing.preStartTime)
 
 		await outingRef.update({
-			showings: firebase.firestore.FieldValue.arrayUnion(showing.id),
+			showings: firebase.firestore.FieldValue.arrayUnion(showing.id)
 		})
 
 		if (isLatestShowing) await outingRef.update({ preEndTime: showing.preEndTime })
@@ -53,5 +53,18 @@ export const getOuting = async id => {
 		return { id, ...outingDocument.data() }
 	} catch (error) {
 		console.error('Error fetching outing: ', error.message)
+	}
+}
+
+export function removeOutingShowing(outingId, showingId) {
+	try {
+		const outingRef = db.collection('outings').doc(outingId)
+		outingRef.update({
+			showings: firebase.firestore.FieldValue.arrayRemove(showingId)
+		})
+
+		return getOuting(outingId)
+	} catch (error) {
+		console.error('Error removing showing from outing: ', error.message)
 	}
 }

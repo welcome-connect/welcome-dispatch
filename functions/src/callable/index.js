@@ -1,2 +1,3 @@
 const addRole = require('./addRole')
-module.exports = { addRole }
+const sendSMS = require('./sendSMS')
+module.exports = { addRole, sendSMS }

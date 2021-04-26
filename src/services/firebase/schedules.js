@@ -122,3 +122,16 @@ export const updateScheduleOutings = async (id, outing) => {
 		console.error('Error updating team: ', error.message)
 	}
 }
+
+export function removeScheduleOuting(scheduleId, outingId) {
+	try {
+		const scheduleRef = db.collection('schedules').doc(scheduleId)
+		scheduleRef.update({
+			outings: firebase.firestore.FieldValue.arrayRemove(outingId)
+		})
+
+		return getSchedule(scheduleId)
+	} catch (error) {
+		console.error('Error removing outing from schedule: ', error.message)
+	}
+}

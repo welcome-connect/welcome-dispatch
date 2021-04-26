@@ -92,7 +92,7 @@ export function ShowingDetails({ showing }) {
 			{isShowingEditModalOpen ? (
 				<Portal id="edit-showing-modal">
 					<Modal onClose={toggleShowingEditModal}>
-						<EditShowingForm showing={showing} />
+						<EditShowingForm showing={showing} handleClose={toggleShowingEditModal}/>
 					</Modal>
 				</Portal>
 			) : null}

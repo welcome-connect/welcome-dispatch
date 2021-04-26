@@ -1,3 +1,4 @@
 const findSymmetricDiff = require('./findSymmetricDiff')
+const updateOutingTimeSlot = require('./updateOutingTimeSlot')
 
-module.exports = findSymmetricDiff
+module.exports = { findSymmetricDiff, updateOutingTimeSlot }

@@ -1,6 +1,6 @@
 import { createShowingModel } from '@utils/index'
 import { db, firebase } from './index'
-import { createOuting, addShowingToOuting } from './outings'
+import { createOuting, addShowingToOuting, removeOutingShowing } from './outings'
 import { checkAgentSchedule, createSchedule, updateScheduleOutings } from './schedules'
 
 // CREATE SHOWING
@@ -80,22 +80,13 @@ export const getShowing = async id => {
 }
 
 // UPDATE SHOWING
-export const updateShowing = async (id, data, checkAvail = false) => {
-	const { createdAt, status } = await getShowing(id)
-
-	if (data.agent && checkAvail) {
-		const { isAvailable } = await checkAgentSchedule(data.agent.id, showingModel)
-		if (!isAvailable) throw new Error('Agent is unavailable at this time')
-	}
-
+export const updateShowing = async (id, data) => {
 	try {
-		await db.collection('showings').doc(id).update(showingModel)
+		await db.collection('showings').doc(id).update(data)
 		return getShowing(id)
 	} catch (error) {
 		console.error('Error updating showing: ', error.message)
 	}
-
-	return getShowing(id)
 }
 
 export const updateShowingOutingId = async (id, outingId) => {
@@ -107,6 +98,45 @@ export const updateShowingOutingId = async (id, outingId) => {
 	}
 
 	return getShowing(id)
+}
+
+export async function updateShowingAgent(showingId, newAgentId) {
+	const showingRef = db.collection('showings').doc(showingId)
+	const showing = (await showingRef.get()).data()
+	const agent = (await db.collection('users').doc(newAgentId).get()).data()
+
+	const { isAvailable, schedule, adjecentOuting } = await checkAgentSchedule(newAgentId, showing)
+	if (!isAvailable) throw new Error('Agent is unavailable at this time')
+
+	let outing
+	if (!adjecentOuting) {
+		const { leadId, date, preStartTime, preEndTime } = showing
+		const newOutingModel = {
+			agentId: newAgentId,
+			leadId,
+			date,
+			preStartTime,
+			preEndTime,
+			showings: [showing.id],
+			cancelledShowings: [],
+			completedShowings: [],
+			status: 'pending'
+		}
+		outing = await createOuting(newOutingModel)
+	} else {
+		outing = await addShowingToOuting(showing, adjecentOuting)
+	}
+
+	const updatedShowing = await updateShowingOutingId(showing.id, outing.id)
+
+	if (!schedule) {
+		const newSchedule = await createSchedule(agent.id, outing)
+		if (showing.outingId !== 'unassigned') await removeOutingShowing(showing.outingId, updatedShowing.id)
+		return { showing: updatedShowing, schedule: newSchedule, outing }
+	}
+
+	if (showing.outingId !== 'unassigned') await removeOutingShowing(showing.outingId, updatedShowing.id)
+	return { showing: updatedShowing, schedule, outing }
 }
 
 export function deleteShowing(showingId) {

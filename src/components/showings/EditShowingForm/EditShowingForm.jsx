@@ -1,14 +1,16 @@
 import { Button } from '@styles/styled-components'
 import { formatPhoneNumber } from '@utils/formatPhoneNumber'
-import { format, fromUnixTime } from 'date-fns'
+import { format, fromUnixTime, getUnixTime } from 'date-fns'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import { EditShowingStageOne } from './EditShowingStageOne'
 import { StageTwo } from '@components/schedule/NewShowingForm/StageTwo'
 import { EditShowingStageThree } from './EdirShowingStageThree'
+import { getShowing, updateShowing, updateShowingAgent } from '@services/firebase/showings'
+import { functions } from '@services/firebase'
 
-export function EditShowingForm({ showing }) {
+export function EditShowingForm({ showing, handleClose }) {
 	const [formData, setFormData] = useState({})
 	const [changedData, setChangedData] = useState({})
 	const [stage, setStage] = useState(1)
@@ -21,8 +23,35 @@ export function EditShowingForm({ showing }) {
 		setChangedData({ ...changedData, [e.target.name]: e.target.value })
 	}
 
-	function onSubmit() {
-		console.log('FORM SAVED!', { changedData })
+	async function onSubmit() {
+		const isUpdatingAgent = changedData.agentId
+
+		if (changedData.toMarketDate) {
+			const toMarketDate = new Date(`${changedData.toMarketDate}`)
+			changedData.toMarketDate = {
+				seconds: getUnixTime(toMarketDate),
+				string: format(toMarketDate, 'MM/dd/yyyy')
+			}
+		}
+
+		if (isUpdatingAgent) {
+			if (showing.status === 'pending') {
+				await updateShowingAgent(showing.id, changedData.agentId)
+				await updateShowing(showing.id, changedData)
+				const { agentId, outingId, id } = await getShowing(showing.id)
+				const sendSMS = functions.httpsCallable('callSendSMS')
+				await sendSMS({ agentId, outingId, showingId: id })
+			} else {
+				setSubmitError({
+					message: `Agent cannot be reassigned to 'in-progress' showings - Agent must cancel showing themselves`
+				})
+				return
+			}
+		} else {
+			await updateShowing(showing.id, changedData)
+		}
+
+		handleClose()
 	}
 
 	function handleStage(e) {
@@ -42,7 +71,7 @@ export function EditShowingForm({ showing }) {
 				bedrooms: showing.bedrooms,
 				bathrooms: showing.bathrooms,
 				builtIn: showing.builtIn || '',
-				toMarketDate: showing.toMarketDate.seconds
+				toMarketDate: showing.toMarketDate?.seconds
 					? format(new Date(showing.toMarketDate.string), 'yyyy-MM-dd')
 					: '',
 				financingConsidered: showing.financingConsidered || '',
