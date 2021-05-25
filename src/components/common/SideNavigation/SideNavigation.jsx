@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import { LeftArrowIcon, RightArrowIcon, DispatchIcon, LogoMark, Logo, ShowingsIcon } from '@components/icons'
 import NavLink from './NavLink'
 import { useNavigation } from '@contexts/navigation'
+import { SOSIcon } from '@components/icons/SOSIcon'
 
 export const SideNavigation = () => {
 	const { openSideNav, closeSideNav, isSideNavExpanded } = useNavigation()
@@ -26,6 +27,10 @@ export const SideNavigation = () => {
 				<NavLink href="/showings">
 					<ShowingsIcon />
 					<Label className="label">Showings</Label>
+				</NavLink>
+				<NavLink href="/sos-history">
+					<SOSIcon />
+					<Label className="label">SOS History</Label>
 				</NavLink>
 			</ul>
 		</NavigationContainer>

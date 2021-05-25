@@ -1,8 +1,8 @@
 import styled, { keyframes } from 'styled-components'
 
-export function Modal({ children, onClose }) {
+export function Modal({ children, onClose, ...props }) {
 	return (
-		<Container>
+		<Container {...props}>
 			<Background onClick={onClose}></Background>
 			<ModalContainer>{children}</ModalContainer>
 		</Container>

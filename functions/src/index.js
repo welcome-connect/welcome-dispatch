@@ -14,3 +14,4 @@ exports.triggerNotifyAgentOnShowingCreation = t.showings.notifyAgentOnShowingCre
 exports.triggerRemoveShowingRefsOnShowingDeletion = t.showings.removeShowingRefsOnShowingDeletion
 exports.triggerDeleteOutingOnShowingRemoval = t.outings.deleteOutingOnShowingRemoval
 exports.triggerDeleteScheduleOnOutingRemoval = t.schedules.deleteScheduleOnOutingRemoval
+exports.triggerAddToSOSHistoryOnSOSDismissal = t.sosSignal.addToSOSHistoryOnSOSDismissal

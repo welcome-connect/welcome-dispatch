@@ -5,8 +5,13 @@ import { theme, GlobalStyles } from '../styles'
 
 import { NavigationProvider } from '../contexts/navigation'
 import { AuthProvider } from '../contexts/auth'
+import { useFirestoreSub } from '@hooks/useFirestoreSub'
+import { SOSModal } from '@components/sos/SOSModal/SOSModal'
 
 function MyApp({ Component, pageProps }) {
+	const [[sosSignal]] = useFirestoreSub('sos-signal')
+	console.log({ sosSignal })
+
 	return (
 		<>
 			<Head>
@@ -19,6 +24,7 @@ function MyApp({ Component, pageProps }) {
 					<NavigationProvider>
 						<GlobalStyles />
 						<Component {...pageProps} />
+						{sosSignal ? <SOSModal sosSignal={sosSignal} /> : null}
 					</NavigationProvider>
 				</AuthProvider>
 			</ThemeProvider>
