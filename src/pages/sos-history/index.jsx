@@ -59,9 +59,10 @@ export default function SOSHistoryPage() {
 
 const PageContainer = styled.div`
 	padding: 24px;
-	height: 100%;
+	height: calc(100vh - 60px);
 	display: flex;
 	flex-direction: column;
+  overflow-y: auto;
 `
 
 const SOSSignalCard = styled.div`
